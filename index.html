@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Agenflex Comercial V5.9</title>
+<title>Agenflex Comercial V6.0</title>
 <style>
 :root{
   --red:#e30613;--red2:#b9000b;--black:#111;--navy:#082c67;--blue:#15598d;
@@ -57,7 +57,12 @@ table.editor textarea{min-height:48px;resize:vertical}
 .check-box{margin-top:13px;padding:12px 14px;border:1px solid #dfe4ea;border-radius:10px;background:#f8fafc;display:flex;align-items:center;gap:10px}
 .check-box input{width:18px;height:18px;accent-color:var(--red);cursor:pointer}.check-box label{font-size:13px;font-weight:900;cursor:pointer}
 .upload-box{border:2px dashed #bdc5d0;border-radius:12px;padding:18px;text-align:center;background:#fafbfc}.upload-box input{display:none}.upload-box b{display:block;margin-bottom:5px}.upload-box p{margin:0;color:var(--muted);font-size:12px}.thumbs{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px}
-.thumb{width:125px;height:92px;border:1px solid #d7dde5;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px;font-size:11px}.thumb img{max-width:100%;max-height:100%;object-fit:contain}
+.thumb{width:125px;height:92px;border:1px solid #d7dde5;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px;font-size:11px;position:relative}.thumb img{max-width:100%;max-height:100%;object-fit:contain}
+.thumb-remove{position:absolute;top:4px;right:4px;width:23px;height:23px;border:0;border-radius:50%;background:#e30613;color:#fff;font-weight:900;line-height:23px;padding:0;cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.25);z-index:2}
+.thumb-remove:hover{background:#a90009}
+.art-drop-zone{transition:.18s ease;border-color:#bdc5d0}
+.art-drop-zone.drag-over{border-color:var(--red);background:#fff3f4;box-shadow:0 0 0 4px rgba(227,6,19,.08)}
+.drop-hint{margin:12px auto 4px;max-width:330px;padding:13px;border-radius:9px;background:#f1f3f6;color:#667085;font-size:12px;font-weight:800}
 .info{margin-top:12px;background:#fff8e3;border:1px solid #efd89d;border-radius:9px;padding:10px 11px;color:#6d520a;font-size:12px}
 
 /* PDF */
@@ -212,12 +217,13 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea></div>
     </div>
 
     <div class="section-title">Arte do cliente</div>
-    <div class="upload-box">
-      <b>🖼️ Anexar artes ao orçamento</b>
-      <p>Cada imagem anexada será adicionada em uma página separada após a primeira página do PDF.</p>
+    <div class="upload-box art-drop-zone" id="artDropZone">
+      <b>🖼️ Arte do cliente</b>
+      <p>Arraste a arte para esta área ou clique em <b style="display:inline">Adicionar arte</b>. Você pode adicionar uma por vez ou várias, sem apagar as já anexadas.</p>
+      <div class="drop-hint">⬇ Arraste e solte arquivos aqui</div>
       <div class="toolbar" style="justify-content:center">
-        <label class="btn orange" for="arteInput" style="cursor:pointer">Selecionar artes</label>
-        <button class="btn light" type="button" onclick="removeArts()">Remover artes</button>
+        <label class="btn orange" for="arteInput" style="cursor:pointer">＋ Adicionar arte</label>
+        <button class="btn light" type="button" onclick="removeArts()">Remover todas</button>
       </div>
       <input id="arteInput" type="file" multiple accept="image/png,image/jpeg,image/webp,application/pdf">
       <div id="artThumbs" class="thumbs"></div>
@@ -258,7 +264,7 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea></div>
         <div><b>Email:</b> <span id="pEmail"></span></div>
       </div>
 
-      <div class="pdf-title">Itens do Orçamento</div>
+      <div class="pdf-title">Itens da Proposta</div>
       <table class="pdf-items"><thead><tr><th>Produto</th><th>NCM</th><th>Quant.</th><th>Unit.</th><th>IPI</th><th>Unit. c/ Imp.</th><th>Valor Total</th></tr></thead><tbody id="pdfRows"></tbody></table>
 
       <table class="totals">
@@ -273,6 +279,8 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea></div>
         <div><strong>Previsão de Faturamento:</strong> <span id="pPrevisao"></span></div>
         <div><strong>Vendedor:</strong> <span id="pVendedor"></span></div>
         <div><strong>Projeto:</strong> <span id="pProjeto"></span></div>
+        <div><strong>Validade da proposta:</strong> <span id="pValidade"></span></div>
+        <div><strong>Clichê:</strong> <span id="pCliche"></span></div>
         <div><strong>Frete:</strong> <span id="pFrete"></span></div>
         <div><strong>Forma de pagamento:</strong> <span id="pPagamento"></span></div>
         <div style="margin-top:12px"><b>DESTINAÇÃO DOS ITENS DO PEDIDO:</b> <span id="pDestinacao"></span></div>
@@ -325,7 +333,7 @@ const teamLogos={revenda:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QA
 const BRL=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
 const N2=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const N4=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:4,maximumFractionDigits:4});
-const KEY='agenflex_v57_orc';
+const KEY='agenflex_v60_orc';
 function isoToday(){const d=new Date(),o=d.getTimezoneOffset();return new Date(d.getTime()-o*60000).toISOString().slice(0,10)}
 function brDate(iso){if(!iso)return'';const [y,m,d]=iso.split('-');return `${d}/${m}/${y}`}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
@@ -378,6 +386,7 @@ function refresh(){
   pTotalRow.style.display = mostrarTotais ? 'table-row' : 'none';
   pIncluido.textContent=brDate(orcData.value)+' às '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   pPrevisao.textContent=brDate(previsao.value);pVendedor.textContent=(vendedor.value||'').toUpperCase();pProjeto.textContent=projeto.value;
+  pValidade.textContent=validade.value;pCliche.textContent=cliche.value||'—';
   pFrete.textContent=frete.value.replace(/^FRETE COBRADO DO CLIENTE:\s*/i,'');pPagamento.textContent=pagamento.value;pDestinacao.textContent=(destinacao.value||'').toUpperCase();pRegras.textContent=regras.value;
   pGerado.textContent=new Date().toLocaleDateString('pt-BR')+' às '+new Date().toLocaleTimeString('pt-BR');pGeradoPor.textContent=vendedor.value;
   pdfRows.innerHTML='';
@@ -387,11 +396,74 @@ function refresh(){
 }
 
 let arts=[];
-arteInput.addEventListener('change',e=>{
-  const files=[...e.target.files];if(!files.length)return;arts=[];let pending=files.length;
-  files.forEach(file=>{const r=new FileReader();r.onload=()=>{arts.push({name:file.name,type:file.type,data:r.result});if(--pending===0){renderArts();toastMsg(arts.length+' arte(s) anexada(s)')}};r.readAsDataURL(file)})
+
+function addArtFiles(fileList){
+  const files=[...fileList].filter(file=>{
+    const okType=file.type.startsWith('image/') || file.type==='application/pdf';
+    return okType;
+  });
+  if(!files.length){
+    toastMsg('Nenhum arquivo de arte compatível');
+    return;
+  }
+
+  let pending=files.length;
+  files.forEach(file=>{
+    const r=new FileReader();
+    r.onload=()=>{
+      arts.push({
+        id: Date.now().toString(36)+Math.random().toString(36).slice(2),
+        name:file.name,
+        type:file.type,
+        data:r.result
+      });
+      pending--;
+      if(pending===0){
+        arteInput.value='';
+        renderArts();
+        toastMsg(files.length===1?'Arte adicionada':files.length+' artes adicionadas');
+      }
+    };
+    r.readAsDataURL(file);
+  });
+}
+
+arteInput.addEventListener('change',e=>addArtFiles(e.target.files));
+
+const dropZone=document.getElementById('artDropZone');
+['dragenter','dragover'].forEach(eventName=>{
+  dropZone.addEventListener(eventName,e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    dropZone.classList.add('drag-over');
+  });
 });
-function removeArts(){arts=[];arteInput.value='';renderArts();toastMsg('Artes removidas')}
+['dragleave','drop'].forEach(eventName=>{
+  dropZone.addEventListener(eventName,e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    dropZone.classList.remove('drag-over');
+  });
+});
+dropZone.addEventListener('drop',e=>{
+  if(e.dataTransfer && e.dataTransfer.files){
+    addArtFiles(e.dataTransfer.files);
+  }
+});
+
+function removeArt(id){
+  arts=arts.filter(art=>art.id!==id);
+  renderArts();
+  toastMsg('Arte removida');
+}
+
+function removeArts(){
+  arts=[];
+  arteInput.value='';
+  renderArts();
+  toastMsg('Todas as artes foram removidas');
+}
+
 function renderArts(){
   artThumbs.innerHTML='';
   artPages.innerHTML='';
@@ -400,19 +472,41 @@ function renderArts(){
   arts.forEach((art,idx)=>{
     const th=document.createElement('div');
     th.className='thumb';
-    if(art.type.startsWith('image/')) th.innerHTML=`<img src="${art.data}">`;
-    else th.textContent='PDF: '+art.name;
+
+    const removeBtn=document.createElement('button');
+    removeBtn.type='button';
+    removeBtn.className='thumb-remove';
+    removeBtn.title='Excluir esta arte';
+    removeBtn.setAttribute('aria-label','Excluir '+art.name);
+    removeBtn.textContent='×';
+    removeBtn.onclick=(e)=>{
+      e.stopPropagation();
+      removeArt(art.id);
+    };
+    th.appendChild(removeBtn);
+
+    if(art.type.startsWith('image/')){
+      const im=document.createElement('img');
+      im.src=art.data;
+      im.alt=art.name;
+      th.appendChild(im);
+    }else{
+      const label=document.createElement('span');
+      label.textContent='PDF: '+art.name;
+      label.style.padding='6px';
+      th.appendChild(label);
+    }
     artThumbs.appendChild(th);
 
     const page=document.createElement('div');
     page.className='pdf-page art-page '+(idx===0?'first-art':'subsequent-art');
 
     let content=art.type.startsWith('image/')
-      ? `<div class="art-frame"><img src="${art.data}"></div>`
+      ? `<div class="art-frame"><img src="${art.data}" alt="${esc(art.name)}"></div>`
       : `<div class="art-frame"><div><b>Arquivo PDF anexado:</b><br>${esc(art.name)}<br><br>O navegador pode não incorporar visualmente o PDF anexado nesta impressão.</div></div>`;
 
     page.innerHTML=`<h2>Arte anexada pelo cliente</h2>
-      <div class="art-sub">Orçamento: ${esc(orcamento.value)} • ${esc(cliente.value)}</div>
+      <div class="art-sub">Proposta: ${esc(orcamento.value)} • ${esc(cliente.value)}</div>
       ${content}
       <div class="generated">Anexo de arte • Agenflex</div>`;
 
@@ -436,7 +530,7 @@ function saveDraft(){rememberSeller();localStorage.setItem(KEY,JSON.stringify({f
 function loadDraft(){try{const raw=localStorage.getItem(KEY);if(!raw)return;const d=JSON.parse(raw);Object.entries(d.fields||{}).forEach(([id,v])=>{const el=document.getElementById(id);if(!el)return;if(id==='mostrarTotalPdf')el.checked=Boolean(v);else el.value=v});if(Array.isArray(d.items)&&d.items.length)items=d.items}catch(e){}}
 function clearForm(){if(!confirm('Limpar o orçamento atual?'))return;localStorage.removeItem(KEY);location.reload()}
 function printPDF(){if(!timeEquipe.value){toastMsg('Selecione o time antes de gerar o PDF');timeEquipe.focus();return}rememberSeller();refresh();window.print()}
-async function copySummary(){rememberSeller();const t=totals();const lines=items.map(it=>`${it.produto} | ${N2.format(it.quant)} ${it.unidade} | ${BRL.format(calcItem(it).total)}`).join('\n');const txt=`ORÇAMENTO AGENFLEX\nOrçamento: ${orcamento.value}\nCliente: ${cliente.value}\nComprador: ${comprador.value}\n\n${lines}\n\nClichê: ${cliche.value}\nTotal: ${BRL.format(t.total)}\nPagamento: ${pagamento.value}\nVendedor: ${vendedor.value}`;try{await navigator.clipboard.writeText(txt);toastMsg('Resumo copiado')}catch(e){toastMsg('Não foi possível copiar')}}
+async function copySummary(){rememberSeller();const t=totals();const lines=items.map(it=>`${it.produto} | ${N2.format(it.quant)} ${it.unidade} | ${BRL.format(calcItem(it).total)}`).join('\n');const txt=`PROPOSTA AGENFLEX\nProposta: ${orcamento.value}\nCliente: ${cliente.value}\nComprador: ${comprador.value}\n\n${lines}\n\nClichê: ${cliche.value}\nTotal: ${BRL.format(t.total)}\nPagamento: ${pagamento.value}\nVendedor: ${vendedor.value}`;try{await navigator.clipboard.writeText(txt);toastMsg('Resumo copiado')}catch(e){toastMsg('Não foi possível copiar')}}
 
 /* Clichê */
 function calcCliche(){const cil=+cCil.value||0,bob=+cBob.value||0,cores=+cCores.value||0,base=+cValor.value||0,desc=+cDesconto.value||0;const cm=cil+10,bm=bob+10,area=cm*bm*cores,prev=area*base,econ=prev*(desc/100),total=prev-econ;cTotal.textContent=BRL.format(total);dCil.textContent=N2.format(cil)+' cm';dCilM.textContent=N2.format(cm)+' cm';dBob.textContent=N2.format(bob)+' cm';dBobM.textContent=N2.format(bm)+' cm';dArea.textContent=N2.format(area)+' cm²';dBase.textContent=BRL.format(base)+'/cm²';dPrevisto.textContent=BRL.format(prev);dDesc.textContent=desc+'%';dEconomia.textContent=BRL.format(econ);return total}
