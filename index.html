@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Agenflex Comercial V6.0</title>
+<title>Agenflex Comercial V6.5</title>
 <style>
 :root{
   --red:#e30613;--red2:#b9000b;--black:#111;--navy:#082c67;--blue:#15598d;
@@ -26,7 +26,7 @@ nav{display:flex;gap:7px;margin-left:auto;flex-wrap:wrap}
 main{max-width:1500px;margin:22px auto;padding:0 18px 50px}.page{display:none}.page.active{display:block}
 .hero{background:linear-gradient(120deg,#111,#202020 65%,#3a0005);color:#fff;padding:34px;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.12);margin-bottom:22px}
 .hero h2{font-size:34px;margin:0 0 9px}.hero p{margin:0;color:#ddd;line-height:1.55;max-width:850px}
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
 .tool-card{background:#fff;border:1px solid #e1e5eb;border-top:5px solid var(--red);border-radius:16px;padding:22px;box-shadow:0 7px 22px rgba(16,24,40,.07);cursor:pointer}
 .tool-card .ico{width:48px;height:48px;border-radius:12px;background:#fff0f1;display:grid;place-items:center;font-size:24px;margin-bottom:14px}
 .tool-card h3{margin:0 0 8px}.tool-card p{font-size:14px;color:var(--muted);line-height:1.5}
@@ -57,13 +57,30 @@ table.editor textarea{min-height:48px;resize:vertical}
 .check-box{margin-top:13px;padding:12px 14px;border:1px solid #dfe4ea;border-radius:10px;background:#f8fafc;display:flex;align-items:center;gap:10px}
 .check-box input{width:18px;height:18px;accent-color:var(--red);cursor:pointer}.check-box label{font-size:13px;font-weight:900;cursor:pointer}
 .upload-box{border:2px dashed #bdc5d0;border-radius:12px;padding:18px;text-align:center;background:#fafbfc}.upload-box input{display:none}.upload-box b{display:block;margin-bottom:5px}.upload-box p{margin:0;color:var(--muted);font-size:12px}.thumbs{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px}
-.thumb{width:125px;height:92px;border:1px solid #d7dde5;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px;font-size:11px;position:relative}.thumb img{max-width:100%;max-height:100%;object-fit:contain}
-.thumb-remove{position:absolute;top:4px;right:4px;width:23px;height:23px;border:0;border-radius:50%;background:#e30613;color:#fff;font-weight:900;line-height:23px;padding:0;cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.25);z-index:2}
-.thumb-remove:hover{background:#a90009}
-.art-drop-zone{transition:.18s ease;border-color:#bdc5d0}
-.art-drop-zone.drag-over{border-color:var(--red);background:#fff3f4;box-shadow:0 0 0 4px rgba(227,6,19,.08)}
-.drop-hint{margin:12px auto 4px;max-width:330px;padding:13px;border-radius:9px;background:#f1f3f6;color:#667085;font-size:12px;font-weight:800}
+.thumb{width:125px;height:92px;border:1px solid #d7dde5;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px;font-size:11px}.thumb img{max-width:100%;max-height:100%;object-fit:contain}
 .info{margin-top:12px;background:#fff8e3;border:1px solid #efd89d;border-radius:9px;padding:10px 11px;color:#6d520a;font-size:12px}
+.measure-toolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:13px}
+.measure-alert{color:#c00000;font-weight:900;font-size:12px;padding:10px 12px;border-left:4px solid #c00000;background:#fff4f4;border-radius:7px}
+.measure-summary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.measure-summary-card{border:1px solid #e2e6eb;border-radius:13px;background:#fafbfc;padding:14px}
+.measure-summary-card .measure-kicker{font-size:11px;font-weight:900;color:#667085;text-transform:uppercase;letter-spacing:.04em}
+.measure-summary-card .measure-big{font-size:34px;font-weight:900;color:var(--red);margin-top:5px}
+.measure-summary-card .measure-sub{font-size:11px;color:#667085;margin-top:4px;line-height:1.4}
+.measure-bad{color:#b42318;font-weight:900}.measure-good{color:#16803b;font-weight:900}
+.measure-status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 14px}
+.measure-status-pill{border:1px solid #dfe4ea;border-radius:10px;padding:10px 8px;text-align:center;background:#f8fafc;color:#667085;font-size:11px;font-weight:900;transition:.15s}
+.measure-status-pill.active.catalogo{background:#eef6ff;border-color:#84adff;color:#1849a9}
+.measure-status-pill.active.padrao{background:#edf9f0;border-color:#86d49a;color:#137333}
+.measure-status-pill.active.nao-padrao{background:#fff1f0;border-color:#f0a3a0;color:#b42318}
+.measure-reason-box{margin:12px 0;padding:12px 14px;border-radius:10px;border:1px solid #f1b2ae;border-left:5px solid #b42318;background:#fff5f4;color:#7a271a;font-size:12px;line-height:1.55}
+.measure-reason-box.good{border-color:#a7d9b3;border-left-color:#16803b;background:#f2fbf4;color:#176a34}
+.measure-suggestion-box{margin:12px 0;padding:13px 14px;border-radius:10px;border:1px solid #f0cf88;border-left:5px solid #f5a033;background:#fff9ec;color:#6d520a;font-size:12px;line-height:1.55}
+.measure-suggestion-box b{color:#4e3a06}
+.measure-calc-box{margin-top:12px;padding:12px 14px;border-radius:10px;background:#f7f9fb;border:1px solid #dfe4ea;font-size:12px;line-height:1.6;color:#344054}
+.measure-calc-box .calc-final{font-weight:900;color:#b42318}
+@media(max-width:720px){.measure-status-grid{grid-template-columns:1fr}}
+@media(max-width:720px){.measure-summary{grid-template-columns:1fr}}
+
 
 /* PDF */
 .preview-wrap{background:#e3e7ed;padding:14px}.pdf-page{background:#fff;box-shadow:0 4px 15px rgba(0,0,0,.10);margin:0 auto 16px;min-height:760px;padding:18px 18px 24px;border-top:7px solid var(--red)}
@@ -83,7 +100,7 @@ table.editor textarea{min-height:48px;resize:vertical}
 .cliche-result{background:linear-gradient(135deg,#fff,#fff7f7);border:1px solid #eee;border-radius:16px;padding:24px;text-align:center}.cliche-result .label{font-size:14px;font-weight:900}.cliche-total{color:var(--red);font-size:54px;font-weight:900;margin:13px 0}.detail-list{margin-top:18px;text-align:left}.detail-row{display:grid;grid-template-columns:auto 1fr auto;gap:9px;padding:7px 0;font-size:14px;align-items:end}.dots{border-bottom:2px dotted #d8d8d8;transform:translateY(-4px)}.formula{margin-top:15px;background:#fff4f4;border:1px dashed #e8989e;border-radius:10px;padding:13px;font-size:13px}
 .dev{padding:45px;text-align:center}.dev .big{font-size:62px}.dev p{color:var(--muted);max-width:720px;margin:0 auto;line-height:1.6}
 .toast{position:fixed;right:18px;bottom:18px;background:#111;color:#fff;padding:12px 15px;border-radius:9px;opacity:0;transform:translateY(12px);transition:.2s;z-index:50}.toast.show{opacity:1;transform:none}
-@media(max-width:1100px){.cards{grid-template-columns:1fr}.two-col{grid-template-columns:1fr}}
+@media(max-width:1250px){.cards{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:1fr}}@media(max-width:700px){.cards{grid-template-columns:1fr}}
 @media(max-width:720px){.header-inner{flex-wrap:wrap}.brand{display:none}nav{width:100%;margin:0}.nav-btn{flex:1;padding:9px 6px}.grid2,.grid3{grid-template-columns:1fr}.full{grid-column:auto}.metrics{grid-template-columns:1fr}.pdf-top{grid-template-columns:1fr}.company{text-align:left}.cliche-total{font-size:40px}}
 @media print{
   body{background:#fff}
@@ -145,6 +162,7 @@ table.editor textarea{min-height:48px;resize:vertical}
     <button class="nav-btn active" data-page="homePage" onclick="showPage('homePage',this)">Início</button>
     <button class="nav-btn" data-page="orcamentoPage" onclick="showPage('orcamentoPage',this)">Orçamento</button>
     <button class="nav-btn" data-page="clichePage" onclick="showPage('clichePage',this)">Calculadora de Clichê</button>
+    <button class="nav-btn" data-page="medidasPage" onclick="showPage('medidasPage',this)">Medidas</button>
     <button class="nav-btn" data-page="fatorPage" onclick="showPage('fatorPage',this)">Fator Indicado</button>
   </nav>
 </div></header>
@@ -155,6 +173,7 @@ table.editor textarea{min-height:48px;resize:vertical}
   <div class="cards">
     <div class="tool-card" onclick="go('orcamentoPage')"><div class="ico">📄</div><h3>Orçamento</h3><p>Crie o PDF completo, escolha a identidade do time e anexe quantas artes forem necessárias.</p><span class="tag">FUNCIONAL</span></div>
     <div class="tool-card" onclick="go('clichePage')"><div class="ico">🧮</div><h3>Calculadora de Clichê</h3><p>Calcule o valor comercial do clichê com margem e descontos previstos.</p><span class="tag">FUNCIONAL</span></div>
+    <div class="tool-card" onclick="go('medidasPage')"><div class="ico">📏</div><h3>Medidas</h3><p>Consulte cilindros, valide medidas padrão e veja o pedido mínimo sugerido.</p><span class="tag">FUNCIONAL</span></div>
     <div class="tool-card" onclick="go('fatorPage')"><div class="ico">📈</div><h3>Fator Indicado</h3><p>Área reservada para a futura lógica de custos, impostos e fator recomendado.</p><span class="tag dev">EM DESENVOLVIMENTO</span></div>
   </div>
 </section>
@@ -217,10 +236,9 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea></div>
     </div>
 
     <div class="section-title">Arte do cliente</div>
-    <div class="upload-box art-drop-zone" id="artDropZone">
-      <b>🖼️ Arte do cliente</b>
-      <p>Arraste a arte para esta área ou clique em <b style="display:inline">Adicionar arte</b>. Você pode adicionar uma por vez ou várias, sem apagar as já anexadas.</p>
-      <div class="drop-hint">⬇ Arraste e solte arquivos aqui</div>
+    <div class="upload-box" id="artDropZone">
+      <b>🖼️ Anexar artes à proposta</b>
+      <p>Arraste e solte os arquivos aqui ou clique em “＋ Adicionar arte”. As artes anteriores serão mantidas.</p>
       <div class="toolbar" style="justify-content:center">
         <label class="btn orange" for="arteInput" style="cursor:pointer">＋ Adicionar arte</label>
         <button class="btn light" type="button" onclick="removeArts()">Remover todas</button>
@@ -279,9 +297,9 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea></div>
         <div><strong>Previsão de Faturamento:</strong> <span id="pPrevisao"></span></div>
         <div><strong>Vendedor:</strong> <span id="pVendedor"></span></div>
         <div><strong>Projeto:</strong> <span id="pProjeto"></span></div>
+        <div><strong>Frete:</strong> <span id="pFrete"></span></div>
         <div><strong>Validade da proposta:</strong> <span id="pValidade"></span></div>
         <div><strong>Clichê:</strong> <span id="pCliche"></span></div>
-        <div><strong>Frete:</strong> <span id="pFrete"></span></div>
         <div><strong>Forma de pagamento:</strong> <span id="pPagamento"></span></div>
         <div style="margin-top:12px"><b>DESTINAÇÃO DOS ITENS DO PEDIDO:</b> <span id="pDestinacao"></span></div>
         <div id="pRegras" class="rules"></div>
@@ -324,6 +342,123 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea></div>
 </div>
 </section>
 
+
+<section id="medidasPage" class="page">
+<div class="two-col">
+  <section class="panel">
+    <div class="panel-head"><h2>📏 Consulta de Medidas</h2><span>Validação automática, kg e unidades mínimas</span></div>
+    <div class="panel-body">
+      <div class="grid2">
+        <div class="field"><label>Categoria / Modelo</label>
+          <select id="mCategoria">
+            <option value="sacola_vazada" selected>Sacola Vazada</option>
+            <option value="envelope_seguranca_coex">Envelope de Segurança (COEX)</option>
+            <option value="envelope_sacola_coex">Envelope Sacola (COEX)</option>
+            <option value="envelope_platinum_termica_pp">Envelope Platinum Térmica 0,013 (PP)</option>
+            <option value="metalizado_pizza_lanche">Envelope Metalizado — Pizza e Lanche</option>
+            <option value="metalizado_espetinho">Envelope Metalizado — Espetinho</option>
+            <option value="metalizado_congelado">Envelope Metalizado — Congelado</option>
+            <option value="sacola_metalizada_platinum_pp">Sacola Metalizada Platinum 0,013 (PP)</option>
+          </select>
+        </div>
+        <div class="field"><label>Regra de densidade / mínimo</label>
+          <select id="mDensidade">
+            <option value="bd" selected>BD — Baixa Densidade</option>
+            <option value="ad">AD — Alta Densidade</option>
+            <option value="na">Não se aplica / outro material</option>
+          </select>
+        </div>
+        <div class="field"><label>Largura desejada do cliente (cm)</label><input id="mLargDesejada" type="number" step="0.01" min="0" placeholder="Ex.: 20"></div>
+        <div class="field"><label>Altura desejada do cliente (cm)</label><input id="mAltDesejada" type="number" step="0.01" min="0" placeholder="Ex.: 30"></div>
+        <div class="field"><label>Espessura indicada pela altura (automática)</label><input id="mEsp" type="text" readonly placeholder="Definida automaticamente pela altura"></div>
+        <div class="field"><label>Aba de catálogo / referência</label><input id="mAba" type="text" readonly placeholder="Quando houver"></div>
+        <div class="field"><label>Cilindro indicado (automático)</label><input id="mCil" type="text" readonly placeholder="Preenchido automaticamente"></div>
+        <div class="field"><label>Bobina indicada — altura × 2 (cm)</label><input id="mBob" type="text" readonly placeholder="Preenchido automaticamente"></div>
+      </div>
+
+      <div class="measure-toolbar">
+        <button class="btn red" type="button" onclick="calcMedidas()">Calcular</button>
+        <button class="btn light" type="button" onclick="clearMedidas()">Limpar</button>
+        <div class="measure-alert">⚠ ATENÇÃO: Alta Densidade (AD) sempre 200 kg — Baixa Densidade (BD) 100 kg quando a medida estiver dentro do padrão.</div>
+      </div>
+
+      <div class="info">
+        <b>Regra de produção:</b> primeiro o sistema procura um cilindro igual à largura. Se não existir, testa <b>largura × 2</b>. A bobina segue sempre <b>altura × 2</b>. A espessura é determinada automaticamente pela altura conforme as medidas padrão cadastradas do modelo. Se a largura não for produzível ou a altura não possuir espessura padrão, a medida passa para <b>200 kg</b>.
+      </div>
+
+      <div class="section-title" id="catalogTitle">Medidas de catálogo — Sacola Vazada</div>
+      <div class="table-wrap"><table class="editor" style="min-width:760px"><thead><tr><th>Largura</th><th>Altura</th><th>Aba</th><th>Espessura</th><th>Pedido padrão</th><th></th></tr></thead><tbody id="catalogBody"></tbody></table></div>
+      <div class="info" style="margin-top:10px">As medidas acima são as medidas oficiais de catálogo. Uma medida fora da lista ainda pode continuar <b>padrão de produção</b> quando largura/cilindro e altura/espessura respeitarem as regras cadastradas.</div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>📋 Resultado da Consulta</h2><span>Apoio ao comercial</span></div>
+    <div class="panel-body">
+      <div class="measure-summary">
+        <div class="measure-summary-card">
+          <div class="measure-kicker">Pedido mínimo sugerido</div>
+          <div class="measure-big" id="mPedidoMin">—</div>
+          <div class="measure-sub" id="mPedidoMotivo">Informe a medida para calcular.</div>
+        </div>
+        <div class="measure-summary-card">
+          <div class="measure-kicker">Unidades mínimas + 10%</div>
+          <div class="measure-big" id="mUnidadesMin">—</div>
+          <div class="measure-sub" id="mKgMilheiro">Kg/milheiro: —</div>
+          <div class="measure-sub" id="mUnidadesBase">Unidade mínima base: —</div>
+        </div>
+      </div>
+
+      <div class="measure-status-grid" aria-label="Classificação da medida">
+        <div class="measure-status-pill catalogo" id="statusCatalogo">⭐ MEDIDA DE CATÁLOGO</div>
+        <div class="measure-status-pill padrao" id="statusPadrao">✅ PRODUZÍVEL PADRÃO</div>
+        <div class="measure-status-pill nao-padrao" id="statusNaoPadrao">⚠ NÃO PADRÃO</div>
+      </div>
+
+      <div class="measure-reason-box" id="mMotivos200" style="display:none"></div>
+      <div class="measure-suggestion-box" id="mSugestaoComercial" style="display:none"></div>
+
+      <div class="cliche-result" style="text-align:left">
+        <div class="detail-list" style="margin-top:0">
+          <div class="detail-row"><span>Categoria</span><span class="dots"></span><span id="rCategoria">Sacola Vazada</span></div>
+          <div class="detail-row"><span>Medida solicitada</span><span class="dots"></span><span id="rSolicitada">—</span></div>
+          <div class="detail-row"><span>Espessura automática</span><span class="dots"></span><span id="rEsp">—</span></div>
+          <div class="detail-row"><span>Regra altura → espessura</span><span class="dots"></span><span id="rEspStatus">—</span></div>
+          <div class="detail-row"><span>Cilindro indicado</span><span class="dots"></span><span id="rCil">—</span></div>
+          <div class="detail-row"><span>Regra do cilindro</span><span class="dots"></span><span id="rBateu">—</span></div>
+          <div class="detail-row"><span>Largura próxima disponível</span><span class="dots"></span><span id="rSugestao">—</span></div>
+          <div class="detail-row"><span>Bobina (altura × 2)</span><span class="dots"></span><span id="rBob">—</span></div>
+          <div class="detail-row"><span>Aba</span><span class="dots"></span><span id="rAba">—</span></div>
+          <div class="detail-row"><span>Medida de produção</span><span class="dots"></span><span id="rResultante">—</span></div>
+          <div class="detail-row"><span>Medida de catálogo?</span><span class="dots"></span><span id="rCatalogo">—</span></div>
+          <div class="detail-row"><span>Status da medida</span><span class="dots"></span><span id="rStatus">Informe a medida</span></div>
+          <div class="detail-row"><span>Kg/milheiro</span><span class="dots"></span><span id="rKgMilheiro">—</span></div>
+          <div class="detail-row"><span>Cálculo das unidades mínimas</span><span class="dots"></span><span id="rCalcUnidades">—</span></div>
+        </div>
+      </div>
+
+      <div class="section-title">Quadro de cilindros disponíveis</div>
+      <div class="table-wrap"><table class="editor" style="min-width:520px"><thead><tr><th>Cilindro (cm)</th><th>Pode atender diretamente</th><th>Pode atender batendo 2x</th></tr></thead><tbody>
+        <tr><td><b>32</b></td><td>32 cm</td><td>16 cm</td></tr>
+        <tr><td><b>35</b></td><td>35 cm</td><td>17,5 cm</td></tr>
+        <tr><td><b>40</b></td><td>40 cm</td><td>20 cm</td></tr>
+        <tr><td><b>45</b></td><td>45 cm</td><td>22,5 cm</td></tr>
+        <tr><td><b>49</b></td><td>49 cm</td><td>24,5 cm</td></tr>
+        <tr><td><b>52</b></td><td>52 cm</td><td>26 cm</td></tr>
+        <tr><td><b>56</b></td><td>56 cm</td><td>28 cm</td></tr>
+        <tr><td><b>62</b></td><td>62 cm</td><td>31 cm</td></tr>
+      </tbody></table></div>
+
+      <div class="section-title" id="espTitle">Regra de altura × espessura</div>
+      <div class="table-wrap"><table class="editor" style="min-width:460px"><thead><tr><th>Altura (cm)</th><th>Espessura automática</th></tr></thead><tbody id="espBody"></tbody></table></div>
+      <div class="info" id="mObservacao">Informe largura e altura para consultar.</div>
+      <div class="measure-calc-box" id="mContaUnidades"><b>Conta das unidades:</b> informe uma medida para calcular.</div>
+      <div class="info"><b>Fórmula comercial:</b> Kg/milheiro = largura × altura × espessura. Unidade mínima base = (kg mínimos ÷ kg/milheiro) × 1.000. Para oferta comercial, o sistema adiciona <b>10%</b> sobre a unidade mínima base.</div>
+    </div>
+  </section>
+</div>
+</section>
+
 <section id="fatorPage" class="page"><section class="panel"><div class="panel-head"><h2>📈 Fator Indicado</h2><span>Em desenvolvimento</span></div><div class="dev"><div class="big">🚧</div><h2>Módulo reservado</h2><p>Espaço preparado para a futura lógica de matéria-prima, impostos, estado, pedido mínimo e recomendação de fator.</p></div></section></section>
 </main>
 <div id="toast" class="toast"></div>
@@ -333,7 +468,7 @@ const teamLogos={revenda:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QA
 const BRL=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
 const N2=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const N4=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:4,maximumFractionDigits:4});
-const KEY='agenflex_v60_orc';
+const KEY='agenflex_v61_orc';
 function isoToday(){const d=new Date(),o=d.getTimezoneOffset();return new Date(d.getTime()-o*60000).toISOString().slice(0,10)}
 function brDate(iso){if(!iso)return'';const [y,m,d]=iso.split('-');return `${d}/${m}/${y}`}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
@@ -386,8 +521,7 @@ function refresh(){
   pTotalRow.style.display = mostrarTotais ? 'table-row' : 'none';
   pIncluido.textContent=brDate(orcData.value)+' às '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   pPrevisao.textContent=brDate(previsao.value);pVendedor.textContent=(vendedor.value||'').toUpperCase();pProjeto.textContent=projeto.value;
-  pValidade.textContent=validade.value;pCliche.textContent=cliche.value||'—';
-  pFrete.textContent=frete.value.replace(/^FRETE COBRADO DO CLIENTE:\s*/i,'');pPagamento.textContent=pagamento.value;pDestinacao.textContent=(destinacao.value||'').toUpperCase();pRegras.textContent=regras.value;
+  pFrete.textContent=frete.value.replace(/^FRETE COBRADO DO CLIENTE:\s*/i,'');pValidade.textContent=validade.value;pCliche.textContent=cliche.value;pPagamento.textContent=pagamento.value;pDestinacao.textContent=(destinacao.value||'').toUpperCase();pRegras.textContent=regras.value;
   pGerado.textContent=new Date().toLocaleDateString('pt-BR')+' às '+new Date().toLocaleTimeString('pt-BR');pGeradoPor.textContent=vendedor.value;
   pdfRows.innerHTML='';
   items.forEach(it=>{const c=calcItem(it),tr=document.createElement('tr');tr.innerHTML=`<td>${esc((it.codigo?it.codigo+' - ':'')+it.produto)}${it.detalhes?'<div class="item-notes">'+esc(it.detalhes).replace(/\n/g,'<br>')+'</div>':''}</td><td>${esc(it.ncm)}</td><td>${N2.format(it.quant)} ${esc(it.unidade)}</td><td>${N4.format(it.unit)}</td><td>${N2.format(c.ipi)}${it.ipi?'<div>('+String(it.ipi).replace('.',',')+'%)</div>':''}</td><td>${N4.format(c.unitImp)}</td><td>${N2.format(c.total)}</td>`;pdfRows.appendChild(tr)});
@@ -396,74 +530,27 @@ function refresh(){
 }
 
 let arts=[];
-
 function addArtFiles(fileList){
-  const files=[...fileList].filter(file=>{
-    const okType=file.type.startsWith('image/') || file.type==='application/pdf';
-    return okType;
-  });
-  if(!files.length){
-    toastMsg('Nenhum arquivo de arte compatível');
-    return;
-  }
-
-  let pending=files.length;
+  const files=[...fileList].filter(file=>file.type.startsWith('image/')||file.type==='application/pdf');
+  if(!files.length)return;
+  let pending=files.length,added=0;
   files.forEach(file=>{
     const r=new FileReader();
     r.onload=()=>{
-      arts.push({
-        id: Date.now().toString(36)+Math.random().toString(36).slice(2),
-        name:file.name,
-        type:file.type,
-        data:r.result
-      });
-      pending--;
-      if(pending===0){
-        arteInput.value='';
-        renderArts();
-        toastMsg(files.length===1?'Arte adicionada':files.length+' artes adicionadas');
-      }
+      arts.push({name:file.name,type:file.type,data:r.result});added++;
+      if(--pending===0){renderArts();arteInput.value='';toastMsg(added+' arte(s) adicionada(s)')}
     };
+    r.onerror=()=>{if(--pending===0)renderArts()};
     r.readAsDataURL(file);
   });
 }
-
 arteInput.addEventListener('change',e=>addArtFiles(e.target.files));
-
-const dropZone=document.getElementById('artDropZone');
-['dragenter','dragover'].forEach(eventName=>{
-  dropZone.addEventListener(eventName,e=>{
-    e.preventDefault();
-    e.stopPropagation();
-    dropZone.classList.add('drag-over');
-  });
-});
-['dragleave','drop'].forEach(eventName=>{
-  dropZone.addEventListener(eventName,e=>{
-    e.preventDefault();
-    e.stopPropagation();
-    dropZone.classList.remove('drag-over');
-  });
-});
-dropZone.addEventListener('drop',e=>{
-  if(e.dataTransfer && e.dataTransfer.files){
-    addArtFiles(e.dataTransfer.files);
-  }
-});
-
-function removeArt(id){
-  arts=arts.filter(art=>art.id!==id);
-  renderArts();
-  toastMsg('Arte removida');
-}
-
-function removeArts(){
-  arts=[];
-  arteInput.value='';
-  renderArts();
-  toastMsg('Todas as artes foram removidas');
-}
-
+function removeArt(idx){arts.splice(idx,1);renderArts();toastMsg('Arte removida')}
+function removeArts(){arts=[];arteInput.value='';renderArts();toastMsg('Artes removidas')}
+const artDropZone=document.getElementById('artDropZone');
+['dragenter','dragover'].forEach(evt=>artDropZone.addEventListener(evt,e=>{e.preventDefault();e.stopPropagation();artDropZone.style.borderColor='#e30613';artDropZone.style.background='#fff5f5'}));
+['dragleave','drop'].forEach(evt=>artDropZone.addEventListener(evt,e=>{e.preventDefault();e.stopPropagation();artDropZone.style.borderColor='';artDropZone.style.background=''}));
+artDropZone.addEventListener('drop',e=>addArtFiles(e.dataTransfer.files));
 function renderArts(){
   artThumbs.innerHTML='';
   artPages.innerHTML='';
@@ -472,37 +559,20 @@ function renderArts(){
   arts.forEach((art,idx)=>{
     const th=document.createElement('div');
     th.className='thumb';
-
-    const removeBtn=document.createElement('button');
-    removeBtn.type='button';
-    removeBtn.className='thumb-remove';
-    removeBtn.title='Excluir esta arte';
-    removeBtn.setAttribute('aria-label','Excluir '+art.name);
-    removeBtn.textContent='×';
-    removeBtn.onclick=(e)=>{
-      e.stopPropagation();
-      removeArt(art.id);
-    };
-    th.appendChild(removeBtn);
-
-    if(art.type.startsWith('image/')){
-      const im=document.createElement('img');
-      im.src=art.data;
-      im.alt=art.name;
-      th.appendChild(im);
-    }else{
-      const label=document.createElement('span');
-      label.textContent='PDF: '+art.name;
-      label.style.padding='6px';
-      th.appendChild(label);
-    }
+    th.style.position='relative';
+    if(art.type.startsWith('image/')) th.innerHTML=`<img src="${art.data}" alt="${esc(art.name)}">`;
+    else th.innerHTML=`<span>PDF: ${esc(art.name)}</span>`;
+    const del=document.createElement('button');
+    del.type='button';del.textContent='×';del.title='Remover esta arte';
+    del.style.cssText='position:absolute;top:3px;right:3px;width:24px;height:24px;border:0;border-radius:50%;background:#e30613;color:#fff;font-weight:900;cursor:pointer;line-height:24px;padding:0';
+    del.onclick=()=>removeArt(idx);th.appendChild(del);
     artThumbs.appendChild(th);
 
     const page=document.createElement('div');
     page.className='pdf-page art-page '+(idx===0?'first-art':'subsequent-art');
 
     let content=art.type.startsWith('image/')
-      ? `<div class="art-frame"><img src="${art.data}" alt="${esc(art.name)}"></div>`
+      ? `<div class="art-frame"><img src="${art.data}"></div>`
       : `<div class="art-frame"><div><b>Arquivo PDF anexado:</b><br>${esc(art.name)}<br><br>O navegador pode não incorporar visualmente o PDF anexado nesta impressão.</div></div>`;
 
     page.innerHTML=`<h2>Arte anexada pelo cliente</h2>
@@ -532,14 +602,312 @@ function clearForm(){if(!confirm('Limpar o orçamento atual?'))return;localStora
 function printPDF(){if(!timeEquipe.value){toastMsg('Selecione o time antes de gerar o PDF');timeEquipe.focus();return}rememberSeller();refresh();window.print()}
 async function copySummary(){rememberSeller();const t=totals();const lines=items.map(it=>`${it.produto} | ${N2.format(it.quant)} ${it.unidade} | ${BRL.format(calcItem(it).total)}`).join('\n');const txt=`PROPOSTA AGENFLEX\nProposta: ${orcamento.value}\nCliente: ${cliente.value}\nComprador: ${comprador.value}\n\n${lines}\n\nClichê: ${cliche.value}\nTotal: ${BRL.format(t.total)}\nPagamento: ${pagamento.value}\nVendedor: ${vendedor.value}`;try{await navigator.clipboard.writeText(txt);toastMsg('Resumo copiado')}catch(e){toastMsg('Não foi possível copiar')}}
 
+
+/* Medidas */
+const CILINDROS_PADRAO=[32,35,40,45,49,52,56,62];
+const MEDIDAS_CATALOGO={
+  sacola_vazada:[
+    {larg:16,alt:25,aba:0,esp:'0,008'},
+    {larg:20,alt:30,aba:0,esp:'0,008'},
+    {larg:26,alt:35,aba:0,esp:'0,008'},
+    {larg:32,alt:35,aba:0,esp:'0,008'},
+    {larg:32,alt:40,aba:0,esp:'0,010'},
+    {larg:35,alt:50,aba:0,esp:'0,010'},
+    {larg:40,alt:50,aba:0,esp:'0,010'}
+  ],
+  envelope_seguranca_coex:[
+    {larg:16,alt:23,aba:3,esp:'0,010'},
+    {larg:20,alt:28,aba:3,esp:'0,010'},
+    {larg:26,alt:35,aba:3,esp:'0,010'},
+    {larg:32,alt:40,aba:3,esp:'0,010'},
+    {larg:40,alt:47,aba:3,esp:'0,010'}
+  ],
+  envelope_sacola_coex:[
+    {larg:16,alt:30,aba:3,esp:'0,010'},
+    {larg:20,alt:37,aba:3,esp:'0,010'},
+    {larg:26,alt:43,aba:3,esp:'0,010'},
+    {larg:32,alt:40,aba:3,esp:'0,010'},
+    {larg:40,alt:47,aba:3,esp:'0,010'}
+  ],
+  envelope_platinum_termica_pp:[
+    {larg:20,alt:28,aba:4,esp:'0,013'},
+    {larg:26,alt:36,aba:4,esp:'0,013'},
+    {larg:32,alt:36,aba:4,esp:'0,013'},
+    {larg:40,alt:46,aba:4,esp:'0,013'}
+  ],
+  metalizado_pizza_lanche:[
+    {larg:22.5,alt:22,aba:4,esp:'0,004'},
+    {larg:32,alt:34,aba:4,esp:'0,004'},
+    {larg:45,alt:46,aba:5,esp:'0,004'},
+    {larg:52,alt:52,aba:5,esp:'0,004'}
+  ],
+  metalizado_espetinho:[
+    {larg:13.5,alt:36,aba:4,esp:'0,006'}
+  ],
+  metalizado_congelado:[
+    {larg:22.5,alt:22,aba:4,esp:'0,006'},
+    {larg:26,alt:36,aba:4,esp:'0,006'},
+    {larg:32,alt:36,aba:4,esp:'0,006'},
+    {larg:40,alt:36,aba:4,esp:'0,006'}
+  ],
+  sacola_metalizada_platinum_pp:[
+    {larg:20,alt:30,aba:0,esp:'0,013'},
+    {larg:26,alt:37,aba:0,esp:'0,013'},
+    {larg:32,alt:37,aba:0,esp:'0,013'},
+    {larg:40,alt:50,aba:0,esp:'0,013'}
+  ]
+};
+const NOMES_CATEGORIA={
+  sacola_vazada:'Sacola Vazada',
+  envelope_seguranca_coex:'Envelope de Segurança (COEX)',
+  envelope_sacola_coex:'Envelope Sacola (COEX)',
+  envelope_platinum_termica_pp:'Envelope Platinum Térmica 0,013 (PP)',
+  metalizado_pizza_lanche:'Envelope Metalizado — Pizza e Lanche',
+  metalizado_espetinho:'Envelope Metalizado — Espetinho',
+  metalizado_congelado:'Envelope Metalizado — Congelado',
+  sacola_metalizada_platinum_pp:'Sacola Metalizada Platinum 0,013 (PP)'
+};
+function nomeCategoria(cat){return NOMES_CATEGORIA[cat]||cat}
+function numeroPt(v){return String(v).replace('.',',')}
+function normalizarEspessura(valor){
+  const txt=String(valor??'').trim().replace(',','.');
+  if(!txt)return '';
+  const n=Number(txt);
+  if(!Number.isFinite(n))return String(valor).trim();
+  return n.toFixed(3).replace('.',',');
+}
+function catalogoDaCategoria(cat){return MEDIDAS_CATALOGO[cat]||[]}
+function regraEspessuraPorAltura(cat){
+  const mapa={};
+  catalogoDaCategoria(cat).forEach(m=>{if(!mapa[m.alt])mapa[m.alt]=m.esp});
+  return mapa;
+}
+function espessuraPorAltura(cat,alt){
+  const regras=regraEspessuraPorAltura(cat);
+  return regras[Number(alt)]||'';
+}
+function itemCatalogo(cat,larg,alt){
+  return catalogoDaCategoria(cat).find(m=>Math.abs(m.larg-larg)<0.0001&&Math.abs(m.alt-alt)<0.0001)||null;
+}
+function largurasDisponiveis(cat){
+  const vals=[];
+  CILINDROS_PADRAO.forEach(c=>{vals.push(c);vals.push(c/2)});
+  catalogoDaCategoria(cat).forEach(m=>vals.push(m.larg));
+  return [...new Set(vals.map(v=>Number(v.toFixed(4))))].sort((a,b)=>a-b);
+}
+function sugestaoLargura(cat,larg){
+  if(!larg)return [];
+  const vals=largurasDisponiveis(cat).filter(v=>Math.abs(v-larg)>0.0001);
+  if(!vals.length)return [];
+  const min=Math.min(...vals.map(v=>Math.abs(v-larg)));
+  return vals.filter(v=>Math.abs(Math.abs(v-larg)-min)<0.0001).slice(0,2);
+}
+function encontrarCilindro(cat,larg,alt){
+  if(!larg)return {cil:null,tipo:null,catalogo:false};
+  const direto=CILINDROS_PADRAO.find(c=>Math.abs(c-larg)<0.0001);
+  if(direto)return {cil:direto,tipo:'direto',catalogo:false};
+  const dobro=larg*2;
+  const batido=CILINDROS_PADRAO.find(c=>Math.abs(c-dobro)<0.0001);
+  if(batido)return {cil:batido,tipo:'2x',catalogo:false};
+  // Medidas oficiais de catálogo são consideradas produzíveis mesmo quando usam cilindro específico não listado no quadro geral.
+  const catItem=itemCatalogo(cat,larg,alt) || catalogoDaCategoria(cat).find(m=>Math.abs(m.larg-larg)<0.0001);
+  if(catItem)return {cil:dobro,tipo:'catalogo2x',catalogo:true};
+  return {cil:null,tipo:null,catalogo:false};
+}
+function renderCatalogo(){
+  const cat=document.getElementById('mCategoria').value;
+  const body=document.getElementById('catalogBody');
+  const title=document.getElementById('catalogTitle');
+  if(!body)return;
+  title.textContent='Medidas de catálogo — '+nomeCategoria(cat);
+  body.innerHTML='';
+  catalogoDaCategoria(cat).forEach((m,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${numeroPt(m.larg)}</td><td>${numeroPt(m.alt)}</td><td>${m.aba?('+'+numeroPt(m.aba)+' cm'):'—'}</td><td>${m.esp}</td><td><b>100 kg*</b></td><td><button class="btn light" type="button" style="padding:6px 10px" onclick="useCatalogo('${cat}',${i})">Usar</button></td>`;
+    body.appendChild(tr);
+  });
+}
+function renderEspessuras(){
+  const cat=document.getElementById('mCategoria').value;
+  const body=document.getElementById('espBody');
+  const title=document.getElementById('espTitle');
+  if(!body)return;
+  title.textContent='Regra de altura × espessura — '+nomeCategoria(cat);
+  body.innerHTML='';
+  const mapa=regraEspessuraPorAltura(cat);
+  Object.keys(mapa).map(Number).sort((a,b)=>a-b).forEach(alt=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><b>${numeroPt(alt)}</b></td><td>${mapa[alt]} mm</td>`;
+    body.appendChild(tr);
+  });
+}
+function useCatalogo(cat,i){
+  const m=MEDIDAS_CATALOGO[cat][i];
+  document.getElementById('mCategoria').value=cat;
+  document.getElementById('mLargDesejada').value=m.larg;
+  document.getElementById('mAltDesejada').value=m.alt;
+  ajustarDensidadeCategoria();
+  renderCatalogo();renderEspessuras();calcMedidas();
+}
+function ajustarDensidadeCategoria(){
+  const cat=document.getElementById('mCategoria').value;
+  const sel=document.getElementById('mDensidade');
+  if(cat==='sacola_vazada'){
+    if(sel.value==='na')sel.value='bd';
+  }else{
+    if(sel.value==='bd'||sel.value==='ad')sel.value='na';
+  }
+}
+function clearMedidas(){
+  document.getElementById('mCategoria').value='sacola_vazada';
+  document.getElementById('mDensidade').value='bd';
+  document.getElementById('mLargDesejada').value='';
+  document.getElementById('mAltDesejada').value='';
+  ['mEsp','mAba','mCil','mBob'].forEach(id=>document.getElementById(id).value='');
+  renderCatalogo();renderEspessuras();calcMedidas();
+}
+function calcMedidas(){
+  const cat=document.getElementById('mCategoria').value;
+  const dens=document.getElementById('mDensidade').value;
+  const larg=Number(document.getElementById('mLargDesejada').value)||0;
+  const alt=Number(document.getElementById('mAltDesejada').value)||0;
+  const esp=espessuraPorAltura(cat,alt);
+  const espN=Number(String(esp).replace(',','.'))||0;
+  const bob=alt?alt*2:0;
+  const catalogItem=itemCatalogo(cat,larg,alt);
+  const aba=catalogItem?catalogItem.aba:0;
+  const encaixe=encontrarCilindro(cat,larg,alt);
+  const cil=encaixe.cil;
+  const medidaPreenchida=larg>0&&alt>0;
+  const alturaComEspessuraPadrao=!!esp;
+  const larguraCompativel=!!cil;
+  const catalogo=!!catalogItem && catalogItem.esp===esp;
+  const padraoProducao=medidaPreenchida&&larguraCompativel&&alturaComEspessuraPadrao;
+  const minimoPorMedida=padraoProducao?100:200;
+  const pedido=(dens==='ad')?200:minimoPorMedida;
+  const kgMilheiro=(medidaPreenchida&&espN)?larg*alt*espN:0;
+  const unidadesBaseExatas=(kgMilheiro>0)?(pedido/kgMilheiro)*1000:0;
+  const unidadesBase=(unidadesBaseExatas>0)?Math.ceil(unidadesBaseExatas):0;
+  const unidades=(unidadesBase>0)?Math.ceil(unidadesBase*1.10):0;
+  const acrescimo10=(unidadesBase>0)?unidades-unidadesBase:0;
+  const sug=!larguraCompativel?sugestaoLargura(cat,larg):[];
+
+  document.getElementById('mEsp').value=esp?esp+' mm':'';
+  document.getElementById('mAba').value=aba?('+'+numeroPt(aba)+' cm'):(catalogItem?'Sem aba':'—');
+  document.getElementById('mCil').value=cil?numeroPt(cil)+' cm':'';
+  document.getElementById('mBob').value=bob?numeroPt(bob)+' cm':'';
+  document.getElementById('mPedidoMin').textContent=medidaPreenchida?(pedido+' kg'):'—';
+  document.getElementById('mUnidadesMin').textContent=unidades?new Intl.NumberFormat('pt-BR').format(unidades)+' un.':'—';
+  document.getElementById('mKgMilheiro').textContent=kgMilheiro?`Kg/milheiro: ${N4.format(kgMilheiro)} kg`:'Kg/milheiro: —';
+  document.getElementById('mUnidadesBase').textContent=unidadesBase?`Unidade mínima base: ${new Intl.NumberFormat('pt-BR').format(unidadesBase)} un.`:'Unidade mínima base: —';
+  let resumoPedido='Informe a medida para calcular.';
+  if(medidaPreenchida){
+    if(dens==='ad')resumoPedido='200 kg: Alta Densidade (AD).';
+    else if(!larguraCompativel&&!alturaComEspessuraPadrao)resumoPedido='200 kg: largura/cilindro e altura/espessura fora do padrão.';
+    else if(!larguraCompativel)resumoPedido='200 kg: largura não compatível com os cilindros.';
+    else if(!alturaComEspessuraPadrao)resumoPedido='200 kg: altura sem espessura padrão cadastrada.';
+    else resumoPedido=catalogo?'100 kg: medida de catálogo.':'100 kg: medida produzível padrão.';
+  }
+  document.getElementById('mPedidoMotivo').textContent=resumoPedido;
+
+  document.getElementById('rCategoria').textContent=nomeCategoria(cat);
+  document.getElementById('rSolicitada').textContent=(larg&&alt)?`${numeroPt(larg)} x ${numeroPt(alt)}${aba?' + '+numeroPt(aba):''}${esp?' x '+esp:''}`:'—';
+  document.getElementById('rEsp').textContent=esp?esp+' mm':'Não definida para esta altura';
+  document.getElementById('rEspStatus').textContent=!alt?'—':(esp?`${numeroPt(alt)} cm → ${esp} mm`:`Altura ${numeroPt(alt)} cm sem espessura padrão cadastrada`);
+  document.getElementById('rCil').textContent=cil?numeroPt(cil)+' cm':'Não encontrado';
+  if(!larg) document.getElementById('rBateu').textContent='—';
+  else if(encaixe.tipo==='direto') document.getElementById('rBateu').textContent=`Não — ${numeroPt(larg)} cm usa cilindro ${numeroPt(cil)} cm`;
+  else if(encaixe.tipo==='2x') document.getElementById('rBateu').textContent=`Sim — ${numeroPt(larg)} × 2 = ${numeroPt(cil)} cm`;
+  else if(encaixe.tipo==='catalogo2x') document.getElementById('rBateu').textContent=`Catálogo — ${numeroPt(larg)} × 2 = ${numeroPt(cil)} cm`;
+  else document.getElementById('rBateu').textContent=`Fora do padrão — não há cilindro ${numeroPt(larg)} ou ${numeroPt(larg*2)} cm`;
+  document.getElementById('rSugestao').textContent=larguraCompativel?'Não necessária':(sug.length?`${sug.map(numeroPt).join(' cm ou ')} cm`:'Nenhuma sugestão cadastrada');
+  document.getElementById('rBob').textContent=bob?`${numeroPt(alt)} × 2 = ${numeroPt(bob)} cm`:'—';
+  document.getElementById('rAba').textContent=aba?`+${numeroPt(aba)} cm`:(catalogItem?'Sem aba':'—');
+  document.getElementById('rResultante').textContent=(cil&&bob&&esp)?`${numeroPt(cil)} x ${numeroPt(bob)} x ${esp}`:'—';
+  document.getElementById('rCatalogo').textContent=medidaPreenchida&&esp?(catalogo?'Sim':'Não'):'—';
+  document.getElementById('rKgMilheiro').textContent=kgMilheiro?`${N4.format(kgMilheiro)} kg/milheiro`:'—';
+  document.getElementById('rCalcUnidades').textContent=unidades?`Base: (${pedido} ÷ ${N4.format(kgMilheiro)}) × 1.000 = ${new Intl.NumberFormat('pt-BR').format(unidadesBase)} un. | +10% = ${new Intl.NumberFormat('pt-BR').format(unidades)} un.`:'—';
+
+  const contaEl=document.getElementById('mContaUnidades');
+  contaEl.innerHTML=unidades
+    ? `<b>Conta das unidades:</b><br>Kg/milheiro: ${numeroPt(larg)} × ${numeroPt(alt)} × ${esp} = <b>${N4.format(kgMilheiro)} kg/milheiro</b><br>Unidade mínima base: (${pedido} ÷ ${N4.format(kgMilheiro)}) × 1.000 = <b>${new Intl.NumberFormat('pt-BR').format(unidadesBase)} un.</b><br>10% adicional: ${new Intl.NumberFormat('pt-BR').format(unidadesBase)} × 10% ≈ <b>${new Intl.NumberFormat('pt-BR').format(acrescimo10)} un.</b><br><span class="calc-final">Quantidade mínima para oferecer: ${new Intl.NumberFormat('pt-BR').format(unidades)} un.</span>`
+    : '<b>Conta das unidades:</b> informe uma medida para calcular.';
+
+  // Classificação visual: catálogo, padrão de produção ou não padrão.
+  ['statusCatalogo','statusPadrao','statusNaoPadrao'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  if(medidaPreenchida){
+    if(catalogo)document.getElementById('statusCatalogo').classList.add('active');
+    else if(padraoProducao)document.getElementById('statusPadrao').classList.add('active');
+    else document.getElementById('statusNaoPadrao').classList.add('active');
+  }
+
+  const motivos200=[];
+  if(medidaPreenchida){
+    if(dens==='ad')motivos200.push('Alta Densidade (AD): mínimo obrigatório de 200 kg');
+    if(!larguraCompativel)motivos200.push(`largura ${numeroPt(larg)} cm não corresponde a nenhum cilindro disponível de forma direta ou batendo 2x`);
+    if(!alturaComEspessuraPadrao)motivos200.push(`altura ${numeroPt(alt)} cm não possui espessura padrão cadastrada para ${nomeCategoria(cat)}`);
+  }
+  const motivoBox=document.getElementById('mMotivos200');
+  if(medidaPreenchida && pedido===200){
+    motivoBox.style.display='block';
+    motivoBox.classList.remove('good');
+    motivoBox.innerHTML='<b>⚠ Por que o pedido mínimo é 200 kg?</b><br>'+motivos200.map(m=>'• '+m).join('<br>');
+  }else if(medidaPreenchida && pedido===100){
+    motivoBox.style.display='block';
+    motivoBox.classList.add('good');
+    motivoBox.innerHTML='<b>✅ Pedido mínimo de 100 kg</b><br>A medida respeita as regras de largura/cilindro e altura/espessura para produção padrão.';
+  }else{
+    motivoBox.style.display='none';
+  }
+
+  const sugestaoBox=document.getElementById('mSugestaoComercial');
+  if(medidaPreenchida && !larguraCompativel && sug.length){
+    const sugestoes=sug.map(v=>{
+      const encSug=encontrarCilindro(cat,v,alt);
+      const cilSug=encSug.cil;
+      const minimoSug=(dens==='ad')?200:(alturaComEspessuraPadrao&&cilSug?100:200);
+      const kgSug=(espN>0)?v*alt*espN:0;
+      const baseSug=kgSug>0?Math.ceil((minimoSug/kgSug)*1000):0;
+      const unSug=baseSug?Math.ceil(baseSug*1.10):0;
+      return `<b>${numeroPt(v)} × ${numeroPt(alt)}${esp?' × '+esp:''}</b>${cilSug?` — cilindro ${numeroPt(cilSug)} cm`:''} — mínimo ${minimoSug} kg${unSug?` — oferecer aprox. ${new Intl.NumberFormat('pt-BR').format(unSug)} un. (+10%)`:''}`;
+    });
+    sugestaoBox.style.display='block';
+    sugestaoBox.innerHTML='<b>💡 Sugestão comercial</b><br>A largura solicitada não encaixa nos cilindros disponíveis. Você pode oferecer a medida produzível mais próxima:<br>'+sugestoes.map(x=>'• '+x).join('<br>');
+  }else{
+    sugestaoBox.style.display='none';
+  }
+
+  if(!medidaPreenchida){
+    document.getElementById('rStatus').textContent='Informe largura e altura';
+    document.getElementById('mObservacao').innerHTML='Informe largura e altura para consultar. A espessura será definida automaticamente pela altura.';
+    return;
+  }
+
+  if(padraoProducao){
+    document.getElementById('rStatus').textContent=catalogo?'Medida de catálogo — padrão':'Medida padrão de produção';
+    const densTxt=dens==='ad'?'<br><span class="measure-bad">⚠ Como foi selecionado AD, o pedido mínimo sobe para 200 kg.</span>':'';
+    document.getElementById('mObservacao').innerHTML=catalogo
+      ? `✅ <b>Medida de catálogo.</b> Largura/cilindro e altura/espessura estão dentro do padrão.${densTxt}`
+      : `✅ <b>Medida padrão de produção.</b> Mesmo fora do catálogo, a largura encaixa em medida produzível e a altura possui espessura padrão cadastrada.${densTxt}`;
+  }else{
+    const motivos=[];
+    if(!larguraCompativel)motivos.push(`largura ${numeroPt(larg)} cm não encaixa nos cilindros disponíveis${sug.length?`; medida próxima: ${sug.map(v=>numeroPt(v)+' cm').join(' ou ')}`:''}`);
+    if(!alturaComEspessuraPadrao)motivos.push(`altura ${numeroPt(alt)} cm não possui espessura padrão cadastrada para este modelo`);
+    document.getElementById('rStatus').textContent='Medida não padrão';
+    document.getElementById('mObservacao').innerHTML='⚠️ <b>Medida não padrão.</b> Pedido mínimo: <b>200 kg</b>.<br>Motivo: '+motivos.join(' e ')+'.';
+  }
+}
+
 /* Clichê */
 function calcCliche(){const cil=+cCil.value||0,bob=+cBob.value||0,cores=+cCores.value||0,base=+cValor.value||0,desc=+cDesconto.value||0;const cm=cil+10,bm=bob+10,area=cm*bm*cores,prev=area*base,econ=prev*(desc/100),total=prev-econ;cTotal.textContent=BRL.format(total);dCil.textContent=N2.format(cil)+' cm';dCilM.textContent=N2.format(cm)+' cm';dBob.textContent=N2.format(bob)+' cm';dBobM.textContent=N2.format(bm)+' cm';dArea.textContent=N2.format(area)+' cm²';dBase.textContent=BRL.format(base)+'/cm²';dPrevisto.textContent=BRL.format(prev);dDesc.textContent=desc+'%';dEconomia.textContent=BRL.format(econ);return total}
 async function copyCliche(){try{await navigator.clipboard.writeText(BRL.format(calcCliche()));toastMsg('Valor copiado')}catch(e){}}
-function useCliche(){cliche.value=BRL.format(calcCliche());refresh();go('orcamentoPage');toastMsg('Clichê enviado ao orçamento')}
+function useCliche(){cliche.value=BRL.format(calcCliche());refresh();go('orcamentoPage');toastMsg('Clichê enviado à proposta')}
 
 document.querySelectorAll('#orcamentoPage input:not(#arteInput),#orcamentoPage select,#orcamentoPage textarea').forEach(x=>{x.addEventListener('input',refresh);x.addEventListener('change',refresh)});
 document.querySelectorAll('#clichePage input,#clichePage select').forEach(x=>{x.addEventListener('input',calcCliche);x.addEventListener('change',calcCliche)});
-renderSellers();loadDraft();renderItems();calcCliche();updateTeamLogo();
+document.querySelectorAll('#medidasPage input,#medidasPage select').forEach(x=>{x.addEventListener('input',calcMedidas);x.addEventListener('change',calcMedidas)});
+document.getElementById('mCategoria').addEventListener('change',()=>{ajustarDensidadeCategoria();renderCatalogo();renderEspessuras();calcMedidas()});
+renderSellers();loadDraft();renderItems();calcCliche();updateTeamLogo();renderCatalogo();renderEspessuras();calcMedidas();
 </script>
 </body>
 </html>
