@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Agenflex Comercial V6.5</title>
-<style>
+<title>Agenflex Comercial V6.6</title>
+<script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=XNEfF_bt3XB2gyuOUwvBRg-1IPa_pxjpzwNi4xotkWjEpPfdjVXDwgpcj0UEUeBx18PA-q83oTrPBezSfJMdh7C51x99PJ9QXPmycB4AYaN8pwyhpJm2AfypOfV9SetSvyc4YHnaqYXUNt3RZemRtl00ksMI_f30X8cFpFTADwo_a-yY21s60YLiLYMqd7c5w2jWWF0pyWjgdlRG9zJHUhRQUd31-ojKr9tdsHGLn5AUhEOjIOcUB5tZz8c7XhC8N3VYyTasbWRBHlYT49sNDnppeIbQ87vsj2vUb6PSVZpp3Pxy6nvRN2GqJ1e32HpeBrWcMLu20Vdw9LKB2vxlFA" charset="UTF-8"></script><style>
 :root{
   --red:#e30613;--red2:#b9000b;--black:#111;--navy:#082c67;--blue:#15598d;
   --bg:#eef1f5;--card:#fff;--ink:#101828;--muted:#667085;--line:#dfe4ea;
@@ -453,7 +453,7 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea></div>
       <div class="table-wrap"><table class="editor" style="min-width:460px"><thead><tr><th>Altura (cm)</th><th>Espessura automática</th></tr></thead><tbody id="espBody"></tbody></table></div>
       <div class="info" id="mObservacao">Informe largura e altura para consultar.</div>
       <div class="measure-calc-box" id="mContaUnidades"><b>Conta das unidades:</b> informe uma medida para calcular.</div>
-      <div class="info"><b>Fórmula comercial:</b> Kg/milheiro = largura × altura × espessura. Unidade mínima base = (kg mínimos ÷ kg/milheiro) × 1.000. Para oferta comercial, o sistema adiciona <b>10%</b> sobre a unidade mínima base.</div>
+      <div class="info"><b>Fórmula comercial:</b> Kg/milheiro = largura × altura de cálculo × espessura. Em modelos com aba, a altura de cálculo = altura + (aba ÷ 2). Unidade mínima base = (kg mínimos ÷ kg/milheiro) × 1.000. O acréscimo de <b>10%</b> é aplicado sobre o valor exato da unidade mínima base.</div>
     </div>
   </section>
 </div>
@@ -766,6 +766,13 @@ function clearMedidas(){
   ['mEsp','mAba','mCil','mBob'].forEach(id=>document.getElementById(id).value='');
   renderCatalogo();renderEspessuras();calcMedidas();
 }
+function formatDecimal(valor, casas=10){
+  if(!Number.isFinite(valor)) return '—';
+  return valor.toLocaleString('pt-BR',{
+    minimumFractionDigits:0,
+    maximumFractionDigits:casas
+  });
+}
 function calcMedidas(){
   const cat=document.getElementById('mCategoria').value;
   const dens=document.getElementById('mDensidade').value;
@@ -785,11 +792,15 @@ function calcMedidas(){
   const padraoProducao=medidaPreenchida&&larguraCompativel&&alturaComEspessuraPadrao;
   const minimoPorMedida=padraoProducao?100:200;
   const pedido=(dens==='ad')?200:minimoPorMedida;
-  const kgMilheiro=(medidaPreenchida&&espN)?larg*alt*espN:0;
+  // Para cálculo de peso, a aba entra pela metade:
+  // Ex.: 20 x 28 + 4 -> altura de cálculo = 28 + (4/2) = 30 cm.
+  const alturaCalculo=alt+(aba/2);
+  const kgMilheiro=(medidaPreenchida&&espN)?larg*alturaCalculo*espN:0;
   const unidadesBaseExatas=(kgMilheiro>0)?(pedido/kgMilheiro)*1000:0;
-  const unidadesBase=(unidadesBaseExatas>0)?Math.ceil(unidadesBaseExatas):0;
-  const unidades=(unidadesBase>0)?Math.ceil(unidadesBase*1.10):0;
-  const acrescimo10=(unidadesBase>0)?unidades-unidadesBase:0;
+  const unidadesCom10Exatas=(unidadesBaseExatas>0)?unidadesBaseExatas*1.10:0;
+  // Quantidade comercial final em unidade inteira: sempre arredonda para cima.
+  const unidades=(unidadesCom10Exatas>0)?Math.ceil(unidadesCom10Exatas):0;
+  const acrescimo10Exato=(unidadesBaseExatas>0)?unidadesBaseExatas*0.10:0;
   const sug=!larguraCompativel?sugestaoLargura(cat,larg):[];
 
   document.getElementById('mEsp').value=esp?esp+' mm':'';
@@ -799,7 +810,7 @@ function calcMedidas(){
   document.getElementById('mPedidoMin').textContent=medidaPreenchida?(pedido+' kg'):'—';
   document.getElementById('mUnidadesMin').textContent=unidades?new Intl.NumberFormat('pt-BR').format(unidades)+' un.':'—';
   document.getElementById('mKgMilheiro').textContent=kgMilheiro?`Kg/milheiro: ${N4.format(kgMilheiro)} kg`:'Kg/milheiro: —';
-  document.getElementById('mUnidadesBase').textContent=unidadesBase?`Unidade mínima base: ${new Intl.NumberFormat('pt-BR').format(unidadesBase)} un.`:'Unidade mínima base: —';
+  document.getElementById('mUnidadesBase').textContent=unidadesBaseExatas?`Unidade mínima base: ${formatDecimal(unidadesBaseExatas,10)} un.`:'Unidade mínima base: —';
   let resumoPedido='Informe a medida para calcular.';
   if(medidaPreenchida){
     if(dens==='ad')resumoPedido='200 kg: Alta Densidade (AD).';
@@ -826,11 +837,17 @@ function calcMedidas(){
   document.getElementById('rResultante').textContent=(cil&&bob&&esp)?`${numeroPt(cil)} x ${numeroPt(bob)} x ${esp}`:'—';
   document.getElementById('rCatalogo').textContent=medidaPreenchida&&esp?(catalogo?'Sim':'Não'):'—';
   document.getElementById('rKgMilheiro').textContent=kgMilheiro?`${N4.format(kgMilheiro)} kg/milheiro`:'—';
-  document.getElementById('rCalcUnidades').textContent=unidades?`Base: (${pedido} ÷ ${N4.format(kgMilheiro)}) × 1.000 = ${new Intl.NumberFormat('pt-BR').format(unidadesBase)} un. | +10% = ${new Intl.NumberFormat('pt-BR').format(unidades)} un.`:'—';
+  document.getElementById('rCalcUnidades').textContent=unidades?`Base exata: (${pedido} ÷ ${N4.format(kgMilheiro)}) × 1.000 = ${formatDecimal(unidadesBaseExatas,10)} un. | +10% exato = ${formatDecimal(unidadesCom10Exatas,10)} un. | Para oferecer: ${new Intl.NumberFormat('pt-BR').format(unidades)} un.`:'—';
 
   const contaEl=document.getElementById('mContaUnidades');
+  const detalheAlturaAba=aba
+    ? `${numeroPt(alt)} + (${numeroPt(aba)} ÷ 2) = ${numeroPt(alturaCalculo)} cm`
+    : `${numeroPt(alt)} cm`;
+  const formulaKg=aba
+    ? `${numeroPt(larg)} × (${numeroPt(alt)} + ${numeroPt(aba)} ÷ 2) × ${esp}`
+    : `${numeroPt(larg)} × ${numeroPt(alt)} × ${esp}`;
   contaEl.innerHTML=unidades
-    ? `<b>Conta das unidades:</b><br>Kg/milheiro: ${numeroPt(larg)} × ${numeroPt(alt)} × ${esp} = <b>${N4.format(kgMilheiro)} kg/milheiro</b><br>Unidade mínima base: (${pedido} ÷ ${N4.format(kgMilheiro)}) × 1.000 = <b>${new Intl.NumberFormat('pt-BR').format(unidadesBase)} un.</b><br>10% adicional: ${new Intl.NumberFormat('pt-BR').format(unidadesBase)} × 10% ≈ <b>${new Intl.NumberFormat('pt-BR').format(acrescimo10)} un.</b><br><span class="calc-final">Quantidade mínima para oferecer: ${new Intl.NumberFormat('pt-BR').format(unidades)} un.</span>`
+    ? `<b>Conta das unidades:</b><br>${aba?`Altura de cálculo: ${detalheAlturaAba}<br>`:''}Kg/milheiro: ${formulaKg} = <b>${N4.format(kgMilheiro)} kg/milheiro</b><br>Unidade mínima base: (${pedido} ÷ ${N4.format(kgMilheiro)}) × 1.000 = <b>${formatDecimal(unidadesBaseExatas,10)} un.</b><br>10% adicional: ${formatDecimal(unidadesBaseExatas,10)} × 10% = <b>${formatDecimal(acrescimo10Exato,10)} un.</b><br>Base + 10%: <b>${formatDecimal(unidadesCom10Exatas,10)} un.</b><br><span class="calc-final">Quantidade mínima para oferecer (arredondada): ${new Intl.NumberFormat('pt-BR').format(unidades)} un.</span>`
     : '<b>Conta das unidades:</b> informe uma medida para calcular.';
 
   // Classificação visual: catálogo, padrão de produção ou não padrão.
