@@ -1,0 +1,82 @@
+/* Central Comercial Agenflex — Histórico */
+
+.history-toolbar{
+  display:flex;
+  gap:12px;
+  align-items:flex-end;
+  flex-wrap:wrap;
+  margin-bottom:16px;
+}
+
+.history-search{
+  flex:1 1 380px;
+}
+
+.history-search input{
+  width:100%;
+}
+
+.history-count{
+  font-size:12px;
+  font-weight:900;
+  color:var(--muted);
+  padding:10px 0;
+}
+
+.history-table{
+  min-width:980px;
+}
+
+.history-table td{
+  vertical-align:middle;
+}
+
+.history-muted{
+  margin-top:4px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.history-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:82px;
+  padding:6px 9px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.4px;
+}
+
+.history-badge.rascunho{
+  background:#fff4d6;
+  color:#7a5200;
+}
+
+.history-badge.enviada{
+  background:#e7f6ec;
+  color:#146c2e;
+}
+
+.history-open{
+  padding:7px 11px;
+}
+
+.history-loading,
+.history-empty{
+  text-align:center;
+  padding:28px !important;
+  color:var(--muted);
+}
+
+#historicoVazio{
+  display:none;
+  margin-top:14px;
+  padding:22px;
+  border:1px dashed #cfd6df;
+  border-radius:12px;
+  text-align:center;
+  color:var(--muted);
+  background:#f8fafc;
+}

@@ -1,0 +1,19 @@
+# Configuração local do Supabase (não versionar)
+js/config/supabase-config.js
+.env
+.env.*
+
+# Editor / SO
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Backups temporários
+*.bak
+*.tmp
+
+# =========================================================
+# BACKUPS LOCAIS
+# =========================================================
+
+backup/
