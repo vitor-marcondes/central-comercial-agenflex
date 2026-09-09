@@ -1,102 +1,1111 @@
-:root{
-  --red:#e30613;--red2:#b9000b;--black:#111;--navy:#082c67;--blue:#15598d;
-  --bg:#eef1f5;--card:#fff;--ink:#101828;--muted:#667085;--line:#dfe4ea;
-  --green:#16803b;--orange:#f5a033
-}
-*{box-sizing:border-box}
-body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
-button,input,select,textarea{font:inherit}
-header{
-  position:sticky;top:0;z-index:20;background:linear-gradient(100deg,#070707,#1a1a1a);
-  color:#fff;border-bottom:4px solid var(--red)
-}
-.header-inner{max-width:1500px;margin:auto;padding:12px 20px;display:flex;align-items:center;gap:18px}
-.logo-shell{background:#fff;border-radius:9px;padding:5px 9px}.logo-shell img{width:175px;display:block}
-.brand h1{margin:0;font-size:20px}.brand p{margin:3px 0 0;color:#bbb;font-size:12px}
-nav{display:flex;gap:7px;margin-left:auto;flex-wrap:wrap}
-.nav-btn{border:1px solid #444;background:#1d1d1d;color:#fff;border-radius:9px;padding:10px 13px;font-size:13px;font-weight:800;cursor:pointer}
-.nav-btn:hover,.nav-btn.active{background:var(--red);border-color:var(--red)}
-main{max-width:1500px;margin:22px auto;padding:0 18px 50px}.page{display:none}.page.active{display:block}
-.hero{background:linear-gradient(120deg,#111,#202020 65%,#3a0005);color:#fff;padding:34px;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.12);margin-bottom:22px}
-.hero h2{font-size:34px;margin:0 0 9px}.hero p{margin:0;color:#ddd;line-height:1.55;max-width:850px}
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
-.tool-card{background:#fff;border:1px solid #e1e5eb;border-top:5px solid var(--red);border-radius:16px;padding:22px;box-shadow:0 7px 22px rgba(16,24,40,.07);cursor:pointer}
-.tool-card .ico{width:48px;height:48px;border-radius:12px;background:#fff0f1;display:grid;place-items:center;font-size:24px;margin-bottom:14px}
-.tool-card h3{margin:0 0 8px}.tool-card p{font-size:14px;color:var(--muted);line-height:1.5}
-.tag{display:inline-block;margin-top:10px;padding:6px 9px;border-radius:999px;background:#edf7ef;color:#176a34;font-size:11px;font-weight:800}.tag.dev{background:#fff4df;color:#875700}
-.panel{background:#fff;border:1px solid #e1e5eb;border-radius:16px;box-shadow:0 8px 24px rgba(16,24,40,.07);overflow:hidden}
-.panel-head{padding:18px 21px;border-bottom:1px solid #e5e8ed;display:flex;justify-content:space-between;align-items:center;gap:10px}
-.panel-head h2{margin:0;font-size:20px}.panel-head span{font-size:12px;color:var(--muted)}
-.panel-body{padding:20px 21px}.two-col{display:grid;grid-template-columns:1.05fr .95fr;gap:20px}
-.section-title{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--navy);font-weight:900;margin:18px 0 10px}
-.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.full{grid-column:1/-1}
-.field label{display:block;font-size:12px;font-weight:800;color:#344054;margin-bottom:5px}
-.field input,.field select,.field textarea{width:100%;border:1px solid #cfd6df;border-radius:8px;padding:10px 11px;background:#fff;outline:none}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(8,44,103,.08)}
-.field textarea{min-height:70px;resize:vertical}
-.table-wrap{border:1px solid var(--line);border-radius:11px;overflow:auto}
-table.editor{width:100%;min-width:1030px;border-collapse:collapse}
-table.editor th{background:var(--navy);color:#fff;padding:9px 8px;text-align:left;font-size:12px}
-table.editor th.tax{background:var(--red)}
-table.editor td{padding:7px;border-bottom:1px solid #edf0f4;vertical-align:middle;font-size:13px}
-table.editor input,table.editor textarea,table.editor select{width:100%;border:1px solid #d5dae1;border-radius:6px;padding:7px;background:#fff}
-table.editor textarea{min-height:48px;resize:vertical}
-.del{border:none;background:#fff0f0;color:#b42318;border-radius:7px;width:31px;height:31px;font-weight:900;cursor:pointer}
-.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px}
-.btn{border:none;border-radius:9px;padding:11px 14px;font-weight:900;cursor:pointer}
-.btn.red{background:var(--red);color:#fff}.btn.navy{background:var(--navy);color:#fff}.btn.green{background:var(--green);color:#fff}.btn.orange{background:var(--orange);color:#111}.btn.light{background:#fff;border:1px solid #cfd6df;color:#111}
-.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:15px}
-.metric{background:#f7f9fb;border:1px solid #e1e6ec;border-radius:10px;padding:11px}.metric small{display:block;color:var(--muted);margin-bottom:4px}.metric b{font-size:17px}
-.check-box{margin-top:13px;padding:12px 14px;border:1px solid #dfe4ea;border-radius:10px;background:#f8fafc;display:flex;align-items:center;gap:10px}
-.check-box input{width:18px;height:18px;accent-color:var(--red);cursor:pointer}.check-box label{font-size:13px;font-weight:900;cursor:pointer}
-.upload-box{border:2px dashed #bdc5d0;border-radius:12px;padding:18px;text-align:center;background:#fafbfc}.upload-box input{display:none}.upload-box b{display:block;margin-bottom:5px}.upload-box p{margin:0;color:var(--muted);font-size:12px}.thumbs{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px}
-.thumb{width:125px;height:92px;border:1px solid #d7dde5;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px;font-size:11px}.thumb img{max-width:100%;max-height:100%;object-fit:contain}
-.info{margin-top:12px;background:#fff8e3;border:1px solid #efd89d;border-radius:9px;padding:10px 11px;color:#6d520a;font-size:12px}
-.measure-toolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:13px}
-.measure-alert{color:#c00000;font-weight:900;font-size:12px;padding:10px 12px;border-left:4px solid #c00000;background:#fff4f4;border-radius:7px}
-.measure-summary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
-.measure-summary-card{border:1px solid #e2e6eb;border-radius:13px;background:#fafbfc;padding:14px}
-.measure-summary-card .measure-kicker{font-size:11px;font-weight:900;color:#667085;text-transform:uppercase;letter-spacing:.04em}
-.measure-summary-card .measure-big{font-size:34px;font-weight:900;color:var(--red);margin-top:5px}
-.measure-summary-card .measure-sub{font-size:11px;color:#667085;margin-top:4px;line-height:1.4}
-.measure-bad{color:#b42318;font-weight:900}.measure-good{color:#16803b;font-weight:900}
-.measure-status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 14px}
-.measure-status-pill{border:1px solid #dfe4ea;border-radius:10px;padding:10px 8px;text-align:center;background:#f8fafc;color:#667085;font-size:11px;font-weight:900;transition:.15s}
-.measure-status-pill.active.catalogo{background:#eef6ff;border-color:#84adff;color:#1849a9}
-.measure-status-pill.active.padrao{background:#edf9f0;border-color:#86d49a;color:#137333}
-.measure-status-pill.active.nao-padrao{background:#fff1f0;border-color:#f0a3a0;color:#b42318}
-.measure-reason-box{margin:12px 0;padding:12px 14px;border-radius:10px;border:1px solid #f1b2ae;border-left:5px solid #b42318;background:#fff5f4;color:#7a271a;font-size:12px;line-height:1.55}
-.measure-reason-box.good{border-color:#a7d9b3;border-left-color:#16803b;background:#f2fbf4;color:#176a34}
-.measure-suggestion-box{margin:12px 0;padding:13px 14px;border-radius:10px;border:1px solid #f0cf88;border-left:5px solid #f5a033;background:#fff9ec;color:#6d520a;font-size:12px;line-height:1.55}
-.measure-suggestion-box b{color:#4e3a06}
-.measure-calc-box{margin-top:12px;padding:12px 14px;border-radius:10px;background:#f7f9fb;border:1px solid #dfe4ea;font-size:12px;line-height:1.6;color:#344054}
-.measure-calc-box .calc-final{font-weight:900;color:#b42318}
-@media(max-width:720px){.measure-status-grid{grid-template-columns:1fr}}
-@media(max-width:720px){.measure-summary{grid-template-columns:1fr}}
-
-
-/* PDF */
-.preview-wrap{background:#e3e7ed;padding:14px}.pdf-page{background:#fff;box-shadow:0 4px 15px rgba(0,0,0,.10);margin:0 auto 16px;min-height:760px;padding:18px 18px 24px;border-top:7px solid var(--red)}
-.pdf-top{display:grid;grid-template-columns:1fr 1.45fr;gap:24px;align-items:start}.pdf-brand img{display:block;height:auto;object-fit:contain}
-.pdf-brand img.logo-revenda{width:165px}.pdf-brand img.logo-pharma{width:235px}.pdf-brand img.logo-food{width:210px}
-.quote-name{font-size:27px;font-weight:900;margin:35px 0 25px;color:#111;border-left:6px solid var(--red);padding-left:10px}
-.company{text-align:right}.company h2{margin:0 0 7px;font-size:19px}.company div{font-size:10.5px;line-height:1.5;color:#333}
-.pdf-title{font-size:18px;font-weight:900;margin:14px 0 10px;color:#111;padding-bottom:6px;border-bottom:3px solid var(--red)}
-.client-name{font-size:14px;font-weight:900;margin-bottom:7px}.buyer-line{font-size:11px;margin-bottom:8px}
-.client-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 34px;font-size:12px;line-height:1.45}.client-grid b{display:inline-block;min-width:70px}
-.pdf-items{width:100%;border-collapse:collapse;margin-top:14px;border:1px solid #d6d6d6}.pdf-items th{background:#151515;color:#fff;padding:7px 6px;font-size:10px;text-align:left;border-right:1px solid #333}.pdf-items th:first-child{background:var(--red)}
-.pdf-items td{font-size:10px;padding:7px 6px;background:#fff;vertical-align:top;border-bottom:1px solid #e5e5e5;border-right:1px solid #efefef}.pdf-items tbody tr:nth-child(even) td{background:#f7f7f7}.item-notes{font-size:9.5px;padding-top:3px;color:#555;line-height:1.4}
-.totals{width:290px;margin:12px 0 8px auto;border-collapse:collapse;border:1px solid #d8d8d8}.totals td{font-size:11px;padding:6px 8px;border-bottom:1px solid #e7e7e7}.totals td:first-child{font-weight:900;text-align:right;background:#f5f5f5}.totals td:last-child{text-align:right;background:#fff}.totals tr.total-row td{font-size:12px;font-weight:900;border-top:3px solid var(--red)}.totals tr.total-row td:last-child{color:var(--red)}
-.other{margin-top:20px;font-size:10.5px;line-height:1.55;background:#fafafa;border:1px solid #e2e2e2;border-left:4px solid var(--red);padding:11px 12px}.other strong{display:inline-block;min-width:145px}.rules{margin-top:14px;white-space:pre-line;color:#444}
-.generated{margin-top:32px;text-align:center;color:#8b8b8b;font-size:9px}
-.art-page{text-align:center;position:relative}.art-page h2{margin:4px 0}.art-sub{font-size:11px;color:var(--muted);margin-bottom:14px}.art-frame{height:560px;border:1px solid #d8dde5;background:#fafafa;display:flex;align-items:center;justify-content:center;overflow:hidden}.art-frame img{max-width:96%;max-height:96%;object-fit:contain}
-.cliche-result{background:linear-gradient(135deg,#fff,#fff7f7);border:1px solid #eee;border-radius:16px;padding:24px;text-align:center}.cliche-result .label{font-size:14px;font-weight:900}.cliche-total{color:var(--red);font-size:54px;font-weight:900;margin:13px 0}.detail-list{margin-top:18px;text-align:left}.detail-row{display:grid;grid-template-columns:auto 1fr auto;gap:9px;padding:7px 0;font-size:14px;align-items:end}.dots{border-bottom:2px dotted #d8d8d8;transform:translateY(-4px)}.formula{margin-top:15px;background:#fff4f4;border:1px dashed #e8989e;border-radius:10px;padding:13px;font-size:13px}
-.dev{padding:45px;text-align:center}.dev .big{font-size:62px}.dev p{color:var(--muted);max-width:720px;margin:0 auto;line-height:1.6}
-.toast{position:fixed;right:18px;bottom:18px;background:#111;color:#fff;padding:12px 15px;border-radius:9px;opacity:0;transform:translateY(12px);transition:.2s;z-index:50}.toast.show{opacity:1;transform:none}
-@media(max-width:1250px){.cards{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:1fr}}@media(max-width:700px){.cards{grid-template-columns:1fr}}
-@media(max-width:720px){.header-inner{flex-wrap:wrap}.brand{display:none}nav{width:100%;margin:0}.nav-btn{flex:1;padding:9px 6px}.grid2,.grid3{grid-template-columns:1fr}.full{grid-column:auto}.metrics{grid-template-columns:1fr}.pdf-top{grid-template-columns:1fr}.company{text-align:left}.cliche-total{font-size:40px}}
 /* =========================================================
-   AUTENTICAÇÃO
+   CENTRAL COMERCIAL AGENFLEX
+   Arquivo: styles.css
+
+   Responsabilidade:
+   - Definir a identidade visual da Central Comercial
+   - Organizar layouts, formulários, tabelas e componentes
+   - Estilizar a prévia e a impressão das propostas
+   - Adaptar o sistema para diferentes tamanhos de tela
+
+   Organização:
+   Os blocos abaixo seguem a ordem visual e funcional
+   utilizada atualmente no sistema.
+
+   Observação:
+   Esta etapa reorganiza e documenta o CSS sem alterar
+   intencionalmente o comportamento visual da aplicação.
+   ========================================================= */
+
+/* =========================================================
+   ## 1. VARIÁVEIS, RESET E BASE
+   Cores globais, box-sizing, tipografia e elementos básicos.
+   ========================================================= */
+
+:root {
+  --red: #e30613;
+  --red2: #b9000b;
+  --black: #111;
+  --navy: #082c67;
+  --blue: #15598d;
+  --bg: #eef1f5;
+  --card: #fff;
+  --ink: #101828;
+  --muted: #667085;
+  --line: #dfe4ea;
+  --green: #16803b;
+  --orange: #f5a033;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Segoe UI,Arial,sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+button,input,select,textarea {
+  font: inherit;
+}
+
+/* =========================================================
+   ## 2. CABEÇALHO E NAVEGAÇÃO
+   Header fixo, identidade visual e botões do menu principal.
+   ========================================================= */
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: linear-gradient(100deg,#070707,#1a1a1a);
+  color: #fff;
+  border-bottom: 4px solid var(--red);
+}
+
+.header-inner {
+  max-width: 1500px;
+  margin: auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.logo-shell {
+  background: #fff;
+  border-radius: 9px;
+  padding: 5px 9px;
+}
+
+.logo-shell img {
+  width: 175px;
+  display: block;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.brand p {
+  margin: 3px 0 0;
+  color: #bbb;
+  font-size: 12px;
+}
+
+nav {
+  display: flex;
+  gap: 7px;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.nav-btn {
+  border: 1px solid #444;
+  background: #1d1d1d;
+  color: #fff;
+  border-radius: 9px;
+  padding: 10px 13px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.nav-btn:hover,.nav-btn.active {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+/* =========================================================
+   ## 3. CONTEÚDO PRINCIPAL E PÁGINAS
+   Área central e controle visual das páginas do sistema.
+   ========================================================= */
+
+main {
+  max-width: 1500px;
+  margin: 22px auto;
+  padding: 0 18px 50px;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+/* =========================================================
+   ## 4. PÁGINA INICIAL / CARDS
+   Hero da Central e cartões de acesso aos módulos.
+   ========================================================= */
+
+.hero {
+  background: linear-gradient(120deg,#111,#202020 65%,#3a0005);
+  color: #fff;
+  padding: 34px;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.12);
+  margin-bottom: 22px;
+}
+
+.hero h2 {
+  font-size: 34px;
+  margin: 0 0 9px;
+}
+
+.hero p {
+  margin: 0;
+  color: #ddd;
+  line-height: 1.55;
+  max-width: 850px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 18px;
+}
+
+.tool-card {
+  background: #fff;
+  border: 1px solid #e1e5eb;
+  border-top: 5px solid var(--red);
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 7px 22px rgba(16,24,40,.07);
+  cursor: pointer;
+}
+
+.tool-card .ico {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #fff0f1;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  margin-bottom: 14px;
+}
+
+.tool-card h3 {
+  margin: 0 0 8px;
+}
+
+.tool-card p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.tag {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: #edf7ef;
+  color: #176a34;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.tag.dev {
+  background: #fff4df;
+  color: #875700;
+}
+
+/* =========================================================
+   ## 5. PAINÉIS, LAYOUTS E GRIDS
+   Estruturas reutilizadas nas telas da Central.
+   ========================================================= */
+
+.panel {
+  background: #fff;
+  border: 1px solid #e1e5eb;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(16,24,40,.07);
+  overflow: hidden;
+}
+
+.panel-head {
+  padding: 18px 21px;
+  border-bottom: 1px solid #e5e8ed;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.panel-head h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.panel-head span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.panel-body {
+  padding: 20px 21px;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1.05fr .95fr;
+  gap: 20px;
+}
+
+.section-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--navy);
+  font-weight: 900;
+  margin: 18px 0 10px;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 12px;
+}
+
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 12px;
+}
+
+.full {
+  grid-column: 1/-1;
+}
+
+/* =========================================================
+   ## 6. CAMPOS E FORMULÁRIOS
+   Labels, inputs, selects, textareas e estados de foco.
+   ========================================================= */
+
+.field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  color: #344054;
+  margin-bottom: 5px;
+}
+
+.field input,.field select,.field textarea {
+  width: 100%;
+  border: 1px solid #cfd6df;
+  border-radius: 8px;
+  padding: 10px 11px;
+  background: #fff;
+  outline: none;
+}
+
+.field input:focus,.field select:focus,.field textarea:focus {
+  border-color: var(--navy);
+  box-shadow: 0 0 0 3px rgba(8,44,103,.08);
+}
+
+.field textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+/* =========================================================
+   ## 7. TABELAS
+   Tabelas editáveis e controles internos dos itens.
+   ========================================================= */
+
+.table-wrap {
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  overflow: auto;
+}
+
+table.editor {
+  width: 100%;
+  min-width: 1030px;
+  border-collapse: collapse;
+}
+
+table.editor th {
+  background: var(--navy);
+  color: #fff;
+  padding: 9px 8px;
+  text-align: left;
+  font-size: 12px;
+}
+
+table.editor th.tax {
+  background: var(--red);
+}
+
+table.editor td {
+  padding: 7px;
+  border-bottom: 1px solid #edf0f4;
+  vertical-align: middle;
+  font-size: 13px;
+}
+
+table.editor input,table.editor textarea,table.editor select {
+  width: 100%;
+  border: 1px solid #d5dae1;
+  border-radius: 6px;
+  padding: 7px;
+  background: #fff;
+}
+
+table.editor textarea {
+  min-height: 48px;
+  resize: vertical;
+}
+
+.del {
+  border: none;
+  background: #fff0f0;
+  color: #b42318;
+  border-radius: 7px;
+  width: 31px;
+  height: 31px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+/* =========================================================
+   ## 8. BOTÕES, TOOLBARS E MÉTRICAS
+   Ações, botões coloridos e indicadores comerciais.
+   ========================================================= */
+
+.toolbar {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-top: 13px;
+}
+
+.btn {
+  border: none;
+  border-radius: 9px;
+  padding: 11px 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.btn.red {
+  background: var(--red);
+  color: #fff;
+}
+
+.btn.navy {
+  background: var(--navy);
+  color: #fff;
+}
+
+.btn.green {
+  background: var(--green);
+  color: #fff;
+}
+
+.btn.orange {
+  background: var(--orange);
+  color: #111;
+}
+
+.btn.light {
+  background: #fff;
+  border: 1px solid #cfd6df;
+  color: #111;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 9px;
+  margin-top: 15px;
+}
+
+.metric {
+  background: #f7f9fb;
+  border: 1px solid #e1e6ec;
+  border-radius: 10px;
+  padding: 11px;
+}
+
+.metric small {
+  display: block;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.metric b {
+  font-size: 17px;
+}
+
+.check-box {
+  margin-top: 13px;
+  padding: 12px 14px;
+  border: 1px solid #dfe4ea;
+  border-radius: 10px;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.check-box input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--red);
+  cursor: pointer;
+}
+
+.check-box label {
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+/* =========================================================
+   ## 9. UPLOADS, ARTES E AVISOS
+   Área de anexos, miniaturas e caixas informativas.
+   ========================================================= */
+
+.upload-box {
+  border: 2px dashed #bdc5d0;
+  border-radius: 12px;
+  padding: 18px;
+  text-align: center;
+  background: #fafbfc;
+}
+
+.upload-box input {
+  display: none;
+}
+
+.upload-box b {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.upload-box p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.thumbs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.thumb {
+  width: 125px;
+  height: 92px;
+  border: 1px solid #d7dde5;
+  border-radius: 8px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 4px;
+  font-size: 11px;
+}
+
+.thumb img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.info {
+  margin-top: 12px;
+  background: #fff8e3;
+  border: 1px solid #efd89d;
+  border-radius: 9px;
+  padding: 10px 11px;
+  color: #6d520a;
+  font-size: 12px;
+}
+
+/* =========================================================
+   ## 10. MÓDULO DE MEDIDAS
+   Resumo, classificação, alertas, sugestões e cálculos.
+   ========================================================= */
+
+.measure-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-top: 13px;
+}
+
+.measure-alert {
+  color: #c00000;
+  font-weight: 900;
+  font-size: 12px;
+  padding: 10px 12px;
+  border-left: 4px solid #c00000;
+  background: #fff4f4;
+  border-radius: 7px;
+}
+
+.measure-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.measure-summary-card {
+  border: 1px solid #e2e6eb;
+  border-radius: 13px;
+  background: #fafbfc;
+  padding: 14px;
+}
+
+.measure-summary-card .measure-kicker {
+  font-size: 11px;
+  font-weight: 900;
+  color: #667085;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.measure-summary-card .measure-big {
+  font-size: 34px;
+  font-weight: 900;
+  color: var(--red);
+  margin-top: 5px;
+}
+
+.measure-summary-card .measure-sub {
+  font-size: 11px;
+  color: #667085;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.measure-bad {
+  color: #b42318;
+  font-weight: 900;
+}
+
+.measure-good {
+  color: #16803b;
+  font-weight: 900;
+}
+
+.measure-status-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 8px;
+  margin: 0 0 14px;
+}
+
+.measure-status-pill {
+  border: 1px solid #dfe4ea;
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+  background: #f8fafc;
+  color: #667085;
+  font-size: 11px;
+  font-weight: 900;
+  transition: .15s;
+}
+
+.measure-status-pill.active.catalogo {
+  background: #eef6ff;
+  border-color: #84adff;
+  color: #1849a9;
+}
+
+.measure-status-pill.active.padrao {
+  background: #edf9f0;
+  border-color: #86d49a;
+  color: #137333;
+}
+
+.measure-status-pill.active.nao-padrao {
+  background: #fff1f0;
+  border-color: #f0a3a0;
+  color: #b42318;
+}
+
+.measure-reason-box {
+  margin: 12px 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #f1b2ae;
+  border-left: 5px solid #b42318;
+  background: #fff5f4;
+  color: #7a271a;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.measure-reason-box.good {
+  border-color: #a7d9b3;
+  border-left-color: #16803b;
+  background: #f2fbf4;
+  color: #176a34;
+}
+
+.measure-suggestion-box {
+  margin: 12px 0;
+  padding: 13px 14px;
+  border-radius: 10px;
+  border: 1px solid #f0cf88;
+  border-left: 5px solid #f5a033;
+  background: #fff9ec;
+  color: #6d520a;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.measure-suggestion-box b {
+  color: #4e3a06;
+}
+
+.measure-calc-box {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #f7f9fb;
+  border: 1px solid #dfe4ea;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #344054;
+}
+
+.measure-calc-box .calc-final {
+  font-weight: 900;
+  color: #b42318;
+}
+
+/* =========================================================
+   ## 10.1 RESPONSIVIDADE DO MÓDULO DE MEDIDAS
+   Ajustes específicos das telas de medidas em dispositivos menores.
+   ========================================================= */
+
+@media (max-width:720px) {
+
+  .measure-status-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width:720px) {
+
+  .measure-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   ## 11. PRÉVIA E ESTRUTURA DO PDF
+   Visualização da proposta e das artes antes da impressão.
+   ========================================================= */
+
+.preview-wrap {
+  background: #e3e7ed;
+  padding: 14px;
+}
+
+.pdf-page {
+  background: #fff;
+  box-shadow: 0 4px 15px rgba(0,0,0,.10);
+  margin: 0 auto 16px;
+  min-height: 760px;
+  padding: 18px 18px 24px;
+  border-top: 7px solid var(--red);
+}
+
+.pdf-top {
+  display: grid;
+  grid-template-columns: 1fr 1.45fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.pdf-brand img {
+  display: block;
+  height: auto;
+  object-fit: contain;
+}
+
+.pdf-brand img.logo-revenda {
+  width: 165px;
+}
+
+.pdf-brand img.logo-pharma {
+  width: 235px;
+}
+
+.pdf-brand img.logo-food {
+  width: 210px;
+}
+
+.quote-name {
+  font-size: 27px;
+  font-weight: 900;
+  margin: 35px 0 25px;
+  color: #111;
+  border-left: 6px solid var(--red);
+  padding-left: 10px;
+}
+
+.company {
+  text-align: right;
+}
+
+.company h2 {
+  margin: 0 0 7px;
+  font-size: 19px;
+}
+
+.company div {
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: #333;
+}
+
+.pdf-title {
+  font-size: 18px;
+  font-weight: 900;
+  margin: 14px 0 10px;
+  color: #111;
+  padding-bottom: 6px;
+  border-bottom: 3px solid var(--red);
+}
+
+.client-name {
+  font-size: 14px;
+  font-weight: 900;
+  margin-bottom: 7px;
+}
+
+.buyer-line {
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+
+.client-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 34px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.client-grid b {
+  display: inline-block;
+  min-width: 70px;
+}
+
+.pdf-items {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 14px;
+  border: 1px solid #d6d6d6;
+}
+
+.pdf-items th {
+  background: #151515;
+  color: #fff;
+  padding: 7px 6px;
+  font-size: 10px;
+  text-align: left;
+  border-right: 1px solid #333;
+}
+
+.pdf-items th:first-child {
+  background: var(--red);
+}
+
+.pdf-items td {
+  font-size: 10px;
+  padding: 7px 6px;
+  background: #fff;
+  vertical-align: top;
+  border-bottom: 1px solid #e5e5e5;
+  border-right: 1px solid #efefef;
+}
+
+.pdf-items tbody tr:nth-child(even) td {
+  background: #f7f7f7;
+}
+
+.item-notes {
+  font-size: 9.5px;
+  padding-top: 3px;
+  color: #555;
+  line-height: 1.4;
+}
+
+.totals {
+  width: 290px;
+  margin: 12px 0 8px auto;
+  border-collapse: collapse;
+  border: 1px solid #d8d8d8;
+}
+
+.totals td {
+  font-size: 11px;
+  padding: 6px 8px;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.totals td:first-child {
+  font-weight: 900;
+  text-align: right;
+  background: #f5f5f5;
+}
+
+.totals td:last-child {
+  text-align: right;
+  background: #fff;
+}
+
+.totals tr.total-row td {
+  font-size: 12px;
+  font-weight: 900;
+  border-top: 3px solid var(--red);
+}
+
+.totals tr.total-row td:last-child {
+  color: var(--red);
+}
+
+.other {
+  margin-top: 20px;
+  font-size: 10.5px;
+  line-height: 1.55;
+  background: #fafafa;
+  border: 1px solid #e2e2e2;
+  border-left: 4px solid var(--red);
+  padding: 11px 12px;
+}
+
+.other strong {
+  display: inline-block;
+  min-width: 145px;
+}
+
+.rules {
+  margin-top: 14px;
+  white-space: pre-line;
+  color: #444;
+}
+
+.generated {
+  margin-top: 32px;
+  text-align: center;
+  color: #8b8b8b;
+  font-size: 9px;
+}
+
+.art-page {
+  text-align: center;
+  position: relative;
+}
+
+.art-page h2 {
+  margin: 4px 0;
+}
+
+.art-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+
+.art-frame {
+  height: 560px;
+  border: 1px solid #d8dde5;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.art-frame img {
+  max-width: 96%;
+  max-height: 96%;
+  object-fit: contain;
+}
+
+/* =========================================================
+   ## 12. CLICHÊ, MÓDULO EM DESENVOLVIMENTO E TOAST
+   Resultado do clichê, telas futuras e mensagens rápidas.
+   ========================================================= */
+
+.cliche-result {
+  background: linear-gradient(135deg,#fff,#fff7f7);
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
+.cliche-result .label {
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.cliche-total {
+  color: var(--red);
+  font-size: 54px;
+  font-weight: 900;
+  margin: 13px 0;
+}
+
+.detail-list {
+  margin-top: 18px;
+  text-align: left;
+}
+
+.detail-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 9px;
+  padding: 7px 0;
+  font-size: 14px;
+  align-items: end;
+}
+
+.dots {
+  border-bottom: 2px dotted #d8d8d8;
+  transform: translateY(-4px);
+}
+
+.formula {
+  margin-top: 15px;
+  background: #fff4f4;
+  border: 1px dashed #e8989e;
+  border-radius: 10px;
+  padding: 13px;
+  font-size: 13px;
+}
+
+.dev {
+  padding: 45px;
+  text-align: center;
+}
+
+.dev .big {
+  font-size: 62px;
+}
+
+.dev p {
+  color: var(--muted);
+  max-width: 720px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.toast {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  background: #111;
+  color: #fff;
+  padding: 12px 15px;
+  border-radius: 9px;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: .2s;
+  z-index: 50;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: none;
+}
+
+/* =========================================================
+   ## 13. RESPONSIVIDADE GERAL
+   Adaptação dos principais layouts para telas menores.
+   ========================================================= */
+
+@media (max-width:1250px) {
+
+  .cards {
+    grid-template-columns: repeat(2,1fr);
+  }
+
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width:700px) {
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width:720px) {
+
+  .header-inner {
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    display: none;
+  }
+
+  nav {
+    width: 100%;
+    margin: 0;
+  }
+
+  .nav-btn {
+    flex: 1;
+    padding: 9px 6px;
+  }
+
+  .grid2,.grid3 {
+    grid-template-columns: 1fr;
+  }
+
+  .full {
+    grid-column: auto;
+  }
+
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .pdf-top {
+    grid-template-columns: 1fr;
+  }
+
+  .company {
+    text-align: left;
+  }
+
+  .cliche-total {
+    font-size: 40px;
+  }
+}
+
+/* =========================================================
+   ## 14. AUTENTICAÇÃO
+   Tela de login, usuário autenticado e botão de saída.
    ========================================================= */
 
 body.auth-pending > header,
@@ -111,8 +1120,7 @@ body.auth-pending > .toast {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background:
-    linear-gradient(
+  background: linear-gradient(
       135deg,
       #080808 0%,
       #171717 60%,
@@ -218,58 +1226,116 @@ body.auth-pending > .toast {
   background: var(--red);
   border-color: var(--red);
 }
-@media print{
-  body{background:#fff}
-  header,.editor-side,.panel-head,.info,.toast{display:none!important}
-  main{margin:0;padding:0;max-width:none}
-  .page{display:none!important}
-  #orcamentoPage{display:block!important}
-  #orcamentoPage .two-col{display:block}
-  .preview-side{border:none;box-shadow:none}
-  .preview-wrap{padding:0;background:#fff}
-  .pdf-page{box-shadow:none;margin:0;min-height:auto}
 
+/* =========================================================
+   ## 15. IMPRESSÃO / GERAÇÃO DO PDF
+   Regras exclusivas utilizadas ao imprimir ou gerar a proposta.
+   ========================================================= */
+
+@media print {
+
+  body {
+    background: #fff;
+  }
+
+  header,.editor-side,.panel-head,.info,.toast {
+    display: none !important;
+  }
+
+  main {
+    margin: 0;
+    padding: 0;
+    max-width: none;
+  }
+
+  .page {
+    display: none !important;
+  }
+
+  #orcamentoPage {
+    display: block !important;
+  }
+
+  #orcamentoPage .two-col {
+    display: block;
+  }
+
+  .preview-side {
+    border: none;
+    box-shadow: none;
+  }
+
+  .preview-wrap {
+    padding: 0;
+    background: #fff;
+  }
+
+  .pdf-page {
+    box-shadow: none;
+    margin: 0;
+    min-height: auto;
+  }
   /* Paginação inteligente das artes:
      - a primeira arte tenta ocupar o espaço livre após o orçamento;
      - se o bloco inteiro não couber, o navegador move a arte para a próxima página;
      - as artes seguintes começam em páginas próprias. */
-  .art-page{
-    break-inside:avoid-page;
-    page-break-inside:avoid;
-    border-top:4px solid var(--red);
-    padding:5mm 4mm 4mm;
-  }
-  .art-page.first-art{
-    break-before:auto;
-    page-break-before:auto;
-    margin-top:5mm;
-  }
-  .art-page.subsequent-art{
-    break-before:page;
-    page-break-before:always;
-  }
-  .art-page h2{font-size:16px;margin:0 0 2mm}
-  .art-sub{margin-bottom:3mm}
-  .art-frame{
-    height:105mm;
-    max-height:105mm;
-    min-height:0;
-    border:1px solid #d8dde5;
-    background:#fafafa;
-  }
-  .art-frame img{
-    max-width:100%;
-    max-height:100%;
-    width:auto;
-    height:auto;
-    object-fit:contain;
-  }
-  .art-page .generated{margin-top:3mm}
 
-  @page{size:A4 portrait;margin:8mm}
+  .art-page {
+    break-inside: avoid-page;
+    page-break-inside: avoid;
+    border-top: 4px solid var(--red);
+    padding: 5mm 4mm 4mm;
+  }
+
+  .art-page.first-art {
+    break-before: auto;
+    page-break-before: auto;
+    margin-top: 5mm;
+  }
+
+  .art-page.subsequent-art {
+    break-before: page;
+    page-break-before: always;
+  }
+
+  .art-page h2 {
+    font-size: 16px;
+    margin: 0 0 2mm;
+  }
+
+  .art-sub {
+    margin-bottom: 3mm;
+  }
+
+  .art-frame {
+    height: 105mm;
+    max-height: 105mm;
+    min-height: 0;
+    border: 1px solid #d8dde5;
+    background: #fafafa;
+  }
+
+  .art-frame img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .art-page .generated {
+    margin-top: 3mm;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 8mm;
+  }
 }
+
 /* =========================================================
-   CONSULTA CNPJ
+   ## 16. CONSULTA DE CNPJ
+   Layout do campo, botão de busca e mensagens da integração CNPJá.
    ========================================================= */
 
 .cnpj-search-row {

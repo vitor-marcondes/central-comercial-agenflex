@@ -1,82 +1,119 @@
-/* Central Comercial Agenflex — Histórico */
+/* =========================================================
+   CENTRAL COMERCIAL AGENFLEX
+   Arquivo: historico.css
 
-.history-toolbar{
-  display:flex;
-  gap:12px;
-  align-items:flex-end;
-  flex-wrap:wrap;
-  margin-bottom:16px;
+   Responsabilidade:
+   - Estilizar a página de histórico de propostas
+   - Organizar busca, tabela, badges e estados da listagem
+   - Complementar o styles.css apenas com regras específicas
+     do módulo de histórico
+
+   Dependências visuais:
+   - css/styles.css
+   - Variáveis globais como --muted
+
+   Observação:
+   Este arquivo deve concentrar apenas estilos próprios
+   do histórico, evitando duplicar regras globais.
+   ========================================================= */
+
+/* =========================================================
+   ## 1. BARRA DE FERRAMENTAS E BUSCA
+   Layout da área de pesquisa, filtros e contador do histórico.
+   ========================================================= */
+
+.history-toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
 }
 
-.history-search{
-  flex:1 1 380px;
+.history-search {
+  flex: 1 1 380px;
 }
 
-.history-search input{
-  width:100%;
+.history-search input {
+  width: 100%;
 }
 
-.history-count{
-  font-size:12px;
-  font-weight:900;
-  color:var(--muted);
-  padding:10px 0;
+.history-count {
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--muted);
+  padding: 10px 0;
 }
 
-.history-table{
-  min-width:980px;
+/* =========================================================
+   ## 2. TABELA DO HISTÓRICO
+   Estrutura visual da tabela, textos auxiliares e alinhamentos.
+   ========================================================= */
+
+.history-table {
+  min-width: 980px;
 }
 
-.history-table td{
-  vertical-align:middle;
+.history-table td {
+  vertical-align: middle;
 }
 
-.history-muted{
-  margin-top:4px;
-  color:var(--muted);
-  font-size:12px;
+.history-muted {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
 }
 
-.history-badge{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  min-width:82px;
-  padding:6px 9px;
-  border-radius:999px;
-  font-size:10px;
-  font-weight:900;
-  letter-spacing:.4px;
+/* =========================================================
+   ## 3. BADGES DE STATUS
+   Indicadores visuais para rascunhos, propostas enviadas e estados.
+   ========================================================= */
+
+.history-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 82px;
+  padding: 6px 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .4px;
 }
 
-.history-badge.rascunho{
-  background:#fff4d6;
-  color:#7a5200;
+.history-badge.rascunho {
+  background: #fff4d6;
+  color: #7a5200;
 }
 
-.history-badge.enviada{
-  background:#e7f6ec;
-  color:#146c2e;
+.history-badge.enviada {
+  background: #e7f6ec;
+  color: #146c2e;
 }
 
-.history-open{
-  padding:7px 11px;
+.history-open {
+  padding: 7px 11px;
 }
+
+/* =========================================================
+   ## 4. AÇÕES E ESTADOS DA LISTAGEM
+   Botão de abertura, carregamento e estado sem resultados.
+   ========================================================= */
 
 .history-loading,
-.history-empty{
-  text-align:center;
-  padding:28px !important;
-  color:var(--muted);
+.history-empty {
+  text-align: center;
+  padding: 28px !important;
+  color: var(--muted);
 }
 
-#historicoVazio{
-  display:none;
-  margin-top:14px;
-  padding:22px;
-  border:1px dashed #cfd6df;
-  border-radius:12px;
-  text-align:center;
-  color:var(--muted);
-  background:#f8fafc;
+#historicoVazio {
+  display: none;
+  margin-top: 14px;
+  padding: 22px;
+  border: 1px dashed #cfd6df;
+  border-radius: 12px;
+  text-align: center;
+  color: var(--muted);
+  background: #f8fafc;
 }

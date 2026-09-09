@@ -1,5 +1,25 @@
 <!doctype html>
 <html lang="pt-BR">
+
+<!-- ======================================================
+     CENTRAL COMERCIAL AGENFLEX
+     Arquivo: index.html
+
+     Responsabilidade:
+     - Estrutura visual principal da Central Comercial
+     - Login e navegação
+     - Páginas dos módulos
+     - Formulário e prévia da proposta
+     - Carregamento dos estilos e scripts
+
+     Observação:
+     Regras de negócio ficam em /js.
+     Estilos ficam em /css.
+     ====================================================== -->
+
+<!-- ======================================================
+     ## 1. HEAD / CONFIGURAÇÕES DO DOCUMENTO
+     ====================================================== -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -7,8 +27,13 @@
 <link rel="stylesheet" href="css/styles.css">
 <link rel="stylesheet" href="css/historico.css">
 </head>
+
 <body class="auth-pending">
-  <section id="loginScreen" class="login-screen">
+
+<!-- ======================================================
+     ## 2. AUTENTICAÇÃO / LOGIN
+     ====================================================== -->
+<section id="loginScreen" class="login-screen">
   <div class="login-card">
 
     <img
@@ -61,196 +86,831 @@
 
   </div>
 </section>
-<!-- Estrutura visual. Regras ficam em /js e estilos em /css. -->
-<header><div class="header-inner">
-  <div class="logo-shell"><img src="assets/logos/agenflex.jpg" alt="Agenflex"></div>
-  <div class="brand"><h1>Agenflex Comercial</h1><p>Ferramentas internas do time de vendas</p></div>
-<nav>
 
-  <button
-    class="nav-btn active"
-    data-page="homePage"
-    onclick="showPage('homePage',this)"
-  >
-    Início
-  </button>
+<!-- ======================================================
+     ## 3. CABEÇALHO / NAVEGAÇÃO PRINCIPAL
+     ====================================================== -->
+<header>
+  <div class="header-inner">
 
-  <button
-    class="nav-btn"
-    data-page="orcamentoPage"
-    onclick="showPage('orcamentoPage',this)"
-  >
-    Orçamento
-  </button>
+    <div class="logo-shell">
+      <img
+        src="assets/logos/agenflex.jpg"
+        alt="Agenflex"
+      >
+    </div>
 
-  <button
-    class="nav-btn"
-    data-page="historicoPage"
-    onclick="abrirHistorico(this)"
-  >
-    Histórico
-  </button>
+    <div class="brand">
+      <h1>Agenflex Comercial</h1>
+      <p>Ferramentas internas do time de vendas</p>
+    </div>
 
-  <button
-    class="nav-btn"
-    data-page="clichePage"
-    onclick="showPage('clichePage',this)"
-  >
-    Calculadora de Clichê
-  </button>
+    <nav>
 
-  <button
-    class="nav-btn"
-    data-page="medidasPage"
-    onclick="showPage('medidasPage',this)"
-  >
-    Medidas
-  </button>
+      <button
+        class="nav-btn active"
+        data-page="homePage"
+        onclick="showPage('homePage',this)"
+      >
+        Início
+      </button>
 
-  <button
-    class="nav-btn"
-    data-page="fatorPage"
-    onclick="showPage('fatorPage',this)"
-  >
-    Fator Indicado
-  </button>
+      <button
+        class="nav-btn"
+        data-page="orcamentoPage"
+        onclick="showPage('orcamentoPage',this)"
+      >
+        Orçamento
+      </button>
 
-</nav>  <div id="authUserBox" class="auth-user-box">
+      <button
+        class="nav-btn"
+        data-page="historicoPage"
+        onclick="abrirHistorico(this)"
+      >
+        Histórico
+      </button>
 
-  <div class="auth-user-info">
-    <strong id="authUserName">Usuário</strong>
-    <span id="authUserRole"></span>
+      <button
+        class="nav-btn"
+        data-page="clichePage"
+        onclick="showPage('clichePage',this)"
+      >
+        Calculadora de Clichê
+      </button>
+
+      <button
+        class="nav-btn"
+        data-page="medidasPage"
+        onclick="showPage('medidasPage',this)"
+      >
+        Medidas
+      </button>
+
+      <button
+        class="nav-btn"
+        data-page="fatorPage"
+        onclick="showPage('fatorPage',this)"
+      >
+        Fator Indicado
+      </button>
+
+    </nav>
+
+    <div id="authUserBox" class="auth-user-box">
+
+      <div class="auth-user-info">
+        <strong id="authUserName">Usuário</strong>
+        <span id="authUserRole"></span>
+      </div>
+
+      <button
+        class="auth-logout"
+        type="button"
+        onclick="sairDaCentral()"
+      >
+        Sair
+      </button>
+
+    </div>
+
   </div>
-
-  <button
-    class="auth-logout"
-    type="button"
-    onclick="sairDaCentral()"
-  >
-    Sair
-  </button>
-
-</div>
-</div></header>
+</header>
 
 <main>
+
+<!-- ======================================================
+     ## 4. PÁGINA INICIAL
+     ====================================================== -->
 <section id="homePage" class="page active">
-  <div class="hero"><h2>Central Comercial Agenflex</h2><p>Um único lugar para criação de propostas, cálculo de clichê e futuras ferramentas de precificação do comercial.</p></div>
-  <div class="cards">
-    <div class="tool-card" onclick="go('orcamentoPage')"><div class="ico">📄</div><h3>Orçamento</h3><p>Crie o PDF completo, escolha a identidade do time e anexe quantas artes forem necessárias.</p><span class="tag">FUNCIONAL</span></div>
-    <div class="tool-card" onclick="go('clichePage')"><div class="ico">🧮</div><h3>Calculadora de Clichê</h3><p>Calcule o valor comercial do clichê com margem e descontos previstos.</p><span class="tag">FUNCIONAL</span></div>
-    <div class="tool-card" onclick="go('medidasPage')"><div class="ico">📏</div><h3>Medidas</h3><p>Consulte cilindros, valide medidas padrão e veja o pedido mínimo sugerido.</p><span class="tag">FUNCIONAL</span></div>
-    <div class="tool-card" onclick="go('fatorPage')"><div class="ico">📈</div><h3>Fator Indicado</h3><p>Área reservada para a futura lógica de custos, impostos e fator recomendado.</p><span class="tag dev">EM DESENVOLVIMENTO</span></div>
+
+  <div class="hero">
+    <h2>Central Comercial Agenflex</h2>
+    <p>
+      Um único lugar para criação de propostas, cálculo de clichê
+      e futuras ferramentas de precificação do comercial.
+    </p>
   </div>
+
+  <div class="cards">
+
+    <div
+      class="tool-card"
+      onclick="go('orcamentoPage')"
+    >
+      <div class="ico">📄</div>
+      <h3>Orçamento</h3>
+      <p>
+        Crie o PDF completo, escolha a identidade do time
+        e anexe quantas artes forem necessárias.
+      </p>
+      <span class="tag">FUNCIONAL</span>
+    </div>
+
+    <div
+      class="tool-card"
+      onclick="go('clichePage')"
+    >
+      <div class="ico">🧮</div>
+      <h3>Calculadora de Clichê</h3>
+      <p>
+        Calcule o valor comercial do clichê com margem
+        e descontos previstos.
+      </p>
+      <span class="tag">FUNCIONAL</span>
+    </div>
+
+    <div
+      class="tool-card"
+      onclick="go('medidasPage')"
+    >
+      <div class="ico">📏</div>
+      <h3>Medidas</h3>
+      <p>
+        Consulte cilindros, valide medidas padrão
+        e veja o pedido mínimo sugerido.
+      </p>
+      <span class="tag">FUNCIONAL</span>
+    </div>
+
+    <div
+      class="tool-card"
+      onclick="go('fatorPage')"
+    >
+      <div class="ico">📈</div>
+      <h3>Fator Indicado</h3>
+      <p>
+        Área reservada para a futura lógica de custos,
+        impostos e fator recomendado.
+      </p>
+      <span class="tag dev">EM DESENVOLVIMENTO</span>
+    </div>
+
+  </div>
+
 </section>
 
+<!-- ======================================================
+     ## 5. ORÇAMENTO / PROPOSTA
+     ====================================================== -->
 <section id="orcamentoPage" class="page">
+
 <div class="two-col">
+
 <section class="panel editor-side">
-  <div class="panel-head"><h2>📄 Novo orçamento</h2><span id="saveStatus">Rascunho local</span></div>
-  <div class="panel-body">
 
-    <div class="section-title">Identificação</div>
-    <div class="grid3">
-      <div class="field"><label>Orçamento</label><input id="orcamento" placeholder="Nome fantasia do comércio"></div>
-      <div class="field"><label>Data</label><input id="orcData" type="date"></div>
-      <div class="field"><label>Validade</label><select id="validade"><option>HOJE</option><option>3 DIAS</option><option>5 DIAS</option><option selected>7 DIAS</option><option>15 DIAS</option><option>30 DIAS</option></select></div>
-      <div class="field"><label>Time (interno)</label><select id="timeEquipe"><option value="" selected>Selecione o time</option><option value="revenda">Time Revenda</option><option value="pharma">Time Pharma</option><option value="food">Time Food</option></select></div>
-    </div>
-
-    <div class="section-title">Cliente</div>
-    <div class="grid2">
-      <div class="field full"><label>Razão social / Cliente</label><input id="cliente" placeholder="Razão social / nome do cliente"></div>
-      <div class="field full"><label>Nome do Comprador</label><input id="comprador" placeholder="Nome do comprador / contato"></div>
-      <div class="field">
-
-  <label>CNPJ</label>
-
-  <div class="cnpj-search-row">
-
-    <input
-      id="cnpj"
-      placeholder="00.000.000/0001-00"
-      maxlength="18"
-    >
-
-    <button
-      id="btnBuscarCnpj"
-      class="btn navy"
-      type="button"
-      onclick="buscarCnpjEPreencher()"
-    >
-      🔎 Buscar
-    </button>
-
+  <div class="panel-head">
+    <h2>📄 Novo orçamento</h2>
+    <span id="saveStatus">Rascunho local</span>
   </div>
 
-  <div
-    id="cnpjConsultaStatus"
-    class="cnpj-consulta-status"
-  ></div>
+  <div class="panel-body">
 
-</div>
-      <div class="field"><label>Inscrição Estadual</label><input id="ie" placeholder="Inscrição Estadual"></div>
-      <div class="field"><label>Telefone</label><input id="telefone" placeholder="Telefone"></div>
-      <div class="field"><label>E-mail</label><input id="email" placeholder="E-mail"></div>
-      <div class="field full"><label>Endereço</label><input id="endereco" placeholder="Rua, número"></div>
-      <div class="field"><label>Bairro</label><input id="bairro" placeholder="Bairro"></div>
-      <div class="field"><label>Cidade / UF / CEP</label><input id="cidade" placeholder="Cidade - UF - CEP"></div>
+    <!-- ==================================================
+         ## 5.1 IDENTIFICAÇÃO DA PROPOSTA
+         ================================================== -->
+
+    <div class="section-title">
+      Identificação
     </div>
 
-    <div class="section-title">Itens</div>
-    <div class="table-wrap"><table class="editor">
-      <thead><tr><th>Código</th><th>Produto / observações do item</th><th>NCM</th><th>Qtd.</th><th>Un.</th><th>Valor unit.</th><th class="tax">IPI %</th><th>Total</th><th></th></tr></thead>
-      <tbody id="itemsEditor"></tbody>
-    </table></div>
+    <div class="grid3">
+
+      <div class="field">
+        <label>Orçamento</label>
+        <input
+          id="orcamento"
+          placeholder="Nome fantasia do comércio"
+        >
+      </div>
+
+      <div class="field">
+        <label>Data</label>
+        <input
+          id="orcData"
+          type="date"
+        >
+      </div>
+
+      <div class="field">
+        <label>Validade</label>
+
+        <select id="validade">
+          <option>HOJE</option>
+          <option>3 DIAS</option>
+          <option>5 DIAS</option>
+          <option selected>7 DIAS</option>
+          <option>15 DIAS</option>
+          <option>30 DIAS</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Time (interno)</label>
+
+        <select id="timeEquipe">
+          <option value="" selected>
+            Selecione o time
+          </option>
+
+          <option value="revenda">
+            Time Revenda
+          </option>
+
+          <option value="pharma">
+            Time Pharma
+          </option>
+
+          <option value="food">
+            Time Food
+          </option>
+        </select>
+      </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         ## 5.2 DADOS DO CLIENTE
+         ================================================== -->
+
+    <div class="section-title">
+      Cliente
+    </div>
+
+    <div class="grid2">
+
+      <div class="field full">
+        <label>Razão social / Cliente</label>
+        <input
+          id="cliente"
+          placeholder="Razão social / nome do cliente"
+        >
+      </div>
+
+      <div class="field full">
+        <label>Nome do Comprador</label>
+        <input
+          id="comprador"
+          placeholder="Nome do comprador / contato"
+        >
+      </div>
+
+      <div class="field">
+
+        <label>CNPJ</label>
+
+        <div class="cnpj-search-row">
+
+          <input
+            id="cnpj"
+            placeholder="00.000.000/0001-00"
+            maxlength="18"
+          >
+
+          <button
+            id="btnBuscarCnpj"
+            class="btn navy"
+            type="button"
+            onclick="buscarCnpjEPreencher()"
+          >
+            🔎 Buscar
+          </button>
+
+        </div>
+
+        <div
+          id="cnpjConsultaStatus"
+          class="cnpj-consulta-status"
+        ></div>
+
+      </div>
+
+      <div class="field">
+        <label>Inscrição Estadual</label>
+        <input
+          id="ie"
+          placeholder="Inscrição Estadual"
+        >
+      </div>
+
+      <div class="field">
+        <label>Telefone</label>
+        <input
+          id="telefone"
+          placeholder="Telefone"
+        >
+      </div>
+
+      <div class="field">
+        <label>E-mail</label>
+        <input
+          id="email"
+          placeholder="E-mail"
+        >
+      </div>
+
+      <div class="field full">
+        <label>Endereço</label>
+        <input
+          id="endereco"
+          placeholder="Rua, número"
+        >
+      </div>
+
+      <div class="field">
+        <label>Bairro</label>
+        <input
+          id="bairro"
+          placeholder="Bairro"
+        >
+      </div>
+
+      <div class="field">
+        <label>Cidade / UF / CEP</label>
+        <input
+          id="cidade"
+          placeholder="Cidade - UF - CEP"
+        >
+      </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         ## 5.3 ITENS DA PROPOSTA
+         ================================================== -->
+
+    <div class="section-title">
+      Itens
+    </div>
+
+    <div class="table-wrap">
+
+      <table class="editor">
+
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Produto / observações do item</th>
+            <th>NCM</th>
+            <th>Qtd.</th>
+            <th>Un.</th>
+            <th>Valor unit.</th>
+            <th class="tax">IPI %</th>
+            <th>Total</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody id="itemsEditor"></tbody>
+
+      </table>
+
+    </div>
+
     <div class="toolbar">
-      <button class="btn navy" onclick="addItem()">＋ Adicionar item</button>
-      <button class="btn light" onclick="duplicateLast()">Duplicar último</button>
-      <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #cfd6df;border-radius:9px;background:#f8fafc;font-size:13px;font-weight:900;cursor:pointer">
-        <input id="mostrarTotalPdf" type="checkbox" checked style="width:18px;height:18px;accent-color:#e30613;cursor:pointer">
+
+      <button
+        class="btn navy"
+        onclick="addItem()"
+      >
+        ＋ Adicionar item
+      </button>
+
+      <button
+        class="btn light"
+        onclick="duplicateLast()"
+      >
+        Duplicar último
+      </button>
+
+      <label
+        style="
+          display:flex;
+          align-items:center;
+          gap:8px;
+          padding:10px 12px;
+          border:1px solid #cfd6df;
+          border-radius:9px;
+          background:#f8fafc;
+          font-size:13px;
+          font-weight:900;
+          cursor:pointer
+        "
+      >
+        <input
+          id="mostrarTotalPdf"
+          type="checkbox"
+          checked
+          style="
+            width:18px;
+            height:18px;
+            accent-color:#e30613;
+            cursor:pointer
+          "
+        >
+
         Mostrar totais no PDF
       </label>
+
     </div>
 
-    <div class="section-title">Condições comerciais</div>
+
+    <!-- ==================================================
+         ## 5.4 CONDIÇÕES COMERCIAIS
+         ================================================== -->
+
+    <div class="section-title">
+      Condições comerciais
+    </div>
+
     <div class="grid2">
-      <div class="field"><label>Clichê</label><input id="cliche" value="A CALCULAR"></div>
-      <div class="field"><label>Forma de pagamento</label><input id="pagamento" value="1/30/60 (APÓS ANÁLISE)"></div>
-      <div class="field"><label>Vendedor</label><input id="vendedor" list="vendedoresRecentes" autocomplete="off" placeholder="Nome do vendedor"><datalist id="vendedoresRecentes"></datalist></div>
-      <div class="field"><label>Projeto</label><input id="projeto" placeholder="Projeto / referência"></div>
-      <div class="field"><label>Previsão de faturamento</label><input id="previsao" type="date"></div>
-      <div class="field"><label>Destinação</label><input id="destinacao" placeholder="Ex.: USO E CONSUMO"></div>
-      <div class="field full"><label>Frete</label><input id="frete" value="FRETE COBRADO DO CLIENTE: Calculado com algumas transportadoras e enviado pela mais em conta."></div>
-      <div class="field full"><label>Regras / avisos comerciais</label><textarea id="regras">* Reservamo-nos no direito de entregar até 15% a mais ou a menos e faturar proporcionalmente a quantidade pelo valor unitário.
+
+      <div class="field">
+        <label>Clichê</label>
+        <input
+          id="cliche"
+          value="A CALCULAR"
+        >
+      </div>
+
+      <div class="field">
+        <label>Forma de pagamento</label>
+        <input
+          id="pagamento"
+          value="1/30/60 (APÓS ANÁLISE)"
+        >
+      </div>
+
+      <div class="field">
+
+        <label>Vendedor</label>
+
+        <input
+          id="vendedor"
+          list="vendedoresRecentes"
+          autocomplete="off"
+          placeholder="Nome do vendedor"
+        >
+
+        <datalist id="vendedoresRecentes"></datalist>
+
+      </div>
+
+      <div class="field">
+        <label>Projeto</label>
+        <input
+          id="projeto"
+          placeholder="Projeto / referência"
+        >
+      </div>
+
+      <div class="field">
+        <label>Previsão de faturamento</label>
+        <input
+          id="previsao"
+          type="date"
+        >
+      </div>
+
+      <div class="field">
+        <label>Destinação</label>
+        <input
+          id="destinacao"
+          placeholder="Ex.: USO E CONSUMO"
+        >
+      </div>
+
+      <div class="field full">
+        <label>Frete</label>
+        <input
+          id="frete"
+          value="FRETE COBRADO DO CLIENTE: Calculado com algumas transportadoras e enviado pela mais em conta."
+        >
+      </div>
+
+      <div class="field full">
+
+        <label>
+          Regras / avisos comerciais
+        </label>
+
+        <textarea id="regras">* Reservamo-nos no direito de entregar até 15% a mais ou a menos e faturar proporcionalmente a quantidade pelo valor unitário.
 ** Esse pedido não pode ser cancelado em virtude de se tratar de mercadoria de uso exclusivo do comprador.
 * Ficando pronto o pedido é faturado em até 24 horas.
 Obs.: Certifique-se de haver alguém para receber o pedido no horário comercial. (SEG a SEX das 08h00 às 18h00)
-CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea></div>
+CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
+
+      </div>
+
     </div>
 
-    <div class="section-title">Arte do cliente</div>
-    <div class="upload-box" id="artDropZone">
-      <b>🖼️ Anexar artes à proposta</b>
-      <p>Arraste e solte os arquivos aqui ou clique em “＋ Adicionar arte”. As artes anteriores serão mantidas.</p>
-      <div class="toolbar" style="justify-content:center">
-        <label class="btn orange" for="arteInput" style="cursor:pointer">＋ Adicionar arte</label>
-        <button class="btn light" type="button" onclick="removeArts()">Remover todas</button>
-      </div>
-      <input id="arteInput" type="file" multiple accept="image/png,image/jpeg,image/webp,application/pdf">
-      <div id="artThumbs" class="thumbs"></div>
+
+    <!-- ==================================================
+         ## 5.5 GESTÃO COMERCIAL
+         ================================================== -->
+
+    <div class="section-title">
+      Gestão comercial
     </div>
+
+    <div class="grid2">
+
+      <!-- Origem da oportunidade -->
+      <div class="field">
+
+        <label for="origemComercial">
+          Origem
+        </label>
+
+        <select id="origemComercial">
+
+          <option
+            value=""
+            selected
+          >
+            Selecione a origem
+          </option>
+
+          <option value="leads_mkt">
+            LEADS - MKT
+          </option>
+
+          <option value="prospeccao">
+            PROSPECÇÃO
+          </option>
+
+          <option value="gestao_carteira">
+            GESTÃO DE CARTEIRA
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <!-- Status da negociação -->
+      <div class="field">
+
+        <label for="statusComercial">
+          Status comercial
+        </label>
+
+        <select id="statusComercial">
+
+          <option
+            value="proposta"
+            selected
+          >
+            Proposta
+          </option>
+
+          <option value="andamento">
+            Andamento
+          </option>
+
+          <option value="concluido">
+            Concluído
+          </option>
+
+          <option value="nao_conquistado">
+            Não conquistado
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <!-- Situação resumida -->
+      <div class="field full">
+
+        <label for="statusComercialSituacao">
+          Situação no sistema
+        </label>
+
+        <input
+          id="statusComercialSituacao"
+          type="text"
+          value="Nova proposta"
+          readonly
+        >
+
+      </div>
+
+    </div>
+
+
+    <!--
+      Este bloco aparece apenas quando:
+      status_comercial = nao_conquistado
+    -->
+
+    <div
+      id="blocoNaoConquistado"
+      class="grid2"
+      hidden
+    >
+
+      <div class="field">
+
+        <label for="motivoNaoConquistado">
+          Motivo da não conquista
+        </label>
+
+        <select id="motivoNaoConquistado">
+
+          <option
+            value=""
+            selected
+          >
+            Selecione o motivo
+          </option>
+
+          <option value="preco">
+            Preço
+          </option>
+
+          <option value="prazo">
+            Prazo
+          </option>
+
+          <option value="concorrencia">
+            Concorrência
+          </option>
+
+          <option value="projeto_cancelado">
+            Projeto cancelado
+          </option>
+
+          <option value="sem_retorno_cliente">
+            Sem retorno do cliente
+          </option>
+
+          <option value="quantidade_minima">
+            Quantidade mínima
+          </option>
+
+          <option value="condicao_pagamento">
+            Condição de pagamento
+          </option>
+
+          <option value="frete">
+            Frete
+          </option>
+
+          <option value="produto_especificacao">
+            Produto / especificação
+          </option>
+
+          <option value="outro">
+            Outro
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="field full">
+
+        <label for="detalheNaoConquistado">
+          Detalhamento
+        </label>
+
+        <textarea
+          id="detalheNaoConquistado"
+          placeholder="Descreva resumidamente o motivo da não conquista."
+        ></textarea>
+
+      </div>
+
+    </div>
+
+
+    <div class="toolbar">
+
+      <button
+        id="btnAtualizarStatusComercial"
+        class="btn green"
+        type="button"
+        onclick="salvarStatusComercial()"
+        disabled
+      >
+        Atualizar gestão comercial
+      </button>
+
+    </div>
+
+
+    <div
+      id="statusComercialInfo"
+      class="info"
+    >
+      Selecione a origem e salve a proposta no banco para liberar
+      a gestão comercial. Propostas novas começam automaticamente
+      com o status <b>Proposta</b>.
+    </div>
+
+
+    <!-- ==================================================
+         ## 5.6 ARTES ANEXADAS
+         ================================================== -->
+
+    <div class="section-title">
+      Arte do cliente
+    </div>
+
+    <div
+      class="upload-box"
+      id="artDropZone"
+    >
+
+      <b>
+        🖼️ Anexar artes à proposta
+      </b>
+
+      <p>
+        Arraste e solte os arquivos aqui ou clique em
+        “＋ Adicionar arte”. As artes anteriores serão mantidas.
+      </p>
+
+      <div
+        class="toolbar"
+        style="justify-content:center"
+      >
+
+        <label
+          class="btn orange"
+          for="arteInput"
+          style="cursor:pointer"
+        >
+          ＋ Adicionar arte
+        </label>
+
+        <button
+          class="btn light"
+          type="button"
+          onclick="removeArts()"
+        >
+          Remover todas
+        </button>
+
+      </div>
+
+      <input
+        id="arteInput"
+        type="file"
+        multiple
+        accept="image/png,image/jpeg,image/webp,application/pdf"
+      >
+
+      <div
+        id="artThumbs"
+        class="thumbs"
+      ></div>
+
+    </div>
+
+
+    <!-- ==================================================
+         ## 5.7 MÉTRICAS E AÇÕES
+         ================================================== -->
 
     <div class="metrics">
-      <div class="metric"><small>Subtotal</small><b id="mSubtotal">R$ 0,00</b></div>
-      <div class="metric"><small>IPI</small><b id="mIpi">R$ 0,00</b></div>
-      <div class="metric"><small>Total interno</small><b id="mTotal">R$ 0,00</b></div>
+
+      <div class="metric">
+        <small>Subtotal</small>
+        <b id="mSubtotal">R$ 0,00</b>
+      </div>
+
+      <div class="metric">
+        <small>IPI</small>
+        <b id="mIpi">R$ 0,00</b>
+      </div>
+
+      <div class="metric">
+        <small>Total interno</small>
+        <b id="mTotal">R$ 0,00</b>
+      </div>
+
     </div>
 
-<div class="toolbar">
-  <button class="btn light" onclick="clearForm()">Limpar</button>
 
-  <button class="btn navy" onclick="saveDraft()">
+<div class="toolbar">
+
+  <button
+    class="btn light"
+    onclick="clearForm()"
+  >
+    Limpar
+  </button>
+
+  <button
+    class="btn navy"
+    onclick="saveDraft()"
+  >
     💻 Salvar no navegador
   </button>
 
@@ -262,76 +922,332 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea></div>
     ☁️ Salvar proposta
   </button>
 
-  <button class="btn red" onclick="printPDF()">
+  <button
+    id="btnEnviarRevisao"
+    class="btn orange"
+    type="button"
+    onclick="enviarRevisaoAtual()"
+    disabled
+  >
+    📤 Enviar revisão
+  </button>
+
+  <button
+    id="btnCriarNovaRevisao"
+    class="btn navy"
+    type="button"
+    onclick="criarNovaRevisaoAtual()"
+    hidden
+    disabled
+  >
+    ➕ Criar nova revisão
+  </button>
+
+  <button
+    class="btn red"
+    onclick="printPDF()"
+  >
     📄 Gerar PDF completo
   </button>
 
-  <button class="btn green" onclick="copySummary()">
+  <button
+    class="btn green"
+    onclick="copySummary()"
+  >
     📋 Copiar resumo
   </button>
+
 </div>
 
-<div class="info">O checkbox controla Subtotal, IPI e Total no PDF. Os valores individuais de cada item continuam visíveis. Na impressão, a primeira arte tenta aproveitar automaticamente o espaço restante da última página do orçamento sem ser cortada.</div>
+    <div class="info">
+      O checkbox controla Subtotal, IPI e Total no PDF.
+      Os valores individuais de cada item continuam visíveis.
+      Na impressão, a primeira arte tenta aproveitar automaticamente
+      o espaço restante da última página do orçamento sem ser cortada.
+    </div>
+
   </div>
+
 </section>
 
+
+<!-- ======================================================
+     ## 5.8 PRÉVIA DO PDF
+     ====================================================== -->
 <section class="panel preview-side">
-  <div class="panel-head"><h2>👁️ Prévia do PDF completo</h2><span id="pagesLabel">Paginação automática</span></div>
+
+  <div class="panel-head">
+    <h2>👁️ Prévia do PDF completo</h2>
+    <span id="pagesLabel">
+      Paginação automática
+    </span>
+  </div>
+
   <div class="preview-wrap">
+
     <div class="pdf-page">
+
       <div class="pdf-top">
-        <div class="pdf-brand"><img id="pdfLogo" class="logo-revenda" src="assets/logos/agenflex.jpg" alt="Agenflex"><div class="quote-name">Proposta: <span id="pOrcamento">—</span></div></div>
-        <div class="company"><h2>AGENFLEX INDUSTRIA E COMERCIO DE<br>EMBALAGENS LTDA</h2><div><b>http://www.agenflex.com.br</b><br><br>CNPJ: 07.348.604/0001-72<br>Inscrição Estadual: 708.195.163.116<br><br>R ANTONIO RAPOSO TAVARES, 71 - COND. PORTAL DO ANHANGUERA<br>MACUCO<br>Valinhos - SP - CEP: 13279-390<br>Telefone: (19) 3871-1007</div></div>
+
+        <div class="pdf-brand">
+
+          <img
+            id="pdfLogo"
+            class="logo-revenda"
+            src="assets/logos/agenflex.jpg"
+            alt="Agenflex"
+          >
+
+          <div class="quote-name">
+            Proposta:
+            <span id="pOrcamento">—</span>
+          </div>
+
+        </div>
+
+        <div class="company">
+
+          <h2>
+            AGENFLEX INDUSTRIA E COMERCIO DE<br>
+            EMBALAGENS LTDA
+          </h2>
+
+          <div>
+            <b>http://www.agenflex.com.br</b>
+            <br><br>
+
+            CNPJ: 07.348.604/0001-72
+            <br>
+
+            Inscrição Estadual: 708.195.163.116
+            <br><br>
+
+            R ANTONIO RAPOSO TAVARES, 71 - COND. PORTAL DO ANHANGUERA
+            <br>
+
+            MACUCO
+            <br>
+
+            Valinhos - SP - CEP: 13279-390
+            <br>
+
+            Telefone: (19) 3871-1007
+          </div>
+
+        </div>
+
       </div>
 
-      <div class="pdf-title">Informações do Cliente</div>
-      <div id="pCliente" class="client-name"></div>
-      <div class="buyer-line"><b>Comprador:</b> <span id="pComprador"></span></div>
+
+      <div class="pdf-title">
+        Informações do Cliente
+      </div>
+
+      <div
+        id="pCliente"
+        class="client-name"
+      ></div>
+
+      <div class="buyer-line">
+        <b>Comprador:</b>
+        <span id="pComprador"></span>
+      </div>
+
+
       <div class="client-grid">
-        <div><b>CNPJ:</b> <span id="pCnpj"></span></div><div><b>Endereço:</b> <span id="pEndereco"></span></div>
-        <div><b>Inscrição Estadual:</b> <span id="pIe"></span></div><div><b>Bairro:</b> <span id="pBairro"></span></div>
-        <div><b>Telefone:</b> <span id="pTelefone"></span></div><div><b>Cidade:</b> <span id="pCidade"></span></div>
-        <div><b>Email:</b> <span id="pEmail"></span></div>
+
+        <div>
+          <b>CNPJ:</b>
+          <span id="pCnpj"></span>
+        </div>
+
+        <div>
+          <b>Endereço:</b>
+          <span id="pEndereco"></span>
+        </div>
+
+        <div>
+          <b>Inscrição Estadual:</b>
+          <span id="pIe"></span>
+        </div>
+
+        <div>
+          <b>Bairro:</b>
+          <span id="pBairro"></span>
+        </div>
+
+        <div>
+          <b>Telefone:</b>
+          <span id="pTelefone"></span>
+        </div>
+
+        <div>
+          <b>Cidade:</b>
+          <span id="pCidade"></span>
+        </div>
+
+        <div>
+          <b>Email:</b>
+          <span id="pEmail"></span>
+        </div>
+
       </div>
 
-      <div class="pdf-title">Itens da Proposta</div>
-      <table class="pdf-items"><thead><tr><th>Produto</th><th>NCM</th><th>Quant.</th><th>Unit.</th><th>IPI</th><th>Unit. c/ Imp.</th><th>Valor Total</th></tr></thead><tbody id="pdfRows"></tbody></table>
 
-      <table class="totals">
-        <tr id="pSubtotalRow"><td>Subtotal:</td><td id="pSubtotal"></td></tr>
-        <tr id="pIpiRow"><td>IPI:</td><td id="pIpi"></td></tr>
-        <tr id="pTotalRow" class="total-row"><td>Total:</td><td id="pTotal"></td></tr>
+      <div class="pdf-title">
+        Itens da Proposta
+      </div>
+
+      <table class="pdf-items">
+
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>NCM</th>
+            <th>Quant.</th>
+            <th>Unit.</th>
+            <th>IPI</th>
+            <th>Unit. c/ Imp.</th>
+            <th>Valor Total</th>
+          </tr>
+        </thead>
+
+        <tbody id="pdfRows"></tbody>
+
       </table>
 
-      <div class="pdf-title">Outras Informações</div>
-      <div class="other">
-        <div><strong>Orçamento - incluído em:</strong> <span id="pIncluido"></span></div>
-        <div><strong>Previsão de Faturamento:</strong> <span id="pPrevisao"></span></div>
-        <div><strong>Vendedor:</strong> <span id="pVendedor"></span></div>
-        <div><strong>Projeto:</strong> <span id="pProjeto"></span></div>
-        <div><strong>Frete:</strong> <span id="pFrete"></span></div>
-        <div><strong>Validade da proposta:</strong> <span id="pValidade"></span></div>
-        <div><strong>Clichê:</strong> <span id="pCliche"></span></div>
-        <div><strong>Forma de pagamento:</strong> <span id="pPagamento"></span></div>
-        <div style="margin-top:12px"><b>DESTINAÇÃO DOS ITENS DO PEDIDO:</b> <span id="pDestinacao"></span></div>
-        <div id="pRegras" class="rules"></div>
+
+      <table class="totals">
+
+        <tr id="pSubtotalRow">
+          <td>Subtotal:</td>
+          <td id="pSubtotal"></td>
+        </tr>
+
+        <tr id="pIpiRow">
+          <td>IPI:</td>
+          <td id="pIpi"></td>
+        </tr>
+
+        <tr
+          id="pTotalRow"
+          class="total-row"
+        >
+          <td>Total:</td>
+          <td id="pTotal"></td>
+        </tr>
+
+      </table>
+
+
+      <div class="pdf-title">
+        Outras Informações
       </div>
-      <div class="generated">Gerado em <span id="pGerado"></span> por <span id="pGeradoPor"></span><br>Documento comercial Agenflex</div>
+
+      <div class="other">
+
+        <div>
+          <strong>Orçamento - incluído em:</strong>
+          <span id="pIncluido"></span>
+        </div>
+
+        <div>
+          <strong>Previsão de Faturamento:</strong>
+          <span id="pPrevisao"></span>
+        </div>
+
+        <div>
+          <strong>Vendedor:</strong>
+          <span id="pVendedor"></span>
+        </div>
+
+        <div>
+          <strong>Projeto:</strong>
+          <span id="pProjeto"></span>
+        </div>
+
+        <div>
+          <strong>Frete:</strong>
+          <span id="pFrete"></span>
+        </div>
+
+        <div>
+          <strong>Validade da proposta:</strong>
+          <span id="pValidade"></span>
+        </div>
+
+        <div>
+          <strong>Clichê:</strong>
+          <span id="pCliche"></span>
+        </div>
+
+        <div>
+          <strong>Forma de pagamento:</strong>
+          <span id="pPagamento"></span>
+        </div>
+
+        <div style="margin-top:12px">
+
+          <b>
+            DESTINAÇÃO DOS ITENS DO PEDIDO:
+          </b>
+
+          <span id="pDestinacao"></span>
+
+        </div>
+
+        <div
+          id="pRegras"
+          class="rules"
+        ></div>
+
+      </div>
+
+
+      <div class="generated">
+
+        Gerado em
+        <span id="pGerado"></span>
+
+        por
+        <span id="pGeradoPor"></span>
+
+        <br>
+
+        Documento comercial Agenflex
+
+      </div>
+
     </div>
+
     <div id="artPages"></div>
+
   </div>
+
 </section>
+
 </div>
 
 </section>
 
-<!-- NOVA PÁGINA: HISTÓRICO -->
+
+<!-- ======================================================
+     ## 6. HISTÓRICO DE PROPOSTAS
+     ====================================================== -->
 <section id="historicoPage" class="page">
+
   <section class="panel">
 
     <div class="panel-head">
-      <h2>📚 Histórico de Propostas</h2>
-      <span id="historicoContador">0 proposta(s)</span>
+
+      <h2>
+        📚 Histórico de Propostas
+      </h2>
+
+      <span id="historicoContador">
+        0 proposta(s)
+      </span>
+
     </div>
 
     <div class="panel-body">
@@ -339,12 +1255,17 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea></div>
       <div class="history-toolbar">
 
         <div class="field history-search">
-          <label>Pesquisar proposta</label>
+
+          <label>
+            Pesquisar proposta
+          </label>
+
           <input
             id="historicoBusca"
             type="search"
             placeholder="Número, proposta, cliente, CNPJ ou vendedor"
           >
+
         </div>
 
         <button
@@ -365,9 +1286,13 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea></div>
 
       </div>
 
+
       <div class="table-wrap">
+
         <table class="editor history-table">
+
           <thead>
+
             <tr>
               <th>Nº</th>
               <th>Proposta / Cliente</th>
@@ -378,185 +1303,1038 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea></div>
               <th>Status</th>
               <th></th>
             </tr>
+
           </thead>
+
           <tbody id="historicoBody"></tbody>
+
         </table>
+
       </div>
+
 
       <div id="historicoVazio">
         Nenhuma proposta encontrada.
       </div>
 
     </div>
+
   </section>
+
 </section>
+
+
+<!-- ======================================================
+     ## 7. CALCULADORA DE CLICHÊ
+     ====================================================== -->
 <section id="clichePage" class="page">
+
 <div class="two-col">
-  <section class="panel"><div class="panel-head"><h2>🧮 Calculadora de Clichê</h2><span>Uso comercial</span></div><div class="panel-body">
-    <div class="grid2">
-      <div class="field"><label>Cilindro (cm)</label><input id="cCil" type="number" step="0.01" placeholder="Ex.: 45"></div>
-      <div class="field"><label>Bobina (cm)</label><input id="cBob" type="number" step="0.01" placeholder="Ex.: 47"></div>
-      <div class="field"><label>Quantidade de cores</label><select id="cCores"><option selected>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></div>
-      <div class="field"><label>Valor-base por cm² (R$)</label><input id="cValor" type="number" step="0.01" value="0.23"></div>
-      <div class="field"><label>Desconto</label><select id="cDesconto"><option value="0" selected>Sem desconto</option><option value="10">10%</option><option value="15">15%</option><option value="20">20%</option><option value="25">25%</option><option value="30">30%</option></select></div>
+
+  <section class="panel">
+
+    <div class="panel-head">
+
+      <h2>
+        🧮 Calculadora de Clichê
+      </h2>
+
+      <span>
+        Uso comercial
+      </span>
+
     </div>
-    <div class="formula"><b>Fórmula:</b> (Cilindro + 10 cm) × (Bobina + 10 cm) × cores × valor-base por cm². O desconto é aplicado sobre o valor previsto.</div>
-    <div class="toolbar"><button class="btn red" onclick="calcCliche()">Calcular</button><button class="btn green" onclick="copyCliche()">Copiar valor</button><button class="btn navy" onclick="useCliche()">Usar no orçamento</button></div>
-  </div></section>
-  <section class="cliche-result">
-    <div class="label">VALOR FINAL DO CLICHÊ</div><div id="cTotal" class="cliche-total">R$ 0,00</div>
-    <div class="detail-list">
-      <div class="detail-row"><span>Cilindro informado</span><span class="dots"></span><span id="dCil">0 cm</span></div>
-      <div class="detail-row"><span>Cilindro + margem</span><span class="dots"></span><span id="dCilM">10 cm</span></div>
-      <div class="detail-row"><span>Bobina informada</span><span class="dots"></span><span id="dBob">0 cm</span></div>
-      <div class="detail-row"><span>Bobina + margem</span><span class="dots"></span><span id="dBobM">10 cm</span></div>
-      <div class="detail-row"><span>Área total</span><span class="dots"></span><span id="dArea">0 cm²</span></div>
-      <div class="detail-row"><span>Valor-base por cm²</span><span class="dots"></span><span id="dBase">R$ 0,23/cm²</span></div>
-      <div class="detail-row"><span>Valor previsto</span><span class="dots"></span><span id="dPrevisto">R$ 0,00</span></div>
-      <div class="detail-row"><span>Desconto</span><span class="dots"></span><span id="dDesc">0%</span></div>
-      <div class="detail-row"><span>Economia</span><span class="dots"></span><span id="dEconomia">R$ 0,00</span></div>
+
+    <div class="panel-body">
+
+      <div class="grid2">
+
+        <div class="field">
+
+          <label>
+            Cilindro (cm)
+          </label>
+
+          <input
+            id="cCil"
+            type="number"
+            step="0.01"
+            placeholder="Ex.: 45"
+          >
+
+        </div>
+
+        <div class="field">
+
+          <label>
+            Bobina (cm)
+          </label>
+
+          <input
+            id="cBob"
+            type="number"
+            step="0.01"
+            placeholder="Ex.: 47"
+          >
+
+        </div>
+
+        <div class="field">
+
+          <label>
+            Quantidade de cores
+          </label>
+
+          <select id="cCores">
+            <option selected>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+            <option>6</option>
+            <option>7</option>
+            <option>8</option>
+          </select>
+
+        </div>
+
+        <div class="field">
+
+          <label>
+            Valor-base por cm² (R$)
+          </label>
+
+          <input
+            id="cValor"
+            type="number"
+            step="0.01"
+            value="0.23"
+          >
+
+        </div>
+
+        <div class="field">
+
+          <label>
+            Desconto
+          </label>
+
+          <select id="cDesconto">
+
+            <option
+              value="0"
+              selected
+            >
+              Sem desconto
+            </option>
+
+            <option value="10">
+              10%
+            </option>
+
+            <option value="15">
+              15%
+            </option>
+
+            <option value="20">
+              20%
+            </option>
+
+            <option value="25">
+              25%
+            </option>
+
+            <option value="30">
+              30%
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+      <div class="formula">
+
+        <b>Fórmula:</b>
+
+        (Cilindro + 10 cm) × (Bobina + 10 cm) × cores ×
+        valor-base por cm².
+
+        O desconto é aplicado sobre o valor previsto.
+
+      </div>
+
+
+      <div class="toolbar">
+
+        <button
+          class="btn red"
+          onclick="calcCliche()"
+        >
+          Calcular
+        </button>
+
+        <button
+          class="btn green"
+          onclick="copyCliche()"
+        >
+          Copiar valor
+        </button>
+
+        <button
+          class="btn navy"
+          onclick="useCliche()"
+        >
+          Usar no orçamento
+        </button>
+
+      </div>
+
     </div>
+
   </section>
+
+
+  <section class="cliche-result">
+
+    <div class="label">
+      VALOR FINAL DO CLICHÊ
+    </div>
+
+    <div
+      id="cTotal"
+      class="cliche-total"
+    >
+      R$ 0,00
+    </div>
+
+
+    <div class="detail-list">
+
+      <div class="detail-row">
+        <span>Cilindro informado</span>
+        <span class="dots"></span>
+        <span id="dCil">0 cm</span>
+      </div>
+
+      <div class="detail-row">
+        <span>Cilindro + margem</span>
+        <span class="dots"></span>
+        <span id="dCilM">10 cm</span>
+      </div>
+
+      <div class="detail-row">
+        <span>Bobina informada</span>
+        <span class="dots"></span>
+        <span id="dBob">0 cm</span>
+      </div>
+
+      <div class="detail-row">
+        <span>Bobina + margem</span>
+        <span class="dots"></span>
+        <span id="dBobM">10 cm</span>
+      </div>
+
+      <div class="detail-row">
+        <span>Área total</span>
+        <span class="dots"></span>
+        <span id="dArea">0 cm²</span>
+      </div>
+
+      <div class="detail-row">
+        <span>Valor-base por cm²</span>
+        <span class="dots"></span>
+        <span id="dBase">R$ 0,23/cm²</span>
+      </div>
+
+      <div class="detail-row">
+        <span>Valor previsto</span>
+        <span class="dots"></span>
+        <span id="dPrevisto">R$ 0,00</span>
+      </div>
+
+      <div class="detail-row">
+        <span>Desconto</span>
+        <span class="dots"></span>
+        <span id="dDesc">0%</span>
+      </div>
+
+      <div class="detail-row">
+        <span>Economia</span>
+        <span class="dots"></span>
+        <span id="dEconomia">R$ 0,00</span>
+      </div>
+
+    </div>
+
+  </section>
+
 </div>
+
 </section>
 
 
+<!-- ======================================================
+     ## 8. CONSULTA DE MEDIDAS
+     ====================================================== -->
 <section id="medidasPage" class="page">
+
 <div class="two-col">
+
   <section class="panel">
-    <div class="panel-head"><h2>📏 Consulta de Medidas</h2><span>Validação automática, kg e unidades mínimas</span></div>
+
+    <div class="panel-head">
+
+      <h2>
+        📏 Consulta de Medidas
+      </h2>
+
+      <span>
+        Validação automática, kg e unidades mínimas
+      </span>
+
+    </div>
+
     <div class="panel-body">
+
       <div class="grid2">
-        <div class="field"><label>Categoria / Modelo</label>
+
+        <div class="field">
+
+          <label>
+            Categoria / Modelo
+          </label>
+
           <select id="mCategoria">
-            <option value="sacola_vazada" selected>Sacola Vazada</option>
-            <option value="envelope_seguranca_coex">Envelope de Segurança (COEX)</option>
-            <option value="envelope_sacola_coex">Envelope Sacola (COEX)</option>
-            <option value="envelope_platinum_termica_pp">Envelope Platinum Térmica 0,013 (PP)</option>
-            <option value="metalizado_pizza_lanche">Envelope Metalizado — Pizza e Lanche</option>
-            <option value="metalizado_espetinho">Envelope Metalizado — Espetinho</option>
-            <option value="metalizado_congelado">Envelope Metalizado — Congelado</option>
-            <option value="sacola_metalizada_platinum_pp">Sacola Metalizada Platinum 0,013 (PP)</option>
+
+            <option
+              value="sacola_vazada"
+              selected
+            >
+              Sacola Vazada
+            </option>
+
+            <option value="envelope_seguranca_coex">
+              Envelope de Segurança (COEX)
+            </option>
+
+            <option value="envelope_sacola_coex">
+              Envelope Sacola (COEX)
+            </option>
+
+            <option value="envelope_platinum_termica_pp">
+              Envelope Platinum Térmica 0,013 (PP)
+            </option>
+
+            <option value="metalizado_pizza_lanche">
+              Envelope Metalizado — Pizza e Lanche
+            </option>
+
+            <option value="metalizado_espetinho">
+              Envelope Metalizado — Espetinho
+            </option>
+
+            <option value="metalizado_congelado">
+              Envelope Metalizado — Congelado
+            </option>
+
+            <option value="sacola_metalizada_platinum_pp">
+              Sacola Metalizada Platinum 0,013 (PP)
+            </option>
+
           </select>
+
         </div>
-        <div class="field"><label>Regra de densidade / mínimo</label>
+
+
+        <div class="field">
+
+          <label>
+            Regra de densidade / mínimo
+          </label>
+
           <select id="mDensidade">
-            <option value="bd" selected>BD — Baixa Densidade</option>
-            <option value="ad">AD — Alta Densidade</option>
-            <option value="na">Não se aplica / outro material</option>
+
+            <option
+              value="bd"
+              selected
+            >
+              BD — Baixa Densidade
+            </option>
+
+            <option value="ad">
+              AD — Alta Densidade
+            </option>
+
+            <option value="na">
+              Não se aplica / outro material
+            </option>
+
           </select>
+
         </div>
-        <div class="field"><label>Largura desejada do cliente (cm)</label><input id="mLargDesejada" type="number" step="0.01" min="0" placeholder="Ex.: 20"></div>
-        <div class="field"><label>Altura desejada do cliente (cm)</label><input id="mAltDesejada" type="number" step="0.01" min="0" placeholder="Ex.: 30"></div>
-        <div class="field"><label>Espessura indicada pela altura (automática)</label><input id="mEsp" type="text" readonly placeholder="Definida automaticamente pela altura"></div>
-        <div class="field"><label>Aba de catálogo / referência</label><input id="mAba" type="text" readonly placeholder="Quando houver"></div>
-        <div class="field"><label>Cilindro indicado (automático)</label><input id="mCil" type="text" readonly placeholder="Preenchido automaticamente"></div>
-        <div class="field"><label>Bobina indicada — altura × 2 (cm)</label><input id="mBob" type="text" readonly placeholder="Preenchido automaticamente"></div>
+
+
+        <div class="field">
+
+          <label>
+            Largura desejada do cliente (cm)
+          </label>
+
+          <input
+            id="mLargDesejada"
+            type="number"
+            step="0.01"
+            min="0"
+            placeholder="Ex.: 20"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Altura desejada do cliente (cm)
+          </label>
+
+          <input
+            id="mAltDesejada"
+            type="number"
+            step="0.01"
+            min="0"
+            placeholder="Ex.: 30"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Espessura indicada pela altura (automática)
+          </label>
+
+          <input
+            id="mEsp"
+            type="text"
+            readonly
+            placeholder="Definida automaticamente pela altura"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Aba de catálogo / referência
+          </label>
+
+          <input
+            id="mAba"
+            type="text"
+            readonly
+            placeholder="Quando houver"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Cilindro indicado (automático)
+          </label>
+
+          <input
+            id="mCil"
+            type="text"
+            readonly
+            placeholder="Preenchido automaticamente"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Bobina indicada — altura × 2 (cm)
+          </label>
+
+          <input
+            id="mBob"
+            type="text"
+            readonly
+            placeholder="Preenchido automaticamente"
+          >
+
+        </div>
+
       </div>
+
 
       <div class="measure-toolbar">
-        <button class="btn red" type="button" onclick="calcMedidas()">Calcular</button>
-        <button class="btn light" type="button" onclick="clearMedidas()">Limpar</button>
-        <div class="measure-alert">⚠ ATENÇÃO: Alta Densidade (AD) sempre 200 kg — Baixa Densidade (BD) 100 kg quando a medida estiver dentro do padrão.</div>
+
+        <button
+          class="btn red"
+          type="button"
+          onclick="calcMedidas()"
+        >
+          Calcular
+        </button>
+
+        <button
+          class="btn light"
+          type="button"
+          onclick="clearMedidas()"
+        >
+          Limpar
+        </button>
+
+        <div class="measure-alert">
+          ⚠ ATENÇÃO: Alta Densidade (AD) sempre 200 kg —
+          Baixa Densidade (BD) 100 kg quando a medida estiver
+          dentro do padrão.
+        </div>
+
       </div>
+
 
       <div class="info">
-        <b>Regra de produção:</b> primeiro o sistema procura um cilindro igual à largura. Se não existir, testa <b>largura × 2</b>. A bobina segue sempre <b>altura × 2</b>. A espessura é determinada automaticamente pela altura conforme as medidas padrão cadastradas do modelo. Se a largura não for produzível ou a altura não possuir espessura padrão, a medida passa para <b>200 kg</b>.
+
+        <b>
+          Regra de produção:
+        </b>
+
+        primeiro o sistema procura um cilindro igual à largura.
+        Se não existir, testa <b>largura × 2</b>.
+
+        A bobina segue sempre <b>altura × 2</b>.
+
+        A espessura é determinada automaticamente pela altura
+        conforme as medidas padrão cadastradas do modelo.
+
+        Se a largura não for produzível ou a altura não possuir
+        espessura padrão, a medida passa para <b>200 kg</b>.
+
       </div>
 
-      <div class="section-title" id="catalogTitle">Medidas de catálogo — Sacola Vazada</div>
-      <div class="table-wrap"><table class="editor" style="min-width:760px"><thead><tr><th>Largura</th><th>Altura</th><th>Aba</th><th>Espessura</th><th>Pedido padrão</th><th></th></tr></thead><tbody id="catalogBody"></tbody></table></div>
-      <div class="info" style="margin-top:10px">As medidas acima são as medidas oficiais de catálogo. Uma medida fora da lista ainda pode continuar <b>padrão de produção</b> quando largura/cilindro e altura/espessura respeitarem as regras cadastradas.</div>
+
+      <div
+        class="section-title"
+        id="catalogTitle"
+      >
+        Medidas de catálogo — Sacola Vazada
+      </div>
+
+
+      <div class="table-wrap">
+
+        <table
+          class="editor"
+          style="min-width:760px"
+        >
+
+          <thead>
+
+            <tr>
+              <th>Largura</th>
+              <th>Altura</th>
+              <th>Aba</th>
+              <th>Espessura</th>
+              <th>Pedido padrão</th>
+              <th></th>
+            </tr>
+
+          </thead>
+
+          <tbody id="catalogBody"></tbody>
+
+        </table>
+
+      </div>
+
+
+      <div
+        class="info"
+        style="margin-top:10px"
+      >
+
+        As medidas acima são as medidas oficiais de catálogo.
+
+        Uma medida fora da lista ainda pode continuar
+        <b>padrão de produção</b> quando largura/cilindro
+        e altura/espessura respeitarem as regras cadastradas.
+
+      </div>
+
     </div>
+
   </section>
+
 
   <section class="panel">
-    <div class="panel-head"><h2>📋 Resultado da Consulta</h2><span>Apoio ao comercial</span></div>
-    <div class="panel-body">
-      <div class="measure-summary">
-        <div class="measure-summary-card">
-          <div class="measure-kicker">Pedido mínimo sugerido</div>
-          <div class="measure-big" id="mPedidoMin">—</div>
-          <div class="measure-sub" id="mPedidoMotivo">Informe a medida para calcular.</div>
-        </div>
-        <div class="measure-summary-card">
-          <div class="measure-kicker">Unidades mínimas + 10%</div>
-          <div class="measure-big" id="mUnidadesMin">—</div>
-          <div class="measure-sub" id="mKgMilheiro">Kg/milheiro: —</div>
-          <div class="measure-sub" id="mUnidadesBase">Unidade mínima base: —</div>
-        </div>
-      </div>
 
-      <div class="measure-status-grid" aria-label="Classificação da medida">
-        <div class="measure-status-pill catalogo" id="statusCatalogo">⭐ MEDIDA DE CATÁLOGO</div>
-        <div class="measure-status-pill padrao" id="statusPadrao">✅ PRODUZÍVEL PADRÃO</div>
-        <div class="measure-status-pill nao-padrao" id="statusNaoPadrao">⚠ NÃO PADRÃO</div>
-      </div>
+    <div class="panel-head">
 
-      <div class="measure-reason-box" id="mMotivos200" style="display:none"></div>
-      <div class="measure-suggestion-box" id="mSugestaoComercial" style="display:none"></div>
+      <h2>
+        📋 Resultado da Consulta
+      </h2>
 
-      <div class="cliche-result" style="text-align:left">
-        <div class="detail-list" style="margin-top:0">
-          <div class="detail-row"><span>Categoria</span><span class="dots"></span><span id="rCategoria">Sacola Vazada</span></div>
-          <div class="detail-row"><span>Medida solicitada</span><span class="dots"></span><span id="rSolicitada">—</span></div>
-          <div class="detail-row"><span>Espessura automática</span><span class="dots"></span><span id="rEsp">—</span></div>
-          <div class="detail-row"><span>Regra altura → espessura</span><span class="dots"></span><span id="rEspStatus">—</span></div>
-          <div class="detail-row"><span>Cilindro indicado</span><span class="dots"></span><span id="rCil">—</span></div>
-          <div class="detail-row"><span>Regra do cilindro</span><span class="dots"></span><span id="rBateu">—</span></div>
-          <div class="detail-row"><span>Largura próxima disponível</span><span class="dots"></span><span id="rSugestao">—</span></div>
-          <div class="detail-row"><span>Bobina (altura × 2)</span><span class="dots"></span><span id="rBob">—</span></div>
-          <div class="detail-row"><span>Aba</span><span class="dots"></span><span id="rAba">—</span></div>
-          <div class="detail-row"><span>Medida de produção</span><span class="dots"></span><span id="rResultante">—</span></div>
-          <div class="detail-row"><span>Medida de catálogo?</span><span class="dots"></span><span id="rCatalogo">—</span></div>
-          <div class="detail-row"><span>Status da medida</span><span class="dots"></span><span id="rStatus">Informe a medida</span></div>
-          <div class="detail-row"><span>Kg/milheiro</span><span class="dots"></span><span id="rKgMilheiro">—</span></div>
-          <div class="detail-row"><span>Cálculo das unidades mínimas</span><span class="dots"></span><span id="rCalcUnidades">—</span></div>
-        </div>
-      </div>
+      <span>
+        Apoio ao comercial
+      </span>
 
-      <div class="section-title">Quadro de cilindros disponíveis</div>
-      <div class="table-wrap"><table class="editor" style="min-width:520px"><thead><tr><th>Cilindro (cm)</th><th>Pode atender diretamente</th><th>Pode atender batendo 2x</th></tr></thead><tbody>
-        <tr><td><b>32</b></td><td>32 cm</td><td>16 cm</td></tr>
-        <tr><td><b>35</b></td><td>35 cm</td><td>17,5 cm</td></tr>
-        <tr><td><b>40</b></td><td>40 cm</td><td>20 cm</td></tr>
-        <tr><td><b>45</b></td><td>45 cm</td><td>22,5 cm</td></tr>
-        <tr><td><b>49</b></td><td>49 cm</td><td>24,5 cm</td></tr>
-        <tr><td><b>52</b></td><td>52 cm</td><td>26 cm</td></tr>
-        <tr><td><b>56</b></td><td>56 cm</td><td>28 cm</td></tr>
-        <tr><td><b>62</b></td><td>62 cm</td><td>31 cm</td></tr>
-      </tbody></table></div>
-
-      <div class="section-title" id="espTitle">Regra de altura × espessura</div>
-      <div class="table-wrap"><table class="editor" style="min-width:460px"><thead><tr><th>Altura (cm)</th><th>Espessura automática</th></tr></thead><tbody id="espBody"></tbody></table></div>
-      <div class="info" id="mObservacao">Informe largura e altura para consultar.</div>
-      <div class="measure-calc-box" id="mContaUnidades"><b>Conta das unidades:</b> informe uma medida para calcular.</div>
-      <div class="info"><b>Fórmula comercial:</b> Kg/milheiro = largura × altura de cálculo × espessura. Em modelos com aba, a altura de cálculo = altura + (aba ÷ 2). Unidade mínima base = (kg mínimos ÷ kg/milheiro) × 1.000. O acréscimo de <b>10%</b> é aplicado sobre o valor exato da unidade mínima base.</div>
     </div>
+
+    <div class="panel-body">
+
+
+      <div class="measure-summary">
+
+        <div class="measure-summary-card">
+
+          <div class="measure-kicker">
+            Pedido mínimo sugerido
+          </div>
+
+          <div
+            class="measure-big"
+            id="mPedidoMin"
+          >
+            —
+          </div>
+
+          <div
+            class="measure-sub"
+            id="mPedidoMotivo"
+          >
+            Informe a medida para calcular.
+          </div>
+
+        </div>
+
+
+        <div class="measure-summary-card">
+
+          <div class="measure-kicker">
+            Unidades mínimas + 10%
+          </div>
+
+          <div
+            class="measure-big"
+            id="mUnidadesMin"
+          >
+            —
+          </div>
+
+          <div
+            class="measure-sub"
+            id="mKgMilheiro"
+          >
+            Kg/milheiro: —
+          </div>
+
+          <div
+            class="measure-sub"
+            id="mUnidadesBase"
+          >
+            Unidade mínima base: —
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="measure-status-grid"
+        aria-label="Classificação da medida"
+      >
+
+        <div
+          class="measure-status-pill catalogo"
+          id="statusCatalogo"
+        >
+          ⭐ MEDIDA DE CATÁLOGO
+        </div>
+
+        <div
+          class="measure-status-pill padrao"
+          id="statusPadrao"
+        >
+          ✅ PRODUZÍVEL PADRÃO
+        </div>
+
+        <div
+          class="measure-status-pill nao-padrao"
+          id="statusNaoPadrao"
+        >
+          ⚠ NÃO PADRÃO
+        </div>
+
+      </div>
+
+
+      <div
+        class="measure-reason-box"
+        id="mMotivos200"
+        style="display:none"
+      ></div>
+
+
+      <div
+        class="measure-suggestion-box"
+        id="mSugestaoComercial"
+        style="display:none"
+      ></div>
+
+
+      <div
+        class="cliche-result"
+        style="text-align:left"
+      >
+
+        <div
+          class="detail-list"
+          style="margin-top:0"
+        >
+
+          <div class="detail-row">
+            <span>Categoria</span>
+            <span class="dots"></span>
+            <span id="rCategoria">Sacola Vazada</span>
+          </div>
+
+          <div class="detail-row">
+            <span>Medida solicitada</span>
+            <span class="dots"></span>
+            <span id="rSolicitada">—</span>
+          </div>
+
+          <div class="detail-row">
+            <span>Espessura automática</span>
+            <span class="dots"></span>
+            <span id="rEsp">—</span>
+          </div>
+
+          <div class="detail-row">
+            <span>Regra altura → espessura</span>
+            <span class="dots"></span>
+            <span id="rEspStatus">—</span>
+          </div>
+
+          <div class="detail-row">
+            <span>Cilindro indicado</span>
+            <span class="dots"></span>
+            <span id="rCil">—</span>
+          </div>
+
+          <div class="detail-row">
+            <span>Regra do cilindro</span>
+            <span class="dots"></span>
+            <span id="rBateu">—</span>
+          </div>
+
+          <div class="detail-row">
+            <span>Largura próxima disponível</span>
+            <span class="dots"></span>
+            <span id="rSugestao">—</span>
+          </div>
+
+          <div class="detail-row">
+            <span>Bobina (altura × 2)</span>
+            <span class="dots"></span>
+            <span id="rBob">—</span>
+          </div>
+
+          <div class="detail-row">
+            <span>Aba</span>
+            <span class="dots"></span>
+            <span id="rAba">—</span>
+          </div>
+
+          <div class="detail-row">
+            <span>Medida de produção</span>
+            <span class="dots"></span>
+            <span id="rResultante">—</span>
+          </div>
+
+          <div class="detail-row">
+            <span>Medida de catálogo?</span>
+            <span class="dots"></span>
+            <span id="rCatalogo">—</span>
+          </div>
+
+          <div class="detail-row">
+            <span>Status da medida</span>
+            <span class="dots"></span>
+            <span id="rStatus">Informe a medida</span>
+          </div>
+
+          <div class="detail-row">
+            <span>Kg/milheiro</span>
+            <span class="dots"></span>
+            <span id="rKgMilheiro">—</span>
+          </div>
+
+          <div class="detail-row">
+            <span>Cálculo das unidades mínimas</span>
+            <span class="dots"></span>
+            <span id="rCalcUnidades">—</span>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="section-title">
+        Quadro de cilindros disponíveis
+      </div>
+
+
+      <div class="table-wrap">
+
+        <table
+          class="editor"
+          style="min-width:520px"
+        >
+
+          <thead>
+
+            <tr>
+              <th>Cilindro (cm)</th>
+              <th>Pode atender diretamente</th>
+              <th>Pode atender batendo 2x</th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            <tr>
+              <td><b>32</b></td>
+              <td>32 cm</td>
+              <td>16 cm</td>
+            </tr>
+
+            <tr>
+              <td><b>35</b></td>
+              <td>35 cm</td>
+              <td>17,5 cm</td>
+            </tr>
+
+            <tr>
+              <td><b>40</b></td>
+              <td>40 cm</td>
+              <td>20 cm</td>
+            </tr>
+
+            <tr>
+              <td><b>45</b></td>
+              <td>45 cm</td>
+              <td>22,5 cm</td>
+            </tr>
+
+            <tr>
+              <td><b>49</b></td>
+              <td>49 cm</td>
+              <td>24,5 cm</td>
+            </tr>
+
+            <tr>
+              <td><b>52</b></td>
+              <td>52 cm</td>
+              <td>26 cm</td>
+            </tr>
+
+            <tr>
+              <td><b>56</b></td>
+              <td>56 cm</td>
+              <td>28 cm</td>
+            </tr>
+
+            <tr>
+              <td><b>62</b></td>
+              <td>62 cm</td>
+              <td>31 cm</td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+
+      <div
+        class="section-title"
+        id="espTitle"
+      >
+        Regra de altura × espessura
+      </div>
+
+
+      <div class="table-wrap">
+
+        <table
+          class="editor"
+          style="min-width:460px"
+        >
+
+          <thead>
+
+            <tr>
+              <th>Altura (cm)</th>
+              <th>Espessura automática</th>
+            </tr>
+
+          </thead>
+
+          <tbody id="espBody"></tbody>
+
+        </table>
+
+      </div>
+
+
+      <div
+        class="info"
+        id="mObservacao"
+      >
+        Informe largura e altura para consultar.
+      </div>
+
+
+      <div
+        class="measure-calc-box"
+        id="mContaUnidades"
+      >
+        <b>Conta das unidades:</b>
+        informe uma medida para calcular.
+      </div>
+
+
+      <div class="info">
+
+        <b>Fórmula comercial:</b>
+
+        Kg/milheiro = largura × altura de cálculo × espessura.
+
+        Em modelos com aba, a altura de cálculo =
+        altura + (aba ÷ 2).
+
+        Unidade mínima base =
+        (kg mínimos ÷ kg/milheiro) × 1.000.
+
+        O acréscimo de <b>10%</b> é aplicado sobre
+        o valor exato da unidade mínima base.
+
+      </div>
+
+    </div>
+
   </section>
+
 </div>
+
 </section>
 
-<section id="fatorPage" class="page"><section class="panel"><div class="panel-head"><h2>📈 Fator Indicado</h2><span>Em desenvolvimento</span></div><div class="dev"><div class="big">🚧</div><h2>Módulo reservado</h2><p>Espaço preparado para a futura lógica de matéria-prima, impostos, estado, pedido mínimo e recomendação de fator.</p></div></section></section>
-</main>
-<div id="toast" class="toast"></div>
 
-<!-- SUPABASE -->
+<!-- ======================================================
+     ## 9. FATOR INDICADO
+     ====================================================== -->
+<section
+  id="fatorPage"
+  class="page"
+>
+
+  <section class="panel">
+
+    <div class="panel-head">
+
+      <h2>
+        📈 Fator Indicado
+      </h2>
+
+      <span>
+        Em desenvolvimento
+      </span>
+
+    </div>
+
+    <div class="dev">
+
+      <div class="big">
+        🚧
+      </div>
+
+      <h2>
+        Módulo reservado
+      </h2>
+
+      <p>
+        Espaço preparado para a futura lógica de matéria-prima,
+        impostos, estado, pedido mínimo e recomendação de fator.
+      </p>
+
+    </div>
+
+  </section>
+
+</section>
+
+</main>
+
+
+<!-- ======================================================
+     ## 10. COMPONENTES GLOBAIS DE INTERFACE
+     ====================================================== -->
+
+<div
+  id="toast"
+  class="toast"
+></div>
+
+
+<!-- ======================================================
+     ## 11. SCRIPTS / DEPENDÊNCIAS
+     ====================================================== -->
+
+<!-- ## 11.1 Supabase, configuração e serviços -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="js/config/supabase-config.js"></script>
+
 <script src="js/services/supabase-client.js"></script>
+
 <script src="js/services/auth.service.js"></script>
+
 <script src="js/services/propostas.service.js"></script>
+
 <script src="js/services/cnpj.service.js"></script>
-<script src="js/modules/proposta.js"></script>
+
 <script src="js/ui/auth-ui.js"></script>
 
-<!-- CENTRAL COMERCIAL -->
+
+<!-- ## 11.2 Núcleo e módulos da Central Comercial -->
+
 <script src="js/core/core.js"></script>
+
 <script src="js/modules/proposta.js"></script>
+
 <script src="js/modules/historico.js"></script>
+
 <script src="js/modules/medidas.js"></script>
+
 <script src="js/modules/cliche.js"></script>
+
 <script src="js/core/init.js"></script>
 
 </body>
