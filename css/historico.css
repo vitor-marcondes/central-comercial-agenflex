@@ -3,23 +3,16 @@
    Arquivo: historico.css
 
    Responsabilidade:
-   - Estilizar a página de histórico de propostas
-   - Organizar busca, tabela, badges e estados da listagem
-   - Complementar o styles.css apenas com regras específicas
-     do módulo de histórico
-
-   Dependências visuais:
-   - css/styles.css
-   - Variáveis globais como --muted
-
-   Observação:
-   Este arquivo deve concentrar apenas estilos próprios
-   do histórico, evitando duplicar regras globais.
+   - Estilizar o histórico
+   - Organizar busca e filtros
+   - Organizar tabela
+   - Diferenciar revisão e status comercial
+   - Exibir origem comercial
    ========================================================= */
 
+
 /* =========================================================
-   ## 1. BARRA DE FERRAMENTAS E BUSCA
-   Layout da área de pesquisa, filtros e contador do histórico.
+   ## 1. BARRA DE BUSCA E FILTROS
    ========================================================= */
 
 .history-toolbar {
@@ -30,13 +23,28 @@
   margin-bottom: 16px;
 }
 
+
 .history-search {
-  flex: 1 1 380px;
+  flex: 1 1 300px;
+  min-width: 260px;
 }
+
 
 .history-search input {
   width: 100%;
 }
+
+
+.history-filter {
+  flex: 0 1 190px;
+  min-width: 170px;
+}
+
+
+.history-filter select {
+  width: 100%;
+}
+
 
 .history-count {
   font-size: 12px;
@@ -45,59 +53,188 @@
   padding: 10px 0;
 }
 
+
 /* =========================================================
-   ## 2. TABELA DO HISTÓRICO
-   Estrutura visual da tabela, textos auxiliares e alinhamentos.
+   ## 2. TABELA
    ========================================================= */
 
 .history-table {
-  min-width: 980px;
+  min-width: 1080px;
 }
+
+
+.history-table th {
+  white-space: nowrap;
+}
+
 
 .history-table td {
   vertical-align: middle;
 }
 
+
 .history-muted {
   margin-top: 4px;
   color: var(--muted);
   font-size: 12px;
+  line-height: 1.35;
 }
 
+
 /* =========================================================
-   ## 3. BADGES DE STATUS
-   Indicadores visuais para rascunhos, propostas enviadas e estados.
+   ## 3. ORIGEM COMERCIAL
+   ========================================================= */
+
+.history-origin-wrap {
+  margin-top: 7px;
+}
+
+
+.history-origin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 4px 8px;
+
+  border-radius: 999px;
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .4px;
+
+  white-space: nowrap;
+
+  background: #eef2f7;
+  color: #475569;
+}
+
+
+.history-origin.leads_mkt {
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+
+.history-origin.prospeccao {
+  background: #eaf4ff;
+  color: #145da0;
+}
+
+
+.history-origin.gestao_carteira {
+  background: #f1ecff;
+  color: #6842a8;
+}
+
+
+.history-origin.sem-origem {
+  background: #f1f3f5;
+  color: #6b7280;
+}
+
+
+/* =========================================================
+   ## 4. REVISÃO
+   ========================================================= */
+
+.history-revision {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+
+.history-revision > b {
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   ## 5. BADGES
    ========================================================= */
 
 .history-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   min-width: 82px;
+
   padding: 6px 9px;
+
   border-radius: 999px;
+
   font-size: 10px;
   font-weight: 900;
   letter-spacing: .4px;
+
+  white-space: nowrap;
 }
+
+
+/* =========================================================
+   ## 6. STATUS DA REVISÃO
+   ========================================================= */
 
 .history-badge.rascunho {
   background: #fff4d6;
   color: #7a5200;
 }
 
+
 .history-badge.enviada {
   background: #e7f6ec;
   color: #146c2e;
 }
 
-.history-open {
-  padding: 7px 11px;
-}
 
 /* =========================================================
-   ## 4. AÇÕES E ESTADOS DA LISTAGEM
-   Botão de abertura, carregamento e estado sem resultados.
+   ## 7. STATUS COMERCIAL
+   ========================================================= */
+
+.history-badge.commercial {
+  min-width: 110px;
+}
+
+
+.history-badge.commercial.proposta {
+  background: #edf2f7;
+  color: #334155;
+}
+
+
+.history-badge.commercial.andamento {
+  background: #e8f2ff;
+  color: #155fa0;
+}
+
+
+.history-badge.commercial.concluido {
+  background: #e7f6ec;
+  color: #146c2e;
+}
+
+
+.history-badge.commercial.nao_conquistado {
+  background: #fdebec;
+  color: #a61b29;
+}
+
+
+/* =========================================================
+   ## 8. AÇÕES
+   ========================================================= */
+
+.history-open {
+  padding: 7px 11px;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   ## 9. ESTADOS DA LISTAGEM
    ========================================================= */
 
 .history-loading,
@@ -107,13 +244,56 @@
   color: var(--muted);
 }
 
+
 #historicoVazio {
   display: none;
+
   margin-top: 14px;
   padding: 22px;
+
   border: 1px dashed #cfd6df;
   border-radius: 12px;
+
   text-align: center;
+
   color: var(--muted);
+
   background: #f8fafc;
+}
+
+
+/* =========================================================
+   ## 10. RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+  .history-filter {
+    flex: 1 1 180px;
+  }
+
+}
+
+
+@media (max-width: 900px) {
+
+  .history-toolbar {
+    align-items: stretch;
+  }
+
+
+  .history-search {
+    flex-basis: 100%;
+  }
+
+
+  .history-filter {
+    flex-basis: calc(50% - 6px);
+  }
+
+
+  .history-table {
+    min-width: 1040px;
+  }
+
 }

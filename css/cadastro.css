@@ -1,0 +1,124 @@
+/* =========================================================
+   CENTRAL COMERCIAL AGENFLEX
+   Arquivo: cadastro.css
+
+   Responsabilidade:
+   - Interface de criação de conta
+   - Ações complementares da tela de login
+   ========================================================= */
+
+
+/* =========================================================
+   ## 1. AÇÃO "CRIAR CONTA"
+   ========================================================= */
+
+.cadastro-login-actions {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.cadastro-link-btn {
+  margin-left: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-weight: 900;
+  color: #e30613;
+  cursor: pointer;
+}
+
+.cadastro-link-btn:hover {
+  text-decoration: underline;
+}
+
+
+/* =========================================================
+   ## 2. ÁREA DE CADASTRO
+   ========================================================= */
+
+.cadastro-conta-area {
+  margin-top: 18px;
+}
+
+.cadastro-conta-area[hidden] {
+  display: none !important;
+}
+
+.cadastro-head {
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+.cadastro-head h2 {
+  margin: 0 0 6px;
+  font-size: 20px;
+  color: #0f172a;
+}
+
+.cadastro-head p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #64748b;
+}
+
+.cadastro-conta-area .field {
+  margin-bottom: 14px;
+}
+
+
+/* =========================================================
+   ## 3. VOLTAR AO LOGIN
+   ========================================================= */
+
+.cadastro-voltar-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 9px 12px;
+  border: 0;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 900;
+  color: #475569;
+  cursor: pointer;
+}
+
+.cadastro-voltar-btn:hover {
+  color: #0f172a;
+}
+
+
+/* =========================================================
+   ## 4. MENSAGENS
+   ========================================================= */
+
+.cadastro-message {
+  min-height: 18px;
+  margin-top: 12px;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.45;
+  text-align: center;
+  color: #64748b;
+}
+
+.cadastro-message.sucesso {
+  padding: 10px;
+  border: 1px solid #cde8d5;
+  border-radius: 9px;
+  background: #f1faf4;
+  color: #146c2e;
+}
+
+.cadastro-message.erro {
+  padding: 10px;
+  border: 1px solid #f2d7da;
+  border-radius: 9px;
+  background: #fff5f5;
+  color: #a61b29;
+}

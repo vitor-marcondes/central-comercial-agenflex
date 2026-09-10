@@ -4,26 +4,27 @@
 //
 // Responsabilidade:
 // - Carregar propostas salvas no Supabase
-// - Filtrar propostas pelo campo de busca
+// - Pesquisar propostas por dados de identificação
+// - Filtrar propostas por origem
+// - Filtrar propostas por status comercial
+// - Filtrar propostas por status da revisão
+// - Identificar a revisão atual
 // - Renderizar a tabela do histórico
-// - Exibir o status da revisão atual
-// - Abrir uma proposta existente no formulário
+// - Abrir propostas existentes
 //
-// Dependências:
-// - js/core/core.js
-// - js/services/propostas.service.js
-// - js/modules/proposta.js
-// - Elementos da página de histórico no index.html
+// IMPORTANTE:
 //
-// Segurança:
-// - Este módulo apenas solicita as propostas
-// - O RLS do Supabase define quais registros o usuário
-//   realmente pode visualizar
+// Busca livre:
+// → número
+// → nome da proposta
+// → cliente
+// → CNPJ
+// → vendedor
 //
-// Observação:
-// ADM visualiza todas as propostas permitidas pelo RLS.
-// Vendedor visualiza somente as propostas permitidas
-// pelas políticas configuradas no banco.
+// Filtros:
+// → origem comercial
+// → status comercial
+// → status da revisão
 // =========================================================
 
 
@@ -31,11 +32,8 @@
 // ## 1. ESTADO DO HISTÓRICO
 // =========================================================
 
-// Lista carregada do Supabase.
 let historicoPropostas = [];
 
-
-// Evita múltiplos carregamentos simultâneos.
 let historicoCarregando = false;
 
 
@@ -45,10 +43,12 @@ let historicoCarregando = false;
 
 
 // ---------------------------------------------------------
-// ## 2.1 Escape de conteúdo HTML
+// ## 2.1 Escape HTML
 // ---------------------------------------------------------
 
-function escaparHistorico(valor) {
+function escaparHistorico(
+  valor
+) {
 
   return esc(
     valor ?? ''
@@ -60,7 +60,9 @@ function escaparHistorico(valor) {
 // ## 2.2 Formatação de data
 // ---------------------------------------------------------
 
-function formatarDataHistorico(valor) {
+function formatarDataHistorico(
+  valor
+) {
 
   if (!valor) {
 
@@ -80,7 +82,7 @@ function formatarDataHistorico(valor) {
 
 
 // ---------------------------------------------------------
-// ## 2.3 Identificação da revisão atual
+// ## 2.3 Revisão atual
 // ---------------------------------------------------------
 
 function revisaoAtualDaLista(
@@ -123,17 +125,73 @@ function revisaoAtualDaLista(
     ||
 
     null
+
   );
 }
 
 
+// ---------------------------------------------------------
+// ## 2.4 Nome da origem
+// ---------------------------------------------------------
+
+function nomeOrigemHistorico(
+  origem
+) {
+
+  const nomes = {
+
+    leads_mkt:
+      'LEADS - MKT',
+
+    prospeccao:
+      'PROSPECÇÃO',
+
+    gestao_carteira:
+      'GESTÃO DE CARTEIRA'
+  };
+
+
+  return nomes[origem] ||
+    'SEM ORIGEM';
+}
+
+
+// ---------------------------------------------------------
+// ## 2.5 Nome do status comercial
+// ---------------------------------------------------------
+
+function nomeStatusComercialHistorico(
+  status
+) {
+
+  const nomes = {
+
+    proposta:
+      'PROPOSTA',
+
+    andamento:
+      'ANDAMENTO',
+
+    concluido:
+      'CONCLUÍDO',
+
+    nao_conquistado:
+      'NÃO CONQUISTADO'
+  };
+
+
+  return nomes[status] ||
+    'PROPOSTA';
+}
+
+
 // =========================================================
-// ## 3. BUSCA E FILTRO
+// ## 3. BUSCA E FILTROS
 // =========================================================
 
 
 // ---------------------------------------------------------
-// ## 3.1 Normalização do texto de busca
+// ## 3.1 Normalizar texto
 // ---------------------------------------------------------
 
 function normalizarBuscaHistorico(
@@ -152,31 +210,60 @@ function normalizarBuscaHistorico(
     .replace(
       /[\u0300-\u036f]/g,
       ''
-    );
+    )
+    .trim();
 }
 
 
 // ---------------------------------------------------------
-// ## 3.2 Filtragem das propostas
+// ## 3.2 Ler filtros
+// ---------------------------------------------------------
+
+function obterFiltrosHistorico() {
+
+  return {
+
+    busca:
+      normalizarBuscaHistorico(
+        document
+          .getElementById(
+            'historicoBusca'
+          )
+          ?.value
+      ),
+
+    origem:
+      document
+        .getElementById(
+          'historicoFiltroOrigem'
+        )
+        ?.value || '',
+
+    statusComercial:
+      document
+        .getElementById(
+          'historicoFiltroStatusComercial'
+        )
+        ?.value || '',
+
+    statusRevisao:
+      document
+        .getElementById(
+          'historicoFiltroStatusRevisao'
+        )
+        ?.value || ''
+  };
+}
+
+
+// ---------------------------------------------------------
+// ## 3.3 Aplicação da busca e filtros
 // ---------------------------------------------------------
 
 function propostasFiltradasHistorico() {
 
-  const termo =
-    normalizarBuscaHistorico(
-      document
-        .getElementById(
-          'historicoBusca'
-        )
-        ?.value
-    );
-
-
-  if (!termo) {
-
-    return historicoPropostas;
-
-  }
+  const filtros =
+    obterFiltrosHistorico();
 
 
   return historicoPropostas.filter(
@@ -188,30 +275,106 @@ function propostasFiltradasHistorico() {
         );
 
 
-      const texto = [
+      if (!revisao) {
 
-        proposta.numero,
+        return false;
 
-        revisao?.nome_proposta,
-
-        revisao?.cliente,
-
-        revisao?.cnpj,
-
-        revisao?.vendedor_nome,
-
-        revisao?.status,
-
-        revisao?.data_proposta
-
-      ].join(' ');
+      }
 
 
-      return normalizarBuscaHistorico(
-        texto
-      ).includes(
-        termo
-      );
+      // ---------------------------------------------------
+      // Filtro por origem
+      // ---------------------------------------------------
+
+      if (
+        filtros.origem &&
+        proposta.origem_comercial !==
+        filtros.origem
+      ) {
+
+        return false;
+
+      }
+
+
+      // ---------------------------------------------------
+      // Filtro por status comercial
+      // ---------------------------------------------------
+
+      if (
+        filtros.statusComercial &&
+        proposta.status_comercial !==
+        filtros.statusComercial
+      ) {
+
+        return false;
+
+      }
+
+
+      // ---------------------------------------------------
+      // Filtro por status da revisão
+      // ---------------------------------------------------
+
+      if (
+        filtros.statusRevisao &&
+        String(
+          revisao.status || ''
+        ).toLowerCase() !==
+        filtros.statusRevisao
+      ) {
+
+        return false;
+
+      }
+
+
+      // ---------------------------------------------------
+      // Busca textual
+      //
+      // Não inclui:
+      // - origem
+      // - status comercial
+      // - status da revisão
+      //
+      // Esses dados pertencem aos filtros.
+      // ---------------------------------------------------
+
+      if (
+        filtros.busca
+      ) {
+
+        const textoBusca = [
+
+          proposta.numero,
+
+          revisao.nome_proposta,
+
+          revisao.cliente,
+
+          revisao.cnpj,
+
+          revisao.vendedor_nome
+
+        ].join(' ');
+
+
+        if (
+          !normalizarBuscaHistorico(
+            textoBusca
+          ).includes(
+            filtros.busca
+          )
+        ) {
+
+          return false;
+
+        }
+
+      }
+
+
+      return true;
 
     }
   );
@@ -219,22 +382,27 @@ function propostasFiltradasHistorico() {
 
 
 // =========================================================
-// ## 4. BADGE DE STATUS
+// ## 4. BADGES
 // =========================================================
 
-function badgeHistorico(
+
+// ---------------------------------------------------------
+// ## 4.1 Status da revisão
+// ---------------------------------------------------------
+
+function badgeRevisaoHistorico(
   status
 ) {
 
-  const statusNormalizado =
+  const normalizado =
     String(
       status || 'rascunho'
-    )
-      .toLowerCase();
+    ).toLowerCase();
 
 
   if (
-    statusNormalizado === 'enviada'
+    normalizado ===
+    'enviada'
   ) {
 
     return (
@@ -249,6 +417,106 @@ function badgeHistorico(
   return (
     '<span class="history-badge rascunho">' +
     'RASCUNHO' +
+    '</span>'
+  );
+}
+
+
+// ---------------------------------------------------------
+// ## 4.2 Status comercial
+// ---------------------------------------------------------
+
+function badgeStatusComercialHistorico(
+  status
+) {
+
+  const normalizado =
+    String(
+      status || 'proposta'
+    ).toLowerCase();
+
+
+  const nomes = {
+
+    proposta:
+      'PROPOSTA',
+
+    andamento:
+      'ANDAMENTO',
+
+    concluido:
+      'CONCLUÍDO',
+
+    nao_conquistado:
+      'NÃO CONQUISTADO'
+  };
+
+
+  const permitidos = [
+
+    'proposta',
+
+    'andamento',
+
+    'concluido',
+
+    'nao_conquistado'
+  ];
+
+
+  const classe =
+    permitidos.includes(
+      normalizado
+    )
+      ? normalizado
+      : 'proposta';
+
+
+  return (
+    `<span class="history-badge commercial ${classe}">` +
+    escaparHistorico(
+      nomes[normalizado] ||
+      'PROPOSTA'
+    ) +
+    '</span>'
+  );
+}
+
+
+// ---------------------------------------------------------
+// ## 4.3 Origem comercial
+// ---------------------------------------------------------
+
+function badgeOrigemHistorico(
+  origem
+) {
+
+  if (!origem) {
+
+    return (
+      '<span class="history-origin sem-origem">' +
+      'SEM ORIGEM' +
+      '</span>'
+    );
+
+  }
+
+
+  const classe =
+    String(origem)
+      .replace(
+        /[^a-z0-9_-]/gi,
+        ''
+      );
+
+
+  return (
+    `<span class="history-origin ${classe}">` +
+    escaparHistorico(
+      nomeOrigemHistorico(
+        origem
+      )
+    ) +
     '</span>'
   );
 }
@@ -293,14 +561,35 @@ function renderizarHistorico() {
     '';
 
 
-  contador.textContent =
-    `${lista.length} proposta(s)`;
+  if (contador) {
+
+    if (
+      lista.length ===
+      historicoPropostas.length
+    ) {
+
+      contador.textContent =
+        `${lista.length} proposta(s)`;
+
+    } else {
+
+      contador.textContent =
+        `${lista.length} de ` +
+        `${historicoPropostas.length} proposta(s)`;
+
+    }
+
+  }
 
 
-  vazio.style.display =
-    lista.length
-      ? 'none'
-      : 'block';
+  if (vazio) {
+
+    vazio.style.display =
+      lista.length
+        ? 'none'
+        : 'block';
+
+  }
 
 
   lista.forEach(
@@ -326,13 +615,18 @@ function renderizarHistorico() {
 
 
       tr.innerHTML = `
+
         <td>
           <b>
-            #${escaparHistorico(proposta.numero)}
+            #${escaparHistorico(
+              proposta.numero
+            )}
           </b>
         </td>
 
+
         <td>
+
           <b>
             ${
               escaparHistorico(
@@ -350,7 +644,17 @@ function renderizarHistorico() {
               )
             }
           </div>
+
+          <div class="history-origin-wrap">
+            ${
+              badgeOrigemHistorico(
+                proposta.origem_comercial
+              )
+            }
+          </div>
+
         </td>
+
 
         <td>
           ${
@@ -361,6 +665,7 @@ function renderizarHistorico() {
           }
         </td>
 
+
         <td>
           ${
             escaparHistorico(
@@ -370,6 +675,7 @@ function renderizarHistorico() {
           }
         </td>
 
+
         <td>
           ${
             formatarDataHistorico(
@@ -378,30 +684,51 @@ function renderizarHistorico() {
           }
         </td>
 
+
         <td>
-          R${
-            escaparHistorico(
-              revisao.numero_revisao
-            )
-          }
+
+          <div class="history-revision">
+
+            <b>
+              R${
+                escaparHistorico(
+                  revisao.numero_revisao
+                )
+              }
+            </b>
+
+            ${
+              badgeRevisaoHistorico(
+                revisao.status
+              )
+            }
+
+          </div>
+
         </td>
+
 
         <td>
           ${
-            badgeHistorico(
-              revisao.status
+            badgeStatusComercialHistorico(
+              proposta.status_comercial
             )
           }
         </td>
 
+
         <td>
+
           <button
             type="button"
             class="btn navy history-open"
-            onclick="abrirPropostaHistorico('${escaparHistorico(proposta.id)}')"
+            onclick="abrirPropostaHistorico('${escaparHistorico(
+              proposta.id
+            )}')"
           >
             Abrir
           </button>
+
         </td>
       `;
 
@@ -416,12 +743,11 @@ function renderizarHistorico() {
 
 
 // =========================================================
-// ## 6. CARREGAMENTO DAS PROPOSTAS
+// ## 6. CARREGAMENTO
 // =========================================================
 
 async function carregarHistorico() {
 
-  // Evita executar duas consultas ao mesmo tempo.
   if (
     historicoCarregando
   ) {
@@ -453,23 +779,18 @@ async function carregarHistorico() {
     true;
 
 
-  // -------------------------------------------------------
-  // ## 6.1 Estado visual de carregamento
-  // -------------------------------------------------------
-
   if (corpo) {
 
-    corpo.innerHTML =
-      `
-        <tr>
-          <td
-            colspan="8"
-            class="history-loading"
-          >
-            Carregando propostas...
-          </td>
-        </tr>
-      `;
+    corpo.innerHTML = `
+      <tr>
+        <td
+          colspan="8"
+          class="history-loading"
+        >
+          Carregando propostas...
+        </td>
+      </tr>
+    `;
 
   }
 
@@ -490,10 +811,6 @@ async function carregarHistorico() {
   }
 
 
-  // -------------------------------------------------------
-  // ## 6.2 Consulta ao Supabase
-  // -------------------------------------------------------
-
   try {
 
     historicoPropostas =
@@ -511,10 +828,6 @@ async function carregarHistorico() {
       erro
     );
 
-
-    // -----------------------------------------------------
-    // ## 6.3 Tratamento de erro
-    // -----------------------------------------------------
 
     if (corpo) {
 
@@ -557,7 +870,7 @@ async function carregarHistorico() {
 
 
 // =========================================================
-// ## 7. ABERTURA DA PÁGINA DE HISTÓRICO
+// ## 7. ABERTURA DO HISTÓRICO
 // =========================================================
 
 async function abrirHistorico(
@@ -573,8 +886,6 @@ async function abrirHistorico(
   await carregarHistorico();
 
 
-  // Após a página carregar, envia o foco
-  // automaticamente para o campo de busca.
   setTimeout(
     () => {
 
@@ -591,7 +902,7 @@ async function abrirHistorico(
 
 
 // =========================================================
-// ## 8. ABERTURA DE UMA PROPOSTA
+// ## 8. ABERTURA DE PROPOSTA
 // =========================================================
 
 async function abrirPropostaHistorico(
@@ -604,8 +915,6 @@ async function abrirPropostaHistorico(
     );
 
 
-  // Bloqueia temporariamente todos os botões Abrir
-  // enquanto a proposta é carregada.
   botoes.forEach(
     botao => {
 
@@ -623,28 +932,16 @@ async function abrirPropostaHistorico(
     );
 
 
-    // -----------------------------------------------------
-    // ## 8.1 Consulta completa da proposta
-    // -----------------------------------------------------
-
     const proposta =
       await obterPropostaCompleta(
         propostaId
       );
 
 
-    // -----------------------------------------------------
-    // ## 8.2 Preenchimento do formulário
-    // -----------------------------------------------------
-
     aplicarPropostaNoFormulario(
       proposta
     );
 
-
-    // -----------------------------------------------------
-    // ## 8.3 Navegação para a proposta
-    // -----------------------------------------------------
 
     showPage(
       'orcamentoPage',
@@ -657,10 +954,6 @@ async function abrirPropostaHistorico(
       behavior: 'smooth'
     });
 
-
-    // -----------------------------------------------------
-    // ## 8.4 Confirmação visual
-    // -----------------------------------------------------
 
     const revisao =
       revisaoAtualDaLista(
@@ -708,37 +1001,84 @@ async function abrirPropostaHistorico(
 
 
 // =========================================================
-// ## 9. LIMPEZA DA BUSCA
+// ## 9. LIMPEZA DOS FILTROS
 // =========================================================
 
-function limparBuscaHistorico() {
+function limparFiltrosHistorico() {
 
-  const campo =
+  const busca =
     document.getElementById(
       'historicoBusca'
     );
 
 
-  if (!campo) {
+  const origem =
+    document.getElementById(
+      'historicoFiltroOrigem'
+    );
 
-    return;
+
+  const statusComercial =
+    document.getElementById(
+      'historicoFiltroStatusComercial'
+    );
+
+
+  const statusRevisao =
+    document.getElementById(
+      'historicoFiltroStatusRevisao'
+    );
+
+
+  if (busca) {
+
+    busca.value =
+      '';
 
   }
 
 
-  campo.value =
-    '';
+  if (origem) {
+
+    origem.value =
+      '';
+
+  }
+
+
+  if (statusComercial) {
+
+    statusComercial.value =
+      '';
+
+  }
+
+
+  if (statusRevisao) {
+
+    statusRevisao.value =
+      '';
+
+  }
 
 
   renderizarHistorico();
 
 
-  campo.focus();
+  busca?.focus();
+}
+
+
+// Mantido por compatibilidade caso exista alguma
+// referência antiga no HTML.
+function limparBuscaHistorico() {
+
+  limparFiltrosHistorico();
 }
 
 
 // =========================================================
-// ## 10. INICIALIZAÇÃO DO HISTÓRICO
+// ## 10. INICIALIZAÇÃO
 // =========================================================
 
 function iniciarHistorico() {
@@ -746,6 +1086,24 @@ function iniciarHistorico() {
   const busca =
     document.getElementById(
       'historicoBusca'
+    );
+
+
+  const origem =
+    document.getElementById(
+      'historicoFiltroOrigem'
+    );
+
+
+  const statusComercial =
+    document.getElementById(
+      'historicoFiltroStatusComercial'
+    );
+
+
+  const statusRevisao =
+    document.getElementById(
+      'historicoFiltroStatusRevisao'
     );
 
 
@@ -757,9 +1115,23 @@ function iniciarHistorico() {
     );
 
   }
+
+
+  [
+    origem,
+    statusComercial,
+    statusRevisao
+  ].forEach(
+    campo => {
+
+      campo?.addEventListener(
+        'change',
+        renderizarHistorico
+      );
+
+    }
+  );
 }
 
 
-// Inicializa os eventos específicos do histórico
-// assim que este módulo é carregado.
 iniciarHistorico();

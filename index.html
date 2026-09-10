@@ -26,6 +26,11 @@
 <title>Agenflex Comercial V6.6</title>
 <link rel="stylesheet" href="css/styles.css">
 <link rel="stylesheet" href="css/historico.css">
+<link rel="stylesheet" href="css/painel.css">
+<link rel="stylesheet" href="css/cadastro.css">
+<link rel="stylesheet" href="css/equipe.css">
+<link rel="stylesheet" href="css/metas.css">
+<link rel="stylesheet" href="css/senha.css">
 </head>
 
 <body class="auth-pending">
@@ -133,6 +138,14 @@
 
       <button
         class="nav-btn"
+        data-page="painelPage"
+        onclick="abrirPainel(this)"
+      >
+        Painel
+      </button>
+
+      <button
+        class="nav-btn"
         data-page="clichePage"
         onclick="showPage('clichePage',this)"
       >
@@ -145,14 +158,6 @@
         onclick="showPage('medidasPage',this)"
       >
         Medidas
-      </button>
-
-      <button
-        class="nav-btn"
-        data-page="fatorPage"
-        onclick="showPage('fatorPage',this)"
-      >
-        Fator Indicado
       </button>
 
     </nav>
@@ -184,13 +189,17 @@
      ====================================================== -->
 <section id="homePage" class="page active">
 
-  <div class="hero">
-    <h2>Central Comercial Agenflex</h2>
-    <p>
-      Um único lugar para criação de propostas, cálculo de clichê
-      e futuras ferramentas de precificação do comercial.
-    </p>
-  </div>
+<div class="hero">
+  <h2>
+    Central Comercial Agenflex
+  </h2>
+
+  <p>
+    Crie propostas, acompanhe negociações,
+    consulte revisões e utilize as ferramentas
+    comerciais da Agenflex em um único lugar.
+  </p>
+</div>
 
   <div class="cards">
 
@@ -233,18 +242,25 @@
       <span class="tag">FUNCIONAL</span>
     </div>
 
-    <div
-      class="tool-card"
-      onclick="go('fatorPage')"
-    >
-      <div class="ico">📈</div>
-      <h3>Fator Indicado</h3>
-      <p>
-        Área reservada para a futura lógica de custos,
-        impostos e fator recomendado.
-      </p>
-      <span class="tag dev">EM DESENVOLVIMENTO</span>
-    </div>
+<div
+  class="tool-card"
+  onclick="abrirHistorico(null)"
+>
+  <div class="ico">📚</div>
+
+  <h3>
+    Histórico
+  </h3>
+
+  <p>
+    Consulte propostas, revisões, origem
+    e andamento comercial.
+  </p>
+
+  <span class="tag">
+    FUNCIONAL
+  </span>
+</div>
 
   </div>
 
@@ -901,20 +917,6 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
 <div class="toolbar">
 
   <button
-    class="btn light"
-    onclick="clearForm()"
-  >
-    Limpar
-  </button>
-
-  <button
-    class="btn navy"
-    onclick="saveDraft()"
-  >
-    💻 Salvar no navegador
-  </button>
-
-  <button
     id="btnSalvarPropostaNuvem"
     class="btn green"
     onclick="salvarPropostaNuvem()"
@@ -951,10 +953,10 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
   </button>
 
   <button
-    class="btn green"
-    onclick="copySummary()"
+    class="btn light"
+    onclick="clearForm()"
   >
-    📋 Copiar resumo
+    Limpar
   </button>
 
 </div>
@@ -1252,40 +1254,112 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
 
     <div class="panel-body">
 
-      <div class="history-toolbar">
+<div class="history-toolbar">
 
-        <div class="field history-search">
+  <div class="field history-search">
+    <label>Pesquisar proposta</label>
 
-          <label>
-            Pesquisar proposta
-          </label>
+    <input
+      id="historicoBusca"
+      type="search"
+      placeholder="Número, proposta, cliente, CNPJ ou vendedor"
+    >
+  </div>
 
-          <input
-            id="historicoBusca"
-            type="search"
-            placeholder="Número, proposta, cliente, CNPJ ou vendedor"
-          >
 
-        </div>
+  <div class="field history-filter">
+    <label>Origem</label>
 
-        <button
-          type="button"
-          class="btn light"
-          onclick="limparBuscaHistorico()"
-        >
-          Limpar busca
-        </button>
+    <select id="historicoFiltroOrigem">
 
-        <button
-          type="button"
-          class="btn navy"
-          onclick="carregarHistorico()"
-        >
-          ↻ Atualizar
-        </button>
+      <option value="">
+        Todas
+      </option>
 
-      </div>
+      <option value="leads_mkt">
+        LEADS - MKT
+      </option>
 
+      <option value="prospeccao">
+        PROSPECÇÃO
+      </option>
+
+      <option value="gestao_carteira">
+        GESTÃO DE CARTEIRA
+      </option>
+
+    </select>
+  </div>
+
+
+  <div class="field history-filter">
+    <label>Status comercial</label>
+
+    <select id="historicoFiltroStatusComercial">
+
+      <option value="">
+        Todos
+      </option>
+
+      <option value="proposta">
+        PROPOSTA
+      </option>
+
+      <option value="andamento">
+        ANDAMENTO
+      </option>
+
+      <option value="concluido">
+        CONCLUÍDO
+      </option>
+
+      <option value="nao_conquistado">
+        NÃO CONQUISTADO
+      </option>
+
+    </select>
+  </div>
+
+
+  <div class="field history-filter">
+    <label>Revisão</label>
+
+    <select id="historicoFiltroStatusRevisao">
+
+      <option value="">
+        Todas
+      </option>
+
+      <option value="rascunho">
+        RASCUNHO
+      </option>
+
+      <option value="enviada">
+        ENVIADA
+      </option>
+
+    </select>
+  </div>
+
+
+  <button
+    type="button"
+    class="btn light"
+    onclick="limparFiltrosHistorico()"
+  >
+    Limpar filtros
+  </button>
+
+
+  <button
+    type="button"
+    class="btn navy"
+    onclick="carregarHistorico()"
+  >
+    ↻ Atualizar
+  </button>
+
+</div>
 
       <div class="table-wrap">
 
@@ -1300,7 +1374,7 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
               <th>Vendedor</th>
               <th>Data</th>
               <th>Revisão</th>
-              <th>Status</th>
+              <th>Status comercial</th>
               <th></th>
             </tr>
 
@@ -1325,11 +1399,266 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
 
 
 <!-- ======================================================
-     ## 7. CALCULADORA DE CLICHÊ
+     ## 7. PAINEL COMERCIAL
+     ====================================================== -->
+
+<section
+  id="painelPage"
+  class="page"
+>
+
+  <section class="panel">
+
+    <div class="panel-head">
+
+      <div>
+        <h2>📊 Painel Comercial</h2>
+        <span>Visão das propostas e negociações</span>
+      </div>
+
+      <span id="painelContador">
+        0 proposta(s)
+      </span>
+
+    </div>
+
+
+    <div class="panel-body">
+
+      <!-- ================================================
+           FILTROS
+           ================================================ -->
+
+      <div class="painel-filtros">
+
+        <div class="field">
+          <label>Origem</label>
+
+          <select id="painelFiltroOrigem">
+
+            <option value="">
+              Todas
+            </option>
+
+            <option value="leads_mkt">
+              LEADS - MKT
+            </option>
+
+            <option value="prospeccao">
+              PROSPECÇÃO
+            </option>
+
+            <option value="gestao_carteira">
+              GESTÃO DE CARTEIRA
+            </option>
+
+          </select>
+        </div>
+
+
+        <div class="field">
+          <label>Status</label>
+
+          <select id="painelFiltroStatus">
+
+            <option value="">
+              Todos
+            </option>
+
+            <option value="proposta">
+              PROPOSTA
+            </option>
+
+            <option value="andamento">
+              ANDAMENTO
+            </option>
+
+            <option value="concluido">
+              CONCLUÍDO
+            </option>
+
+            <option value="nao_conquistado">
+              NÃO CONQUISTADO
+            </option>
+
+          </select>
+        </div>
+
+
+        <div
+          class="field"
+          id="painelFiltroVendedorWrap"
+        >
+          <label>Vendedor</label>
+
+          <select id="painelFiltroVendedor">
+
+            <option value="">
+              Todos
+            </option>
+
+          </select>
+        </div>
+
+
+        <div class="field">
+          <label>Data inicial</label>
+
+          <input
+            id="painelDataInicial"
+            type="date"
+          >
+        </div>
+
+
+        <div class="field">
+          <label>Data final</label>
+
+          <input
+            id="painelDataFinal"
+            type="date"
+          >
+        </div>
+
+
+        <button
+          type="button"
+          class="btn light"
+          onclick="limparFiltrosPainel()"
+        >
+          Limpar filtros
+        </button>
+
+
+        <button
+          type="button"
+          class="btn navy"
+          onclick="carregarPainel()"
+        >
+          ↻ Atualizar
+        </button>
+
+      </div>
+
+
+      <!-- ================================================
+           INDICADORES
+           ================================================ -->
+
+      <div class="painel-cards">
+
+        <div class="painel-card">
+          <span>PROPOSTA</span>
+
+          <strong id="painelQtdProposta">
+            0
+          </strong>
+
+          <small id="painelValorProposta">
+            R$ 0,00
+          </small>
+        </div>
+
+
+        <div class="painel-card andamento">
+          <span>ANDAMENTO</span>
+
+          <strong id="painelQtdAndamento">
+            0
+          </strong>
+
+          <small id="painelValorAndamento">
+            R$ 0,00
+          </small>
+        </div>
+
+
+        <div class="painel-card concluido">
+          <span>CONCLUÍDO</span>
+
+          <strong id="painelQtdConcluido">
+            0
+          </strong>
+
+          <small id="painelValorConcluido">
+            R$ 0,00
+          </small>
+        </div>
+
+
+        <div class="painel-card nao-conquistado">
+          <span>NÃO CONQUISTADO</span>
+
+          <strong id="painelQtdNaoConquistado">
+            0
+          </strong>
+
+          <small id="painelValorNaoConquistado">
+            R$ 0,00
+          </small>
+        </div>
+
+      </div>
+
+
+      <!-- ================================================
+           TABELA
+           ================================================ -->
+
+      <div class="table-wrap">
+
+        <table class="editor painel-table">
+
+          <thead>
+            <tr>
+
+              <th>Nº</th>
+
+              <th>
+                Proposta / Cliente
+              </th>
+
+              <th>Vendedor</th>
+
+              <th>Data</th>
+
+              <th>Origem</th>
+
+              <th>Status</th>
+
+              <th>Valor</th>
+
+              <th>Revisão</th>
+
+              <th></th>
+
+            </tr>
+          </thead>
+
+          <tbody id="painelBody"></tbody>
+
+        </table>
+
+      </div>
+
+
+      <div id="painelVazio">
+        Nenhuma proposta encontrada para os filtros selecionados.
+      </div>
+
+    </div>
+
+  </section>
+
+</section>
+
+
+<!-- ======================================================
+     ## 8. CALCULADORA DE CLICHÊ
      ====================================================== -->
 <section id="clichePage" class="page">
 
-<div class="two-col">
+  <div class="two-col">
 
   <section class="panel">
 
@@ -1577,7 +1906,7 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
 
 
 <!-- ======================================================
-     ## 8. CONSULTA DE MEDIDAS
+     ## 9. CONSULTA DE MEDIDAS
      ====================================================== -->
 <section id="medidasPage" class="page">
 
@@ -2246,49 +2575,6 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
 </section>
 
 
-<!-- ======================================================
-     ## 9. FATOR INDICADO
-     ====================================================== -->
-<section
-  id="fatorPage"
-  class="page"
->
-
-  <section class="panel">
-
-    <div class="panel-head">
-
-      <h2>
-        📈 Fator Indicado
-      </h2>
-
-      <span>
-        Em desenvolvimento
-      </span>
-
-    </div>
-
-    <div class="dev">
-
-      <div class="big">
-        🚧
-      </div>
-
-      <h2>
-        Módulo reservado
-      </h2>
-
-      <p>
-        Espaço preparado para a futura lógica de matéria-prima,
-        impostos, estado, pedido mínimo e recomendação de fator.
-      </p>
-
-    </div>
-
-  </section>
-
-</section>
-
 </main>
 
 
@@ -2316,11 +2602,21 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
 
 <script src="js/services/auth.service.js"></script>
 
+<script src="js/services/usuarios.service.js"></script>
+
+<script src="js/services/senha.service.js"></script>
+
 <script src="js/services/propostas.service.js"></script>
+
+<script src="js/services/painel.service.js"></script>
 
 <script src="js/services/cnpj.service.js"></script>
 
 <script src="js/ui/auth-ui.js"></script>
+
+<script src="js/ui/cadastro-ui.js"></script>
+
+<script src="js/ui/senha-ui.js"></script>
 
 
 <!-- ## 11.2 Núcleo e módulos da Central Comercial -->
@@ -2330,6 +2626,12 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
 <script src="js/modules/proposta.js"></script>
 
 <script src="js/modules/historico.js"></script>
+
+<script src="js/modules/painel.js"></script>
+
+<script src="js/modules/equipe.js"></script>
+
+<script src="js/modules/metas.js"></script>
 
 <script src="js/modules/medidas.js"></script>
 

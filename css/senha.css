@@ -1,0 +1,126 @@
+/* =========================================================
+   CENTRAL COMERCIAL AGENFLEX
+   Arquivo: senha.css
+
+   Responsabilidade:
+   - Esqueci minha senha
+   - Tela de definição da nova senha
+   ========================================================= */
+
+
+/* =========================================================
+   ## 1. ESQUECI MINHA SENHA
+   ========================================================= */
+
+.senha-login-action {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.senha-link-btn {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 900;
+  color: #475569;
+  cursor: pointer;
+}
+
+.senha-link-btn:hover {
+  color: #e30613;
+  text-decoration: underline;
+}
+
+
+/* =========================================================
+   ## 2. OVERLAY DE RECUPERAÇÃO
+   ========================================================= */
+
+.senha-recovery-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background: rgba(15, 23, 42, .82);
+}
+
+.senha-recovery-overlay[hidden] {
+  display: none !important;
+}
+
+
+/* =========================================================
+   ## 3. CARD
+   ========================================================= */
+
+.senha-recovery-card {
+  width: 100%;
+  max-width: 420px;
+
+  padding: 28px;
+
+  border-radius: 16px;
+
+  background: #fff;
+
+  box-shadow:
+    0 24px 70px
+    rgba(0, 0, 0, .30);
+}
+
+.senha-recovery-card h2 {
+  margin:
+    0
+    0
+    7px;
+
+  color: #0f172a;
+}
+
+.senha-recovery-card > p {
+  margin:
+    0
+    0
+    22px;
+
+  font-size: 13px;
+  line-height: 1.5;
+
+  color: #64748b;
+}
+
+.senha-recovery-card .field {
+  margin-bottom: 14px;
+}
+
+
+/* =========================================================
+   ## 4. MENSAGEM
+   ========================================================= */
+
+.senha-recovery-message {
+  min-height: 18px;
+
+  margin-top: 12px;
+
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+
+  color: #64748b;
+}
+
+.senha-recovery-message.erro {
+  color: #a61b29;
+}
+
+.senha-recovery-message.sucesso {
+  color: #146c2e;
+}

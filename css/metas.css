@@ -1,0 +1,199 @@
+/* =========================================================
+   CENTRAL COMERCIAL AGENFLEX
+   Arquivo: metas.css
+
+   Responsabilidade:
+   - Gestão mensal de metas dos vendedores
+   - Indicadores do período
+   - Tabela de definição de metas
+   ========================================================= */
+
+
+/* =========================================================
+   ## 1. ÁREA DE METAS
+   ========================================================= */
+
+.metas-equipe {
+  margin-top: 26px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.metas-equipe-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.metas-equipe-head h3 {
+  margin: 0 0 5px;
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.metas-equipe-head p {
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+
+/* =========================================================
+   ## 2. PERÍODO
+   ========================================================= */
+
+.metas-periodo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.metas-periodo .field {
+  min-width: 150px;
+}
+
+
+/* =========================================================
+   ## 3. INDICADORES
+   ========================================================= */
+
+.metas-resumo {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(180px, 1fr)
+    );
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.meta-resumo-card {
+  padding: 16px;
+  border: 1px solid #dbe2ea;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.meta-resumo-card span {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 10px;
+  font-weight: 900;
+  color: #64748b;
+  letter-spacing: .4px;
+}
+
+.meta-resumo-card strong {
+  display: block;
+  font-size: 23px;
+  color: #0f172a;
+}
+
+
+/* =========================================================
+   ## 4. TABELA
+   ========================================================= */
+
+.metas-table {
+  min-width: 760px;
+}
+
+.metas-table td {
+  vertical-align: middle;
+}
+
+.meta-vendedor-nome {
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.meta-vendedor-email {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.meta-atual {
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.meta-input {
+  width: 170px;
+  padding: 8px 10px;
+  border: 1px solid #cfd6df;
+  border-radius: 8px;
+  background: #fff;
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   ## 5. SITUAÇÃO
+   ========================================================= */
+
+.meta-status {
+  display: inline-flex;
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.meta-status.definida {
+  background: #e7f6ec;
+  color: #146c2e;
+}
+
+.meta-status.nao-definida {
+  background: #fff4d6;
+  color: #7a5200;
+}
+
+
+/* =========================================================
+   ## 6. ESTADO VAZIO
+   ========================================================= */
+
+#metasVazio {
+  display: none;
+  margin-top: 14px;
+  padding: 20px;
+  border: 1px dashed #cfd6df;
+  border-radius: 10px;
+  background: #f8fafc;
+  text-align: center;
+  font-size: 12px;
+  color: #64748b;
+}
+
+
+/* =========================================================
+   ## 7. RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 850px) {
+
+  .metas-resumo {
+    grid-template-columns: 1fr;
+  }
+
+  .metas-equipe-head {
+    flex-direction: column;
+  }
+
+}
+
+@media (max-width: 650px) {
+
+  .metas-periodo .field {
+    flex-basis: 100%;
+  }
+
+}

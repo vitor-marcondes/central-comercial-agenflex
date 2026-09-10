@@ -1,0 +1,251 @@
+/* =========================================================
+   CENTRAL COMERCIAL AGENFLEX
+   Arquivo: equipe.css
+
+   Responsabilidade:
+   - Gestão da equipe comercial
+   - Indicadores de usuários
+   - Filtros
+   - Status de acesso
+   - Ações de aprovação
+   ========================================================= */
+
+
+/* =========================================================
+   ## 1. PAINEL DA EQUIPE
+   ========================================================= */
+
+.gestao-equipe-panel {
+  margin-top: 22px;
+}
+
+.gestao-equipe-panel .panel-head > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.gestao-equipe-panel .panel-head span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+
+/* =========================================================
+   ## 2. INDICADORES
+   ========================================================= */
+
+.equipe-cards {
+  display: grid;
+  grid-template-columns: repeat(
+    4,
+    minmax(160px, 1fr)
+  );
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.equipe-card {
+  padding: 16px;
+  border: 1px solid #dbe2ea;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.equipe-card span {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .4px;
+  color: #64748b;
+}
+
+.equipe-card strong {
+  font-size: 25px;
+  color: #0f172a;
+}
+
+.equipe-card.pendente {
+  background: #fff9e9;
+  border-color: #f4df9b;
+}
+
+.equipe-card.vendedores {
+  background: #f3f8ff;
+  border-color: #d7e8fb;
+}
+
+.equipe-card.gestores {
+  background: #f4f0ff;
+  border-color: #ded3fa;
+}
+
+
+/* =========================================================
+   ## 3. FILTROS
+   ========================================================= */
+
+.equipe-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 18px;
+}
+
+.equipe-toolbar .field {
+  flex: 1 1 180px;
+}
+
+.equipe-search {
+  flex: 2 1 280px !important;
+}
+
+.equipe-toolbar input,
+.equipe-toolbar select {
+  width: 100%;
+}
+
+
+/* =========================================================
+   ## 4. TABELA
+   ========================================================= */
+
+.equipe-table {
+  min-width: 950px;
+}
+
+.equipe-table td {
+  vertical-align: middle;
+}
+
+.equipe-user-name {
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.equipe-user-email {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+
+/* =========================================================
+   ## 5. BADGES
+   ========================================================= */
+
+.equipe-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 9px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .35px;
+  white-space: nowrap;
+}
+
+.equipe-badge.vendedor {
+  background: #eaf4ff;
+  color: #145da0;
+}
+
+.equipe-badge.gestor {
+  background: #f1ecff;
+  color: #6842a8;
+}
+
+.equipe-badge.adm {
+  background: #eef2f7;
+  color: #0f172a;
+}
+
+.equipe-badge.ativo {
+  background: #e7f6ec;
+  color: #146c2e;
+}
+
+.equipe-badge.pendente {
+  background: #fff4d6;
+  color: #7a5200;
+}
+
+
+/* =========================================================
+   ## 6. PERFIL / SELECT
+   ========================================================= */
+
+.equipe-role-select {
+  min-width: 120px;
+  padding: 7px 9px;
+  border: 1px solid #cfd6df;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   ## 7. AÇÕES
+   ========================================================= */
+
+.equipe-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.equipe-actions .btn {
+  padding: 7px 10px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   ## 8. ESTADO VAZIO
+   ========================================================= */
+
+#equipeVazio {
+  display: none;
+  margin-top: 14px;
+  padding: 22px;
+  border: 1px dashed #cfd6df;
+  border-radius: 12px;
+  text-align: center;
+  color: var(--muted);
+  background: #f8fafc;
+}
+
+
+/* =========================================================
+   ## 9. RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 1000px) {
+
+  .equipe-cards {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(160px, 1fr)
+      );
+  }
+
+}
+
+@media (max-width: 650px) {
+
+  .equipe-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .equipe-toolbar .field {
+    flex-basis: 100%;
+  }
+
+}

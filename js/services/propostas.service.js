@@ -412,3 +412,75 @@ async function obterPropostaCompleta(
 
   return data;
 }
+
+// =========================================================
+// ## 9. DADOS DO PAINEL COMERCIAL
+// =========================================================
+
+async function listarDadosPainel(
+  { limite = 500 } = {}
+) {
+
+  const client =
+    getSupabaseClient();
+
+
+  const { data, error } =
+    await client
+      .from('propostas')
+      .select(`
+        id,
+        numero,
+        revisao_atual,
+        criado_por,
+
+        origem_comercial,
+
+        status_comercial,
+        motivo_nao_conquistado,
+        detalhe_nao_conquistado,
+
+        created_at,
+        updated_at,
+
+        revisoes_proposta (
+          id,
+          numero_revisao,
+
+          nome_proposta,
+          cliente,
+          cnpj,
+          vendedor_nome,
+
+          data_proposta,
+
+          status,
+          enviado_em,
+
+          itens_revisao (
+            quantidade,
+            valor_unitario,
+            ipi_percentual
+          )
+        )
+      `)
+      .order(
+        'updated_at',
+        {
+          ascending: false
+        }
+      )
+      .limit(
+        limite
+      );
+
+
+  if (error) {
+
+    throw error;
+
+  }
+
+
+  return data ?? [];
+}
