@@ -1,6 +1,14 @@
 /* =========================================================
    CENTRAL COMERCIAL AGENFLEX
    Arquivo: painel.css
+
+   Responsabilidade:
+   - Filtros comerciais
+   - Meta individual
+   - Meta Oficial por Time
+   - Resultado consolidado
+   - Comparativo dos vendedores
+   - Tabela comercial
    ========================================================= */
 
 
@@ -16,14 +24,21 @@
   margin-bottom: 22px;
 }
 
+
 .painel-filtros .field {
-  flex: 1 1 160px;
-  min-width: 150px;
+  flex: 1 1 150px;
+  min-width: 145px;
 }
+
 
 .painel-filtros select,
 .painel-filtros input {
   width: 100%;
+}
+
+
+.painel-filtro-time {
+  min-width: 145px !important;
 }
 
 
@@ -32,87 +47,132 @@
    ========================================================= */
 
 .painel-meta-area {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   padding: 20px;
+
   border: 1px solid #dbe2ea;
   border-radius: 14px;
+
   background: #fff;
 }
+
 
 .painel-meta-head {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+
   gap: 20px;
+
   margin-bottom: 18px;
 }
 
+
 .painel-meta-head h3 {
   margin: 0 0 5px;
+
   font-size: 20px;
+
   color: #0f172a;
 }
 
+
 .painel-meta-head p {
   margin: 0;
+
   font-size: 12px;
+
   color: #64748b;
 }
+
 
 .painel-meta-periodo {
   display: flex;
   gap: 10px;
 }
 
+
 .painel-meta-periodo .field {
-  min-width: 130px;
+  min-width: 125px;
 }
+
 
 .painel-meta-cards {
   display: grid;
+
   grid-template-columns:
     repeat(
-      4,
+      auto-fit,
       minmax(160px, 1fr)
     );
+
   gap: 12px;
 }
 
+
 .painel-meta-card {
   padding: 16px;
+
   border: 1px solid #dbe2ea;
   border-radius: 12px;
+
   background: #f8fafc;
 }
 
+
+.painel-meta-card[hidden] {
+  display: none !important;
+}
+
+
 .painel-meta-card span {
   display: block;
+
   margin-bottom: 7px;
+
   font-size: 10px;
   font-weight: 900;
+
   color: #64748b;
+
   letter-spacing: .4px;
 }
 
+
 .painel-meta-card strong {
   display: block;
+
   font-size: 22px;
+
   color: #0f172a;
 }
 
+
 .painel-meta-card.conquistado {
   background: #f1faf4;
+
   border-color: #d5ebdc;
 }
 
+
 .painel-meta-card.falta {
   background: #fff9e9;
+
   border-color: #f2dfab;
 }
 
+
 .painel-meta-card.atingimento {
   background: #f3f8ff;
+
   border-color: #d7e8fb;
+}
+
+
+.painel-meta-card.distribuida {
+  background: #f4f0ff;
+
+  border-color: #ded3fa;
 }
 
 
@@ -122,117 +182,303 @@
 
 .painel-meta-progress {
   width: 100%;
-  height: 12px;
+  height: 10px;
+
   margin-top: 16px;
+
   overflow: hidden;
+
   border-radius: 999px;
+
   background: #e9eef5;
 }
 
+
 .painel-meta-progress-bar {
   height: 100%;
+
   border-radius: inherit;
+
   background: #0f5fb3;
-  transition: width .3s ease;
+
+  transition:
+    width .3s ease;
 }
 
 
 /* =========================================================
-   ## 4. CARDS DE STATUS
+   ## 4. RESUMO DOS TIMES
+   ========================================================= */
+
+.painel-times-resumo {
+  margin-bottom: 20px;
+  padding: 18px;
+
+  border: 1px solid #dbe2ea;
+  border-radius: 14px;
+
+  background: #fff;
+}
+
+
+.painel-times-resumo[hidden] {
+  display: none !important;
+}
+
+
+.painel-times-head {
+  margin-bottom: 14px;
+}
+
+
+.painel-times-head h3 {
+  margin: 0 0 4px;
+
+  font-size: 17px;
+
+  color: #0f172a;
+}
+
+
+.painel-times-head p {
+  margin: 0;
+
+  font-size: 12px;
+
+  color: #64748b;
+}
+
+
+.painel-times-cards {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(220px, 1fr)
+    );
+
+  gap: 12px;
+}
+
+
+.painel-time-card {
+  padding: 15px;
+
+  border: 1px solid #dbe2ea;
+  border-radius: 12px;
+
+  background: #f8fafc;
+}
+
+
+.painel-time-card.pharma {
+  background: #f3f8ff;
+
+  border-color: #d7e8fb;
+}
+
+
+.painel-time-card.food {
+  background: #fff8f1;
+
+  border-color: #f2dfcb;
+}
+
+
+.painel-time-card.revenda {
+  background: #f1faf4;
+
+  border-color: #d5ebdc;
+}
+
+
+.painel-time-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-bottom: 14px;
+}
+
+
+.painel-time-card-head > strong {
+  font-size: 16px;
+
+  color: #0f172a;
+}
+
+
+.painel-time-card-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(120px, 1fr)
+    );
+
+  gap: 12px;
+}
+
+
+.painel-time-card-grid span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  letter-spacing: .35px;
+
+  color: #64748b;
+}
+
+
+.painel-time-card-grid b {
+  display: block;
+
+  font-size: 13px;
+
+  color: #0f172a;
+}
+
+
+/* =========================================================
+   ## 5. CARDS DE STATUS
    ========================================================= */
 
 .painel-cards {
   display: grid;
+
   grid-template-columns:
     repeat(
       4,
       minmax(180px, 1fr)
     );
+
   gap: 14px;
+
   margin-bottom: 22px;
 }
 
+
 .painel-card {
   padding: 18px;
+
   border: 1px solid #dbe2ea;
   border-radius: 14px;
+
   background: #f8fafc;
 }
 
+
 .painel-card span {
   display: block;
+
   margin-bottom: 9px;
+
   font-size: 11px;
   font-weight: 900;
+
   color: #475569;
+
   letter-spacing: .5px;
 }
 
+
 .painel-card strong {
   display: block;
+
   margin-bottom: 7px;
+
   font-size: 28px;
   line-height: 1;
+
   color: #0f172a;
 }
 
+
 .painel-card small {
   font-size: 13px;
+
   font-weight: 800;
+
   color: #475569;
 }
 
+
 .painel-card.andamento {
   background: #f3f8ff;
+
   border-color: #d7e8fb;
 }
 
+
 .painel-card.concluido {
   background: #f1faf4;
+
   border-color: #d5ebdc;
 }
 
+
 .painel-card.nao-conquistado {
   background: #fff5f5;
+
   border-color: #f2d7da;
 }
 
 
 /* =========================================================
-   ## 5. COMPARATIVO DE VENDEDORES
+   ## 6. COMPARATIVO DE VENDEDORES
    ========================================================= */
 
 .painel-comparativo {
   margin-bottom: 24px;
   padding: 18px;
+
   border: 1px solid #dbe2ea;
   border-radius: 14px;
+
   background: #fff;
 }
+
 
 .painel-comparativo[hidden] {
   display: none !important;
 }
 
+
 .painel-comparativo-head {
   margin-bottom: 14px;
 }
 
+
 .painel-comparativo-head h3 {
   margin: 0 0 4px;
+
   font-size: 17px;
+
   color: #0f172a;
 }
 
+
 .painel-comparativo-head p {
   margin: 0;
+
   font-size: 12px;
+
   color: #64748b;
 }
 
+
 .painel-comparativo-table {
-  min-width: 760px;
+  min-width: 900px;
 }
+
 
 .painel-comparativo-table td {
   vertical-align: middle;
@@ -240,189 +486,283 @@
 
 
 /* =========================================================
-   ## 6. TABELA PRINCIPAL
+   ## 7. TABELA PRINCIPAL
    ========================================================= */
 
 .painel-table {
   min-width: 1180px;
 }
 
+
 .painel-table th {
   white-space: nowrap;
 }
+
 
 .painel-table td {
   vertical-align: middle;
 }
 
+
 .painel-secondary {
   margin-top: 4px;
+
   font-size: 12px;
+
   color: var(--muted);
 }
 
+
 .painel-value {
   white-space: nowrap;
+
   font-weight: 900;
 }
 
 
 /* =========================================================
-   ## 7. BADGES
+   ## 8. BADGES
    ========================================================= */
 
 .painel-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   padding: 6px 9px;
+
   border-radius: 999px;
+
   font-size: 9px;
   font-weight: 900;
+
   letter-spacing: .3px;
+
   white-space: nowrap;
 }
 
 
 /* =========================================================
-   ## 8. ORIGEM
+   ## 9. TIME
    ========================================================= */
 
-.painel-badge.origem {
-  background: #eef2f7;
-  color: #475569;
-}
-
-.painel-badge.origem.leads_mkt {
-  background: #eef2ff;
-  color: #4338ca;
-}
-
-.painel-badge.origem.prospeccao {
+.painel-badge.time.pharma {
   background: #eaf4ff;
+
   color: #145da0;
 }
 
-.painel-badge.origem.gestao_carteira {
-  background: #f1ecff;
-  color: #6842a8;
+
+.painel-badge.time.food {
+  background: #fff1e4;
+
+  color: #9a4c13;
 }
 
-.painel-badge.origem.sem-origem {
+
+.painel-badge.time.revenda {
+  background: #e7f6ec;
+
+  color: #146c2e;
+}
+
+
+.painel-badge.time.sem-time {
   background: #f1f3f5;
+
   color: #6b7280;
 }
 
 
 /* =========================================================
-   ## 9. STATUS
+   ## 10. ORIGEM
+   ========================================================= */
+
+.painel-badge.origem {
+  background: #eef2f7;
+
+  color: #475569;
+}
+
+
+.painel-badge.origem.leads_mkt {
+  background: #eef2ff;
+
+  color: #4338ca;
+}
+
+
+.painel-badge.origem.prospeccao {
+  background: #eaf4ff;
+
+  color: #145da0;
+}
+
+
+.painel-badge.origem.gestao_carteira {
+  background: #f1ecff;
+
+  color: #6842a8;
+}
+
+
+.painel-badge.origem.sem-origem {
+  background: #f1f3f5;
+
+  color: #6b7280;
+}
+
+
+/* =========================================================
+   ## 11. STATUS
    ========================================================= */
 
 .painel-badge.status.proposta {
   background: #edf2f7;
+
   color: #334155;
 }
 
+
 .painel-badge.status.andamento {
   background: #e8f2ff;
+
   color: #155fa0;
 }
 
+
 .painel-badge.status.concluido {
   background: #e7f6ec;
+
   color: #146c2e;
 }
 
+
 .painel-badge.status.nao_conquistado {
   background: #fdebec;
+
   color: #a61b29;
 }
 
 
 /* =========================================================
-   ## 10. REVISÃO
+   ## 12. REVISÃO
    ========================================================= */
 
 .painel-revisao {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+
   gap: 5px;
 }
+
 
 .painel-revisao b {
   font-size: 13px;
 }
 
+
 .painel-revisao-status {
   display: inline-flex;
+
   padding: 4px 7px;
+
   border-radius: 999px;
+
   font-size: 9px;
   font-weight: 900;
+
   letter-spacing: .3px;
+
   white-space: nowrap;
 }
 
+
 .painel-revisao-status.rascunho {
   background: #fff4d6;
+
   color: #7a5200;
 }
 
+
 .painel-revisao-status.enviada {
   background: #e7f6ec;
+
   color: #146c2e;
 }
 
 
 /* =========================================================
-   ## 11. AÇÕES
+   ## 13. AÇÕES
    ========================================================= */
 
 .painel-open {
   padding: 7px 11px;
+
   white-space: nowrap;
 }
 
 
 /* =========================================================
-   ## 12. CARREGAMENTO / VAZIO
+   ## 14. CARREGAMENTO / VAZIO
    ========================================================= */
 
 .painel-loading {
   padding: 30px !important;
+
   text-align: center;
+
   color: var(--muted);
 }
 
+
 #painelVazio {
   display: none;
+
   margin-top: 14px;
+
   padding: 22px;
+
   border: 1px dashed #cfd6df;
   border-radius: 12px;
+
   text-align: center;
+
   color: var(--muted);
+
   background: #f8fafc;
 }
 
 
 /* =========================================================
-   ## 13. RESPONSIVIDADE
+   ## 15. RESPONSIVIDADE
    ========================================================= */
+
+@media (max-width: 1200px) {
+
+  .painel-times-cards {
+    grid-template-columns: 1fr;
+  }
+
+}
+
 
 @media (max-width: 1100px) {
 
   .painel-cards,
   .painel-meta-cards {
+
     grid-template-columns:
       repeat(
         2,
         minmax(180px, 1fr)
       );
+
   }
 
 }
+
 
 @media (max-width: 700px) {
 
@@ -430,22 +770,32 @@
     flex-basis: 100%;
   }
 
+
   .painel-cards,
   .painel-meta-cards {
     grid-template-columns: 1fr;
   }
 
+
   .painel-meta-head {
     flex-direction: column;
   }
 
+
   .painel-meta-periodo {
     width: 100%;
+
     flex-direction: column;
   }
 
+
   .painel-meta-periodo .field {
     width: 100%;
+  }
+
+
+  .painel-time-card-grid {
+    grid-template-columns: 1fr;
   }
 
 }

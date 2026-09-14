@@ -6,8 +6,10 @@
    - Gestão da equipe comercial
    - Indicadores de usuários
    - Filtros
+   - Perfis
+   - Times
    - Status de acesso
-   - Ações de aprovação
+   - Ações administrativas
    ========================================================= */
 
 
@@ -37,47 +39,70 @@
 
 .equipe-cards {
   display: grid;
-  grid-template-columns: repeat(
-    4,
-    minmax(160px, 1fr)
-  );
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(160px, 1fr)
+    );
+
   gap: 12px;
+
   margin-bottom: 22px;
 }
 
+
 .equipe-card {
   padding: 16px;
-  border: 1px solid #dbe2ea;
+
+  border:
+    1px solid #dbe2ea;
+
   border-radius: 12px;
+
   background: #f8fafc;
 }
 
+
 .equipe-card span {
   display: block;
+
   margin-bottom: 7px;
+
   font-size: 10px;
+
   font-weight: 900;
+
   letter-spacing: .4px;
+
   color: #64748b;
 }
 
+
 .equipe-card strong {
   font-size: 25px;
+
   color: #0f172a;
 }
 
+
 .equipe-card.pendente {
   background: #fff9e9;
+
   border-color: #f4df9b;
 }
 
+
 .equipe-card.vendedores {
   background: #f3f8ff;
+
   border-color: #d7e8fb;
 }
 
+
 .equipe-card.gestores {
   background: #f4f0ff;
+
   border-color: #ded3fa;
 }
 
@@ -88,19 +113,26 @@
 
 .equipe-toolbar {
   display: flex;
+
   flex-wrap: wrap;
+
   gap: 12px;
+
   align-items: flex-end;
+
   margin-bottom: 18px;
 }
 
+
 .equipe-toolbar .field {
-  flex: 1 1 180px;
+  flex: 1 1 165px;
 }
+
 
 .equipe-search {
   flex: 2 1 280px !important;
 }
+
 
 .equipe-toolbar input,
 .equipe-toolbar select {
@@ -113,21 +145,38 @@
    ========================================================= */
 
 .equipe-table {
-  min-width: 950px;
+  min-width: 1100px;
 }
+
 
 .equipe-table td {
   vertical-align: middle;
 }
 
+
+.equipe-loading-cell {
+  padding: 30px !important;
+
+  text-align: center;
+
+  color: var(--muted);
+}
+
+
 .equipe-user-name {
   font-weight: 900;
+
   color: #0f172a;
 }
 
+
 .equipe-user-email {
   margin-top: 4px;
+
   font-size: 11px;
+
+  line-height: 1.4;
+
   color: var(--muted);
 }
 
@@ -138,105 +187,264 @@
 
 .equipe-badge {
   display: inline-flex;
+
   align-items: center;
+
   justify-content: center;
+
   padding: 6px 9px;
+
   border-radius: 999px;
+
   font-size: 9px;
+
   font-weight: 900;
+
   letter-spacing: .35px;
+
   white-space: nowrap;
 }
 
+
+/* ---------------------------------------------------------
+   ## 5.1 Perfis
+   --------------------------------------------------------- */
+
 .equipe-badge.vendedor {
   background: #eaf4ff;
+
   color: #145da0;
 }
 
+
 .equipe-badge.gestor {
   background: #f1ecff;
+
   color: #6842a8;
 }
 
+
 .equipe-badge.adm {
   background: #eef2f7;
+
   color: #0f172a;
 }
 
+
+/* ---------------------------------------------------------
+   ## 5.2 Acesso
+   --------------------------------------------------------- */
+
 .equipe-badge.ativo {
   background: #e7f6ec;
+
   color: #146c2e;
 }
 
+
 .equipe-badge.pendente {
   background: #fff4d6;
+
+  color: #7a5200;
+}
+
+
+/* ---------------------------------------------------------
+   ## 5.3 Times
+   --------------------------------------------------------- */
+
+.equipe-badge.time-pharma {
+  background: #eef4ff;
+
+  color: #2356a8;
+}
+
+
+.equipe-badge.time-food {
+  background: #fff3e8;
+
+  color: #a24c13;
+}
+
+
+.equipe-badge.time-revenda {
+  background: #ecf8f0;
+
+  color: #287348;
+}
+
+
+.equipe-badge.time-sem-time {
+  background: #fff4d6;
+
   color: #7a5200;
 }
 
 
 /* =========================================================
-   ## 6. PERFIL / SELECT
+   ## 6. SELECT DE PERFIL
    ========================================================= */
 
 .equipe-role-select {
   min-width: 120px;
+
   padding: 7px 9px;
-  border: 1px solid #cfd6df;
+
+  border:
+    1px solid #cfd6df;
+
   border-radius: 8px;
+
   background: #fff;
+
   font-size: 11px;
+
   font-weight: 800;
+
+  color: #0f172a;
+
+  cursor: pointer;
+}
+
+
+.equipe-role-select:focus {
+  outline: none;
+
+  border-color: #94a3b8;
+
+  box-shadow:
+    0 0 0 2px
+    rgba(
+      148,
+      163,
+      184,
+      .15
+    );
 }
 
 
 /* =========================================================
-   ## 7. AÇÕES
+   ## 7. SELECT DE TIME
+   ========================================================= */
+
+.equipe-team-select {
+  min-width: 130px;
+
+  padding: 7px 9px;
+
+  border:
+    1px solid #cfd6df;
+
+  border-radius: 8px;
+
+  background: #fff;
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  color: #0f172a;
+
+  cursor: pointer;
+}
+
+
+.equipe-team-select.sem-time {
+  border-color: #e6c35c;
+
+  background: #fffaf0;
+
+  color: #7a5200;
+}
+
+
+.equipe-team-select:focus {
+  outline: none;
+
+  border-color: #94a3b8;
+
+  box-shadow:
+    0 0 0 2px
+    rgba(
+      148,
+      163,
+      184,
+      .15
+    );
+}
+
+
+.equipe-time-empty {
+  color: #94a3b8;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   ## 8. AÇÕES
    ========================================================= */
 
 .equipe-actions {
   display: flex;
+
   flex-wrap: wrap;
+
   gap: 7px;
 }
 
+
 .equipe-actions .btn {
   padding: 7px 10px;
+
   font-size: 10px;
+
   white-space: nowrap;
 }
 
 
 /* =========================================================
-   ## 8. ESTADO VAZIO
+   ## 9. ESTADO VAZIO
    ========================================================= */
 
 #equipeVazio {
   display: none;
+
   margin-top: 14px;
+
   padding: 22px;
-  border: 1px dashed #cfd6df;
+
+  border:
+    1px dashed #cfd6df;
+
   border-radius: 12px;
+
   text-align: center;
+
   color: var(--muted);
+
   background: #f8fafc;
 }
 
 
 /* =========================================================
-   ## 9. RESPONSIVIDADE
+   ## 10. RESPONSIVIDADE
    ========================================================= */
 
 @media (max-width: 1000px) {
 
   .equipe-cards {
+
     grid-template-columns:
       repeat(
         2,
         minmax(160px, 1fr)
       );
+
   }
 
 }
+
 
 @media (max-width: 650px) {
 
@@ -244,8 +452,14 @@
     grid-template-columns: 1fr;
   }
 
+
   .equipe-toolbar .field {
     flex-basis: 100%;
+  }
+
+
+  .equipe-search {
+    flex-basis: 100% !important;
   }
 
 }

@@ -7,7 +7,9 @@
 // - Consulta de perfis da equipe
 // - Aprovação / bloqueio de vendedores
 // - Alteração de tipo de acesso pelo ADM
-// - Consulta e manutenção de metas
+// - Definição do Time comercial do vendedor
+// - Consulta e manutenção de metas individuais
+// - Consulta e manutenção de metas oficiais dos Times
 // - Atribuição de vendedor responsável
 //
 // Dependência:
@@ -32,7 +34,8 @@ async function cadastrarConta({
   const nomeLimpo =
     String(
       nome || ''
-    ).trim();
+    )
+      .trim();
 
 
   const emailLimpo =
@@ -73,7 +76,10 @@ async function cadastrarConta({
   }
 
 
-  const { data, error } =
+  const {
+    data,
+    error
+  } =
     await client.auth.signUp({
 
       email:
@@ -85,8 +91,10 @@ async function cadastrarConta({
       options: {
 
         data: {
+
           nome:
             nomeLimpo
+
         }
 
       }
@@ -100,12 +108,6 @@ async function cadastrarConta({
 
   }
 
-
-  // Se o Supabase iniciar uma sessão automaticamente
-  // após o cadastro, encerramos essa sessão.
-  //
-  // A nova conta nasce como vendedor INATIVO
-  // e precisa ser aprovada antes do uso.
 
   if (
     data?.session
@@ -123,6 +125,7 @@ async function cadastrarConta({
 
     precisaConfirmarEmail:
       !data?.session
+
   };
 }
 
@@ -167,13 +170,16 @@ async function obterMeuPerfil() {
     error
   } =
     await client
-      .from('perfis')
+      .from(
+        'perfis'
+      )
       .select(`
         user_id,
         nome,
         email,
         tipo_acesso,
         ativo,
+        time_equipe,
         created_at,
         updated_at
       `)
@@ -210,13 +216,16 @@ async function listarPerfisEquipe() {
     error
   } =
     await client
-      .from('perfis')
+      .from(
+        'perfis'
+      )
       .select(`
         user_id,
         nome,
         email,
         tipo_acesso,
         ativo,
+        time_equipe,
         created_at,
         updated_at
       `)
@@ -259,11 +268,15 @@ async function definirAcessoVendedor(
     await client.rpc(
       'definir_acesso_vendedor',
       {
+
         p_user_id:
           userId,
 
         p_ativo:
-          Boolean(ativo)
+          Boolean(
+            ativo
+          )
+
       }
     );
 
@@ -292,6 +305,31 @@ async function definirTipoAcesso(
     getSupabaseClient();
 
 
+  const tipoNormalizado =
+    String(
+      tipoAcesso || ''
+    )
+      .trim()
+      .toLowerCase();
+
+
+  if (
+    ![
+      'vendedor',
+      'gestor',
+      'adm'
+    ].includes(
+      tipoNormalizado
+    )
+  ) {
+
+    throw new Error(
+      'Tipo de acesso inválido.'
+    );
+
+  }
+
+
   const {
     data,
     error
@@ -299,11 +337,13 @@ async function definirTipoAcesso(
     await client.rpc(
       'definir_tipo_acesso',
       {
+
         p_user_id:
           userId,
 
         p_tipo_acesso:
-          tipoAcesso
+          tipoNormalizado
+
       }
     );
 
@@ -320,7 +360,74 @@ async function definirTipoAcesso(
 
 
 // =========================================================
-// ## 6. LISTAR METAS
+// ## 6. DEFINIR TIME DO VENDEDOR
+// =========================================================
+
+async function definirTimeVendedor(
+  userId,
+  timeEquipe
+) {
+
+  const client =
+    getSupabaseClient();
+
+
+  const timeNormalizado =
+    String(
+      timeEquipe || ''
+    )
+      .trim()
+      .toLowerCase();
+
+
+  if (
+    ![
+      'pharma',
+      'food',
+      'revenda'
+    ].includes(
+      timeNormalizado
+    )
+  ) {
+
+    throw new Error(
+      'Selecione um Time válido.'
+    );
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await client.rpc(
+      'definir_time_vendedor',
+      {
+
+        p_user_id:
+          userId,
+
+        p_time_equipe:
+          timeNormalizado
+
+      }
+    );
+
+
+  if (error) {
+
+    throw error;
+
+  }
+
+
+  return data;
+}
+
+
+// =========================================================
+// ## 7. LISTAR METAS INDIVIDUAIS
 // =========================================================
 
 async function listarMetasVendedor({
@@ -364,15 +471,21 @@ async function listarMetasVendedor({
 
   if (
     Number.isInteger(
-      Number(ano)
+      Number(
+        ano
+      )
     ) &&
-    Number(ano) > 0
+    Number(
+      ano
+    ) > 0
   ) {
 
     query =
       query.eq(
         'ano',
-        Number(ano)
+        Number(
+          ano
+        )
       );
 
   }
@@ -380,16 +493,24 @@ async function listarMetasVendedor({
 
   if (
     Number.isInteger(
-      Number(mes)
+      Number(
+        mes
+      )
     ) &&
-    Number(mes) >= 1 &&
-    Number(mes) <= 12
+    Number(
+      mes
+    ) >= 1 &&
+    Number(
+      mes
+    ) <= 12
   ) {
 
     query =
       query.eq(
         'mes',
-        Number(mes)
+        Number(
+          mes
+        )
       );
 
   }
@@ -414,7 +535,7 @@ async function listarMetasVendedor({
 
 
 // =========================================================
-// ## 7. SALVAR META
+// ## 8. SALVAR META INDIVIDUAL
 // =========================================================
 
 async function salvarMetaVendedor({
@@ -428,6 +549,26 @@ async function salvarMetaVendedor({
     getSupabaseClient();
 
 
+  const valor =
+    Number(
+      metaValor
+    );
+
+
+  if (
+    !Number.isFinite(
+      valor
+    ) ||
+    valor < 0
+  ) {
+
+    throw new Error(
+      'Informe uma meta individual válida.'
+    );
+
+  }
+
+
   const {
     data,
     error
@@ -435,17 +576,23 @@ async function salvarMetaVendedor({
     await client.rpc(
       'salvar_meta_vendedor',
       {
+
         p_user_id:
           userId,
 
         p_ano:
-          Number(ano),
+          Number(
+            ano
+          ),
 
         p_mes:
-          Number(mes),
+          Number(
+            mes
+          ),
 
         p_meta_valor:
-          Number(metaValor)
+          valor
+
       }
     );
 
@@ -462,7 +609,242 @@ async function salvarMetaVendedor({
 
 
 // =========================================================
-// ## 8. DEFINIR VENDEDOR RESPONSÁVEL
+// ## 9. LISTAR METAS OFICIAIS DOS TIMES
+// =========================================================
+
+async function listarMetasOficiaisEquipe({
+  ano = null,
+  mes = null,
+  timeEquipe = null
+} = {}) {
+
+  const client =
+    getSupabaseClient();
+
+
+  let query =
+    client
+      .from(
+        'metas_equipe'
+      )
+      .select(`
+        id,
+        time_equipe,
+        ano,
+        mes,
+        meta_valor,
+        criado_por,
+        atualizado_por,
+        created_at,
+        updated_at
+      `)
+      .order(
+        'ano',
+        {
+          ascending: false
+        }
+      )
+      .order(
+        'mes',
+        {
+          ascending: false
+        }
+      );
+
+
+  if (
+    Number.isInteger(
+      Number(
+        ano
+      )
+    ) &&
+    Number(
+      ano
+    ) > 0
+  ) {
+
+    query =
+      query.eq(
+        'ano',
+        Number(
+          ano
+        )
+      );
+
+  }
+
+
+  if (
+    Number.isInteger(
+      Number(
+        mes
+      )
+    ) &&
+    Number(
+      mes
+    ) >= 1 &&
+    Number(
+      mes
+    ) <= 12
+  ) {
+
+    query =
+      query.eq(
+        'mes',
+        Number(
+          mes
+        )
+      );
+
+  }
+
+
+  const timeNormalizado =
+    String(
+      timeEquipe || ''
+    )
+      .trim()
+      .toLowerCase();
+
+
+  if (
+    [
+      'pharma',
+      'food',
+      'revenda'
+    ].includes(
+      timeNormalizado
+    )
+  ) {
+
+    query =
+      query.eq(
+        'time_equipe',
+        timeNormalizado
+      );
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await query;
+
+
+  if (error) {
+
+    throw error;
+
+  }
+
+
+  return data || [];
+}
+
+
+// =========================================================
+// ## 10. SALVAR META OFICIAL DO TIME
+// =========================================================
+
+async function salvarMetaOficialEquipe({
+  timeEquipe,
+  ano,
+  mes,
+  metaValor
+}) {
+
+  const client =
+    getSupabaseClient();
+
+
+  const timeNormalizado =
+    String(
+      timeEquipe || ''
+    )
+      .trim()
+      .toLowerCase();
+
+
+  if (
+    ![
+      'pharma',
+      'food',
+      'revenda'
+    ].includes(
+      timeNormalizado
+    )
+  ) {
+
+    throw new Error(
+      'Selecione um Time válido.'
+    );
+
+  }
+
+
+  const valor =
+    Number(
+      metaValor
+    );
+
+
+  if (
+    !Number.isFinite(
+      valor
+    ) ||
+    valor < 0
+  ) {
+
+    throw new Error(
+      'Informe uma meta oficial válida.'
+    );
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await client.rpc(
+      'salvar_meta_equipe',
+      {
+
+        p_time_equipe:
+          timeNormalizado,
+
+        p_ano:
+          Number(
+            ano
+          ),
+
+        p_mes:
+          Number(
+            mes
+          ),
+
+        p_meta_valor:
+          valor
+
+      }
+    );
+
+
+  if (error) {
+
+    throw error;
+
+  }
+
+
+  return data;
+}
+
+
+// =========================================================
+// ## 11. DEFINIR VENDEDOR RESPONSÁVEL
 // =========================================================
 
 async function definirVendedorResponsavel(
@@ -481,11 +863,13 @@ async function definirVendedorResponsavel(
     await client.rpc(
       'definir_vendedor_responsavel',
       {
+
         p_proposta_id:
           propostaId,
 
         p_vendedor_id:
           vendedorId
+
       }
     );
 

@@ -3,9 +3,12 @@
 // Arquivo: metas.js
 //
 // Responsabilidade:
-// - Exibir metas mensais dos vendedores
-// - Permitir Gestor / ADM cadastrar e alterar metas
-// - Calcular resumo das metas da equipe
+// - Gerenciar Meta Oficial por Time
+// - Gerenciar metas individuais dos vendedores
+// - Filtrar vendedores por Time
+// - Calcular total distribuído
+// - Calcular valor restante / excedente
+// - Permitir manutenção por Gestor / ADM
 //
 // Dependências:
 // - js/services/usuarios.service.js
@@ -24,6 +27,9 @@ let metasVendedores =
   [];
 
 let metasPeriodo =
+  [];
+
+let metasOficiaisPeriodo =
   [];
 
 let metasCarregando =
@@ -71,14 +77,18 @@ function formatarMoedaMeta(
   return new Intl.NumberFormat(
     'pt-BR',
     {
+
       style:
         'currency',
 
       currency:
         'BRL'
+
     }
   ).format(
-    Number(valor) || 0
+    Number(
+      valor
+    ) || 0
   );
 }
 
@@ -92,6 +102,34 @@ function podeGerenciarMetas() {
     metasPerfilAtual
       ?.tipo_acesso
   );
+
+}
+
+
+function nomeTimeMeta(
+  timeEquipe
+) {
+
+  const nomes = {
+
+    pharma:
+      'Pharma',
+
+    food:
+      'Food',
+
+    revenda:
+      'Revenda'
+
+  };
+
+
+  return nomes[
+    String(
+      timeEquipe || ''
+    )
+      .toLowerCase()
+  ] || '—';
 }
 
 
@@ -121,7 +159,9 @@ function nomeMesMeta(
 
 
   return meses[
-    Number(mes)
+    Number(
+      mes
+    )
   ] || '—';
 }
 
@@ -220,11 +260,12 @@ function montarInterfaceMetas() {
       <div>
 
         <h3>
-          🎯 Metas da Equipe
+          🎯 Gestão de Metas
         </h3>
 
         <p>
-          Defina a meta mensal de cada vendedor.
+          Defina a meta oficial do Time e distribua
+          as metas individuais dos vendedores.
         </p>
 
       </div>
@@ -233,7 +274,7 @@ function montarInterfaceMetas() {
 
 
     <!-- ================================================
-         PERÍODO
+         FILTROS
          ================================================ -->
 
     <div class="metas-periodo">
@@ -312,12 +353,37 @@ function montarInterfaceMetas() {
       </div>
 
 
+      <div class="field">
+
+        <label>
+          Time
+        </label>
+
+        <select id="metasTime">
+
+          <option value="pharma">
+            Pharma
+          </option>
+
+          <option value="food">
+            Food
+          </option>
+
+          <option value="revenda">
+            Revenda
+          </option>
+
+        </select>
+
+      </div>
+
+
       <button
         type="button"
         class="btn navy"
         onclick="carregarMetasEquipe()"
       >
-        ↻ Carregar período
+        ↻ Atualizar
       </button>
 
 
@@ -325,50 +391,147 @@ function montarInterfaceMetas() {
 
 
     <!-- ================================================
-         RESUMO
+         META OFICIAL
+         ================================================ -->
+
+    <div class="meta-oficial-box">
+
+      <div class="meta-oficial-info">
+
+        <span>
+          META OFICIAL DO TIME
+        </span>
+
+        <strong id="metaOficialTitulo">
+          Pharma
+        </strong>
+
+        <small id="metaOficialPeriodo">
+          —
+        </small>
+
+      </div>
+
+
+      <div class="meta-oficial-editor">
+
+        <div class="field">
+
+          <label>
+            Valor da meta oficial
+          </label>
+
+          <input
+            id="metaOficialInput"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Ex.: 500000"
+          >
+
+        </div>
+
+
+        <button
+          id="btnSalvarMetaOficial"
+          type="button"
+          class="btn navy"
+          onclick="salvarMetaOficialTimeSelecionado()"
+        >
+          Salvar meta oficial
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- ================================================
+         INDICADORES
          ================================================ -->
 
     <div class="metas-resumo">
 
 
-      <div class="meta-resumo-card">
+      <div class="meta-resumo-card oficial">
 
         <span>
-          VENDEDORES ATIVOS
+          META OFICIAL
+        </span>
+
+        <strong id="metasValorOficial">
+          R$ 0,00
+        </strong>
+
+      </div>
+
+
+      <div class="meta-resumo-card distribuida">
+
+        <span>
+          METAS DISTRIBUÍDAS
+        </span>
+
+        <strong id="metasValorDistribuido">
+          R$ 0,00
+        </strong>
+
+      </div>
+
+
+      <div
+        id="metasCardDiferenca"
+        class="meta-resumo-card diferenca"
+      >
+
+        <span id="metasDiferencaTitulo">
+          FALTA DISTRIBUIR
+        </span>
+
+        <strong id="metasValorDiferenca">
+          R$ 0,00
+        </strong>
+
+      </div>
+
+
+      <div class="meta-resumo-card vendedores">
+
+        <span>
+          VENDEDORES DO TIME
         </span>
 
         <strong id="metasQtdVendedores">
           0
         </strong>
 
-      </div>
-
-
-      <div class="meta-resumo-card">
-
-        <span>
-          COM META DEFINIDA
-        </span>
-
-        <strong id="metasQtdDefinidas">
-          0
-        </strong>
+        <small id="metasQtdDefinidasTexto">
+          0 com meta definida
+        </small>
 
       </div>
 
 
-      <div class="meta-resumo-card">
+    </div>
 
-        <span>
-          META TOTAL DA EQUIPE
-        </span>
 
-        <strong id="metasValorTotal">
-          R$ 0,00
-        </strong>
+    <!-- ================================================
+         TÍTULO DA DISTRIBUIÇÃO
+         ================================================ -->
+
+    <div class="metas-distribuicao-head">
+
+      <div>
+
+        <h4>
+          Metas individuais
+        </h4>
+
+        <p id="metasDistribuicaoDescricao">
+          Distribuição da meta entre os vendedores.
+        </p>
 
       </div>
-
 
     </div>
 
@@ -416,10 +579,7 @@ function montarInterfaceMetas() {
 
             <td
               colspan="5"
-              style="
-                text-align:center;
-                padding:30px;
-              "
+              class="metas-loading-cell"
             >
 
               Carregando metas...
@@ -436,7 +596,7 @@ function montarInterfaceMetas() {
 
 
     <div id="metasVazio">
-      Nenhum vendedor ativo encontrado.
+      Nenhum vendedor ativo encontrado neste Time.
     </div>
 
   `;
@@ -536,11 +696,21 @@ function montarInterfaceMetas() {
       carregarMetasEquipe
     );
 
+
+  area
+    .querySelector(
+      '#metasTime'
+    )
+    ?.addEventListener(
+      'change',
+      carregarMetasEquipe
+    );
+
 }
 
 
 // =========================================================
-// ## 6. OBTER PERÍODO
+// ## 6. FILTROS SELECIONADOS
 // =========================================================
 
 function obterPeriodoMetaSelecionado() {
@@ -578,8 +748,42 @@ function obterPeriodoMetaSelecionado() {
 }
 
 
+function obterTimeMetaSelecionado() {
+
+  const valor =
+    String(
+      document
+        .getElementById(
+          'metasTime'
+        )
+        ?.value ||
+      'pharma'
+    )
+      .trim()
+      .toLowerCase();
+
+
+  if (
+    ![
+      'pharma',
+      'food',
+      'revenda'
+    ].includes(
+      valor
+    )
+  ) {
+
+    return 'pharma';
+
+  }
+
+
+  return valor;
+}
+
+
 // =========================================================
-// ## 7. OBTER META DO VENDEDOR
+// ## 7. META INDIVIDUAL
 // =========================================================
 
 function obterMetaVendedorPeriodo(
@@ -595,24 +799,68 @@ function obterMetaVendedorPeriodo(
 
 
 // =========================================================
-// ## 8. INDICADORES
+// ## 8. META OFICIAL DO TIME
+// =========================================================
+
+function obterMetaOficialSelecionada() {
+
+  const timeEquipe =
+    obterTimeMetaSelecionado();
+
+
+  return metasOficiaisPeriodo.find(
+    meta =>
+      meta.time_equipe ===
+      timeEquipe
+  ) || null;
+}
+
+
+// =========================================================
+// ## 9. INDICADORES
 // =========================================================
 
 function atualizarResumoMetas() {
 
-  const definidas =
-    metasVendedores.filter(
-      vendedor =>
-        Boolean(
-          obterMetaVendedorPeriodo(
-            vendedor.user_id
-          )
+  const timeEquipe =
+    obterTimeMetaSelecionado();
+
+
+  const periodo =
+    obterPeriodoMetaSelecionado();
+
+
+  const metaOficial =
+    obterMetaOficialSelecionada();
+
+
+  const valorOficial =
+    Number(
+      metaOficial
+        ?.meta_valor
+    ) || 0;
+
+
+  const idsVendedores =
+    new Set(
+      metasVendedores.map(
+        vendedor =>
+          vendedor.user_id
+      )
+    );
+
+
+  const metasDoTime =
+    metasPeriodo.filter(
+      meta =>
+        idsVendedores.has(
+          meta.user_id
         )
     );
 
 
-  const total =
-    metasPeriodo.reduce(
+  const valorDistribuido =
+    metasDoTime.reduce(
       (
         soma,
         meta
@@ -627,46 +875,243 @@ function atualizarResumoMetas() {
     );
 
 
-  const qtdVendedores =
+  const quantidadeDefinidas =
+    metasVendedores.filter(
+      vendedor =>
+        Boolean(
+          obterMetaVendedorPeriodo(
+            vendedor.user_id
+          )
+        )
+    ).length;
+
+
+  const diferenca =
+    valorOficial -
+    valorDistribuido;
+
+
+  // -------------------------------------------------------
+  // ## 9.1 Elementos
+  // -------------------------------------------------------
+
+  const valorOficialEl =
+    document.getElementById(
+      'metasValorOficial'
+    );
+
+
+  const valorDistribuidoEl =
+    document.getElementById(
+      'metasValorDistribuido'
+    );
+
+
+  const valorDiferencaEl =
+    document.getElementById(
+      'metasValorDiferenca'
+    );
+
+
+  const diferencaTituloEl =
+    document.getElementById(
+      'metasDiferencaTitulo'
+    );
+
+
+  const diferencaCardEl =
+    document.getElementById(
+      'metasCardDiferenca'
+    );
+
+
+  const qtdVendedoresEl =
     document.getElementById(
       'metasQtdVendedores'
     );
 
 
-  const qtdDefinidas =
+  const qtdDefinidasEl =
     document.getElementById(
-      'metasQtdDefinidas'
+      'metasQtdDefinidasTexto'
     );
 
 
-  const valorTotal =
+  const metaTituloEl =
     document.getElementById(
-      'metasValorTotal'
+      'metaOficialTitulo'
     );
 
 
-  if (qtdVendedores) {
+  const metaPeriodoEl =
+    document.getElementById(
+      'metaOficialPeriodo'
+    );
 
-    qtdVendedores.textContent =
+
+  const metaInputEl =
+    document.getElementById(
+      'metaOficialInput'
+    );
+
+
+  const distribuicaoDescricaoEl =
+    document.getElementById(
+      'metasDistribuicaoDescricao'
+    );
+
+
+  // -------------------------------------------------------
+  // ## 9.2 Valores
+  // -------------------------------------------------------
+
+  if (valorOficialEl) {
+
+    valorOficialEl.textContent =
+      formatarMoedaMeta(
+        valorOficial
+      );
+
+  }
+
+
+  if (valorDistribuidoEl) {
+
+    valorDistribuidoEl.textContent =
+      formatarMoedaMeta(
+        valorDistribuido
+      );
+
+  }
+
+
+  if (valorDiferencaEl) {
+
+    valorDiferencaEl.textContent =
+      formatarMoedaMeta(
+        Math.abs(
+          diferenca
+        )
+      );
+
+  }
+
+
+  if (qtdVendedoresEl) {
+
+    qtdVendedoresEl.textContent =
       metasVendedores.length;
 
   }
 
 
-  if (qtdDefinidas) {
+  if (qtdDefinidasEl) {
 
-    qtdDefinidas.textContent =
-      definidas.length;
+    qtdDefinidasEl.textContent =
+      `${quantidadeDefinidas} com meta definida`;
 
   }
 
 
-  if (valorTotal) {
+  // -------------------------------------------------------
+  // ## 9.3 Restante / excedente
+  // -------------------------------------------------------
 
-    valorTotal.textContent =
-      formatarMoedaMeta(
-        total
+  if (
+    diferencaTituloEl &&
+    diferencaCardEl
+  ) {
+
+    diferencaCardEl.classList.remove(
+      'restante',
+      'excedente',
+      'equilibrada'
+    );
+
+
+    if (
+      diferenca > 0
+    ) {
+
+      diferencaTituloEl.textContent =
+        'FALTA DISTRIBUIR';
+
+
+      diferencaCardEl.classList.add(
+        'restante'
       );
+
+    } else if (
+      diferenca < 0
+    ) {
+
+      diferencaTituloEl.textContent =
+        'EXCEDENTE DISTRIBUÍDO';
+
+
+      diferencaCardEl.classList.add(
+        'excedente'
+      );
+
+    } else {
+
+      diferencaTituloEl.textContent =
+        'META DISTRIBUÍDA';
+
+
+      diferencaCardEl.classList.add(
+        'equilibrada'
+      );
+
+    }
+
+  }
+
+
+  // -------------------------------------------------------
+  // ## 9.4 Cabeçalho da Meta Oficial
+  // -------------------------------------------------------
+
+  if (metaTituloEl) {
+
+    metaTituloEl.textContent =
+      nomeTimeMeta(
+        timeEquipe
+      );
+
+  }
+
+
+  if (metaPeriodoEl) {
+
+    metaPeriodoEl.textContent =
+      `${nomeMesMeta(
+        periodo.mes
+      )} / ${periodo.ano}`;
+
+  }
+
+
+  if (metaInputEl) {
+
+    metaInputEl.value =
+      metaOficial
+        ? Number(
+            metaOficial.meta_valor
+          )
+        : '';
+
+  }
+
+
+  if (
+    distribuicaoDescricaoEl
+  ) {
+
+    distribuicaoDescricaoEl.textContent =
+      `Distribuição da meta do Time ` +
+      `${nomeTimeMeta(timeEquipe)} ` +
+      `em ${nomeMesMeta(periodo.mes)}/${periodo.ano}.`;
 
   }
 
@@ -674,7 +1119,7 @@ function atualizarResumoMetas() {
 
 
 // =========================================================
-// ## 9. RENDERIZAR
+// ## 10. RENDERIZAR VENDEDORES
 // =========================================================
 
 function renderizarMetasEquipe() {
@@ -830,7 +1275,7 @@ function renderizarMetasEquipe() {
               )
             "
           >
-            Salvar meta
+            Salvar
           </button>
 
         </td>
@@ -849,7 +1294,7 @@ function renderizarMetasEquipe() {
 
 
 // =========================================================
-// ## 10. CARREGAR METAS
+// ## 11. CARREGAR METAS
 // =========================================================
 
 async function carregarMetasEquipe() {
@@ -882,10 +1327,7 @@ async function carregarMetasEquipe() {
 
         <td
           colspan="5"
-          style="
-            text-align:center;
-            padding:30px;
-          "
+          class="metas-loading-cell"
         >
           Carregando metas...
         </td>
@@ -903,24 +1345,47 @@ async function carregarMetasEquipe() {
       obterPeriodoMetaSelecionado();
 
 
+    const timeEquipe =
+      obterTimeMetaSelecionado();
+
+
     const [
       perfis,
-      metas
+      metasIndividuais,
+      metasOficiais
     ] =
       await Promise.all([
 
         listarPerfisEquipe(),
 
         listarMetasVendedor({
+
           ano:
             periodo.ano,
 
           mes:
             periodo.mes
+
+        }),
+
+        listarMetasOficiaisEquipe({
+
+          ano:
+            periodo.ano,
+
+          mes:
+            periodo.mes,
+
+          timeEquipe
+
         })
 
       ]);
 
+
+    // -----------------------------------------------------
+    // ## 11.1 Somente vendedores ativos do Time escolhido
+    // -----------------------------------------------------
 
     metasVendedores =
       perfis
@@ -928,7 +1393,9 @@ async function carregarMetasEquipe() {
           perfil =>
             perfil.ativo &&
             perfil.tipo_acesso ===
-            'vendedor'
+              'vendedor' &&
+            perfil.time_equipe ===
+              timeEquipe
         )
         .sort(
           (
@@ -948,7 +1415,11 @@ async function carregarMetasEquipe() {
 
 
     metasPeriodo =
-      metas || [];
+      metasIndividuais || [];
+
+
+    metasOficiaisPeriodo =
+      metasOficiais || [];
 
 
     renderizarMetasEquipe();
@@ -970,10 +1441,7 @@ async function carregarMetasEquipe() {
 
           <td
             colspan="5"
-            style="
-              text-align:center;
-              padding:30px;
-            "
+            class="metas-loading-cell"
           >
             Não foi possível carregar as metas.
           </td>
@@ -995,7 +1463,163 @@ async function carregarMetasEquipe() {
 
 
 // =========================================================
-// ## 11. SALVAR META DE UM VENDEDOR
+// ## 12. SALVAR META OFICIAL DO TIME
+// =========================================================
+
+async function salvarMetaOficialTimeSelecionado() {
+
+  if (
+    !podeGerenciarMetas()
+  ) {
+
+    return;
+
+  }
+
+
+  const input =
+    document.getElementById(
+      'metaOficialInput'
+    );
+
+
+  const botao =
+    document.getElementById(
+      'btnSalvarMetaOficial'
+    );
+
+
+  const valor =
+    Number(
+      input?.value
+    );
+
+
+  if (
+    !Number.isFinite(
+      valor
+    ) ||
+    valor < 0
+  ) {
+
+    alert(
+      'Informe uma meta oficial válida.'
+    );
+
+
+    input?.focus();
+
+
+    return;
+
+  }
+
+
+  const periodo =
+    obterPeriodoMetaSelecionado();
+
+
+  const timeEquipe =
+    obterTimeMetaSelecionado();
+
+
+  const confirmar =
+    confirm(
+      `Definir a meta oficial do Time ` +
+      `${nomeTimeMeta(timeEquipe)} para ` +
+      `${nomeMesMeta(periodo.mes)}/${periodo.ano} ` +
+      `em ${formatarMoedaMeta(valor)}?`
+    );
+
+
+  if (!confirmar) {
+
+    return;
+
+  }
+
+
+  const textoOriginal =
+    botao
+      ?.textContent ||
+    'Salvar meta oficial';
+
+
+  if (botao) {
+
+    botao.disabled =
+      true;
+
+
+    botao.textContent =
+      'Salvando...';
+
+  }
+
+
+  try {
+
+    await salvarMetaOficialEquipe({
+
+      timeEquipe,
+
+      ano:
+        periodo.ano,
+
+      mes:
+        periodo.mes,
+
+      metaValor:
+        valor
+
+    });
+
+
+    toastMsg(
+      `Meta oficial do Time ${nomeTimeMeta(timeEquipe)} salva`
+    );
+
+
+    await carregarMetasEquipe();
+
+
+  } catch (erro) {
+
+    console.error(
+      'Erro ao salvar meta oficial:',
+      erro
+    );
+
+
+    alert(
+      'Não foi possível salvar a meta oficial.\n\n' +
+      (
+        erro?.message ||
+        'Erro desconhecido.'
+      )
+    );
+
+
+  } finally {
+
+    if (botao) {
+
+      botao.disabled =
+        false;
+
+
+      botao.textContent =
+        textoOriginal;
+
+    }
+
+  }
+
+}
+
+
+// =========================================================
+// ## 13. SALVAR META INDIVIDUAL
 // =========================================================
 
 async function salvarMetaUsuarioEquipe(
@@ -1049,7 +1673,9 @@ async function salvarMetaUsuarioEquipe(
       'Informe uma meta válida.'
     );
 
+
     input?.focus();
+
 
     return;
 
@@ -1123,7 +1749,7 @@ async function salvarMetaUsuarioEquipe(
 
 
 // =========================================================
-// ## 12. SINCRONIZAR PERMISSÃO
+// ## 14. SINCRONIZAR PERMISSÃO
 // =========================================================
 
 async function sincronizarGestaoMetas() {
@@ -1193,13 +1819,12 @@ async function sincronizarGestaoMetas() {
 
 
 // =========================================================
-// ## 13. INICIALIZAÇÃO
+// ## 15. INICIALIZAÇÃO
 // =========================================================
 
 function iniciarModuloMetas() {
 
   // equipe.js cria o painel dinamicamente.
-  // Executamos depois dele terminar a montagem.
 
   setTimeout(
     sincronizarGestaoMetas,

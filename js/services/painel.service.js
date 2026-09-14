@@ -5,6 +5,7 @@
 // Responsabilidade:
 // - Buscar os dados necessários ao Painel Comercial
 // - Trazer vendedor responsável
+// - Trazer Time registrado na revisão
 // - Trazer data da atualização comercial
 // - Trazer somente os dados permitidos pelo RLS
 // =========================================================
@@ -27,7 +28,9 @@ async function listarDadosPainelGestao({
     error
   } =
     await client
-      .from('propostas')
+      .from(
+        'propostas'
+      )
       .select(`
         id,
         numero,
@@ -55,6 +58,8 @@ async function listarDadosPainelGestao({
           cliente,
           cnpj,
           vendedor_nome,
+
+          time_equipe,
 
           data_proposta,
 

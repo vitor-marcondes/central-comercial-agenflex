@@ -4,16 +4,19 @@
 //
 // Responsabilidade:
 // - Identificar Vendedor / Gestor / ADM
+// - Sincronizar o Time do vendedor com o Orçamento
 // - Exibir Gestão da Equipe somente para Gestor / ADM
 // - Listar usuários
 // - Mostrar contas pendentes
 // - Aprovar / bloquear vendedores
 // - Permitir que ADM altere o perfil
+// - Permitir que Gestor / ADM alterem o Time do vendedor
 // - Exibir ação de redefinição de senha
 //
 // Dependências:
 // - js/services/usuarios.service.js
 // - js/ui/senha-ui.js
+// - js/modules/proposta.js
 // =========================================================
 
 
@@ -21,36 +24,65 @@
 // ## 1. ESTADO
 // =========================================================
 
-let equipePerfilAtual = null;
-let equipePerfis = [];
-let equipeCarregando = false;
+let equipePerfilAtual =
+  null;
+
+let equipePerfis =
+  [];
+
+let equipeCarregando =
+  false;
 
 
 // =========================================================
 // ## 2. AUXILIARES
 // =========================================================
 
-function escaparEquipe(valor) {
+function escaparEquipe(
+  valor
+) {
 
-  return String(valor ?? '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
+  return String(
+    valor ?? ''
+  )
+    .replaceAll(
+      '&',
+      '&amp;'
+    )
+    .replaceAll(
+      '<',
+      '&lt;'
+    )
+    .replaceAll(
+      '>',
+      '&gt;'
+    )
+    .replaceAll(
+      '"',
+      '&quot;'
+    )
+    .replaceAll(
+      "'",
+      '&#039;'
+    );
 
 }
 
 
-function nomePerfilEquipe(tipo) {
+function nomePerfilEquipe(
+  tipo
+) {
 
   const nomes = {
 
-    vendedor: 'VENDEDOR',
+    vendedor:
+      'VENDEDOR',
 
-    gestor: 'GESTOR',
+    gestor:
+      'GESTOR',
 
-    adm: 'ADM'
+    adm:
+      'ADM'
 
   };
 
@@ -59,6 +91,41 @@ function nomePerfilEquipe(tipo) {
     String(
       tipo || '—'
     ).toUpperCase();
+
+}
+
+
+// Nome específico deste módulo para evitar
+// conflito com funções do Painel / Metas.
+
+function nomeTimeGestaoEquipe(
+  time
+) {
+
+  const nomes = {
+
+    pharma:
+      'PHARMA',
+
+    food:
+      'FOOD',
+
+    revenda:
+      'REVENDA'
+
+  };
+
+
+  const chave =
+    String(
+      time || ''
+    )
+      .trim()
+      .toLowerCase();
+
+
+  return nomes[chave] ||
+    '—';
 
 }
 
@@ -92,7 +159,234 @@ function usuarioEhAdmEquipe() {
 
 
 // =========================================================
-// ## 4. CRIAR INTERFACE
+// ## 4. TIME DO ORÇAMENTO
+// =========================================================
+
+
+// ---------------------------------------------------------
+// ## 4.1 Identificar se existe proposta salva aberta
+// ---------------------------------------------------------
+
+function propostaSalvaAbertaEquipe() {
+
+  try {
+
+    return (
+      typeof propostaNuvemAtual !==
+        'undefined' &&
+      Boolean(
+        propostaNuvemAtual
+          ?.propostaId
+      )
+    );
+
+  } catch (erro) {
+
+    return false;
+
+  }
+
+}
+
+
+// ---------------------------------------------------------
+// ## 4.2 Sincronizar perfil → Orçamento
+// ---------------------------------------------------------
+
+function sincronizarTimeOrcamentoComPerfil(
+  perfil
+) {
+
+  const campo =
+    document.getElementById(
+      'timeEquipe'
+    );
+
+
+  if (
+    !campo ||
+    !perfil
+  ) {
+
+    return;
+
+  }
+
+
+  const field =
+    campo.closest(
+      '.field'
+    );
+
+
+  const label =
+    field
+      ?.querySelector(
+        'label'
+      );
+
+
+  const tipo =
+    String(
+      perfil.tipo_acesso ||
+      ''
+    )
+      .trim()
+      .toLowerCase();
+
+
+  // -------------------------------------------------------
+  // ## 4.2.1 Vendedor
+  // -------------------------------------------------------
+
+  if (
+    tipo ===
+    'vendedor'
+  ) {
+
+    const timePerfil =
+      String(
+        perfil.time_equipe ||
+        ''
+      )
+        .trim()
+        .toLowerCase();
+
+
+    const propostaSalva =
+      propostaSalvaAbertaEquipe();
+
+
+    // Se for uma NOVA proposta, o Time vem
+    // obrigatoriamente do perfil do vendedor.
+    //
+    // Se uma proposta JÁ SALVA estiver aberta,
+    // preservamos o Time gravado naquela revisão.
+
+    if (
+      !propostaSalva
+    ) {
+
+      campo.value =
+        [
+          'pharma',
+          'food',
+          'revenda'
+        ].includes(
+          timePerfil
+        )
+          ? timePerfil
+          : '';
+
+    }
+
+
+    // Vendedor não pode escolher outro Time
+    // pela interface.
+
+    campo.disabled =
+      true;
+
+
+    campo.title =
+      timePerfil
+        ? (
+            'Time definido automaticamente ' +
+            'pelo perfil do vendedor.'
+          )
+        : (
+            'Seu perfil ainda não possui ' +
+            'um Time comercial definido.'
+          );
+
+
+    if (label) {
+
+      label.textContent =
+        'Time (definido pelo perfil)';
+
+    }
+
+
+    // Atualiza imediatamente a identidade visual
+    // do PDF de acordo com o Time.
+
+    if (
+      typeof updateTeamLogo ===
+      'function' &&
+      campo.value
+    ) {
+
+      updateTeamLogo();
+
+    }
+
+
+    return;
+
+  }
+
+
+  // -------------------------------------------------------
+  // ## 4.2.2 Gestor / ADM
+  // -------------------------------------------------------
+
+  if (
+    [
+      'gestor',
+      'adm'
+    ].includes(
+      tipo
+    )
+  ) {
+
+    campo.disabled =
+      false;
+
+
+    campo.title =
+      'Selecione o Time da proposta.';
+
+
+    if (label) {
+
+      label.textContent =
+        'Time (interno)';
+
+    }
+
+
+    if (
+      typeof updateTeamLogo ===
+      'function'
+    ) {
+
+      updateTeamLogo();
+
+    }
+
+
+    return;
+
+  }
+
+
+  // -------------------------------------------------------
+  // ## 4.2.3 Perfil não reconhecido
+  // -------------------------------------------------------
+
+  campo.disabled =
+    true;
+
+
+  campo.title =
+    'Perfil sem permissão para definir Time.';
+
+}
+
+
+// =========================================================
+// ## 5. CRIAR INTERFACE DE GESTÃO DA EQUIPE
 // =========================================================
 
 function montarInterfaceGestaoEquipe() {
@@ -150,7 +444,7 @@ function montarInterfaceGestaoEquipe() {
         </h2>
 
         <span>
-          Usuários, acessos e vendedores
+          Usuários, perfis, Times e acessos
         </span>
 
       </div>
@@ -282,6 +576,39 @@ function montarInterfaceGestaoEquipe() {
         <div class="field">
 
           <label>
+            Time
+          </label>
+
+          <select id="equipeFiltroTime">
+
+            <option value="">
+              Todos os Times
+            </option>
+
+            <option value="pharma">
+              Pharma
+            </option>
+
+            <option value="food">
+              Food
+            </option>
+
+            <option value="revenda">
+              Revenda
+            </option>
+
+            <option value="sem_time">
+              Vendedores sem Time
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
             Acesso
           </label>
 
@@ -346,6 +673,10 @@ function montarInterfaceGestaoEquipe() {
               </th>
 
               <th>
+                Time
+              </th>
+
+              <th>
                 Acesso
               </th>
 
@@ -367,11 +698,8 @@ function montarInterfaceGestaoEquipe() {
             <tr>
 
               <td
-                colspan="5"
-                style="
-                  padding:30px;
-                  text-align:center;
-                "
+                colspan="6"
+                class="equipe-loading-cell"
               >
                 Carregando equipe...
               </td>
@@ -406,7 +734,7 @@ function montarInterfaceGestaoEquipe() {
 
 
 // =========================================================
-// ## 5. EVENTOS
+// ## 6. EVENTOS
 // =========================================================
 
 function iniciarEventosEquipe() {
@@ -433,6 +761,16 @@ function iniciarEventosEquipe() {
 
   document
     .getElementById(
+      'equipeFiltroTime'
+    )
+    ?.addEventListener(
+      'change',
+      renderizarEquipe
+    );
+
+
+  document
+    .getElementById(
       'equipeFiltroAcesso'
     )
     ?.addEventListener(
@@ -444,7 +782,7 @@ function iniciarEventosEquipe() {
 
 
 // =========================================================
-// ## 6. FILTROS
+// ## 7. FILTROS
 // =========================================================
 
 function obterPerfisFiltradosEquipe() {
@@ -467,6 +805,14 @@ function obterPerfisFiltradosEquipe() {
       ?.value || '';
 
 
+  const filtroTime =
+    document
+      .getElementById(
+        'equipeFiltroTime'
+      )
+      ?.value || '';
+
+
   const filtroAcesso =
     document
       .getElementById(
@@ -481,7 +827,13 @@ function obterPerfisFiltradosEquipe() {
       const texto =
         [
           perfil.nome,
-          perfil.email
+          perfil.email,
+          perfil.tipo_acesso ===
+            'vendedor'
+            ? nomeTimeGestaoEquipe(
+                perfil.time_equipe
+              )
+            : ''
         ]
           .join(
             ' '
@@ -508,6 +860,44 @@ function obterPerfisFiltradosEquipe() {
       ) {
 
         return false;
+
+      }
+
+
+      if (
+        filtroTime ===
+        'sem_time'
+      ) {
+
+        if (
+          perfil.tipo_acesso !==
+            'vendedor' ||
+          perfil.time_equipe
+        ) {
+
+          return false;
+
+        }
+
+      }
+
+
+      if (
+        filtroTime &&
+        filtroTime !==
+        'sem_time'
+      ) {
+
+        if (
+          perfil.tipo_acesso !==
+            'vendedor' ||
+          perfil.time_equipe !==
+            filtroTime
+        ) {
+
+          return false;
+
+        }
 
       }
 
@@ -543,7 +933,7 @@ function obterPerfisFiltradosEquipe() {
 
 
 // =========================================================
-// ## 7. INDICADORES
+// ## 8. INDICADORES
 // =========================================================
 
 function atualizarIndicadoresEquipe() {
@@ -560,7 +950,7 @@ function atualizarIndicadoresEquipe() {
       perfil =>
         perfil.ativo &&
         perfil.tipo_acesso ===
-        'vendedor'
+          'vendedor'
     ).length;
 
 
@@ -569,7 +959,7 @@ function atualizarIndicadoresEquipe() {
       perfil =>
         perfil.ativo &&
         perfil.tipo_acesso ===
-        'gestor'
+          'gestor'
     ).length;
 
 
@@ -626,7 +1016,7 @@ function atualizarIndicadoresEquipe() {
 
 
 // =========================================================
-// ## 8. BADGES
+// ## 9. BADGES
 // =========================================================
 
 function badgePerfilEquipe(
@@ -682,7 +1072,7 @@ function badgeAcessoEquipe(
 
 
 // =========================================================
-// ## 9. DATA
+// ## 10. DATA
 // =========================================================
 
 function formatarDataEquipe(
@@ -721,7 +1111,7 @@ function formatarDataEquipe(
 
 
 // =========================================================
-// ## 10. SELECT DE PERFIL DO ADM
+// ## 11. SELECT DE PERFIL DO ADM
 // =========================================================
 
 function selectPerfilEquipe(
@@ -738,10 +1128,6 @@ function selectPerfilEquipe(
 
   }
 
-
-  // Conta ainda não aprovada:
-  // primeiro aprovamos como vendedor.
-  // Depois o ADM pode promover para Gestor.
 
   if (
     !perfil.ativo
@@ -814,16 +1200,140 @@ function selectPerfilEquipe(
 
 
 // =========================================================
-// ## 11. AÇÕES
+// ## 12. SELECT DE TIME
+// =========================================================
+
+function selectTimeEquipe(
+  perfil
+) {
+
+  if (
+    perfil.tipo_acesso !==
+    'vendedor'
+  ) {
+
+    return `
+      <span class="equipe-time-empty">
+        —
+      </span>
+    `;
+
+  }
+
+
+  if (
+    !usuarioPodeGerenciarEquipe()
+  ) {
+
+    const classeTime =
+      perfil.time_equipe
+        ? `time-${perfil.time_equipe}`
+        : 'time-sem-time';
+
+
+    return `
+      <span
+        class="
+          equipe-badge
+          ${escaparEquipe(
+            classeTime
+          )}
+        "
+      >
+        ${
+          escaparEquipe(
+            nomeTimeGestaoEquipe(
+              perfil.time_equipe
+            )
+          )
+        }
+      </span>
+    `;
+
+  }
+
+
+  return `
+    <select
+      class="
+        equipe-team-select
+        ${
+          !perfil.time_equipe
+            ? 'sem-time'
+            : ''
+        }
+      "
+      onchange="
+        alterarTimeUsuarioEquipe(
+          '${escaparEquipe(
+            perfil.user_id
+          )}',
+          this.value
+        )
+      "
+    >
+
+      <option
+        value=""
+        ${
+          !perfil.time_equipe
+            ? 'selected'
+            : ''
+        }
+        disabled
+      >
+        Selecionar Time
+      </option>
+
+      <option
+        value="pharma"
+        ${
+          perfil.time_equipe ===
+          'pharma'
+            ? 'selected'
+            : ''
+        }
+      >
+        Pharma
+      </option>
+
+      <option
+        value="food"
+        ${
+          perfil.time_equipe ===
+          'food'
+            ? 'selected'
+            : ''
+        }
+      >
+        Food
+      </option>
+
+      <option
+        value="revenda"
+        ${
+          perfil.time_equipe ===
+          'revenda'
+            ? 'selected'
+            : ''
+        }
+      >
+        Revenda
+      </option>
+
+    </select>
+  `;
+
+}
+
+
+// =========================================================
+// ## 13. AÇÕES
 // =========================================================
 
 function botoesEquipe(
   perfil
 ) {
-
-  // -------------------------------------------------------
-  // ## 11.1 VENDEDOR PENDENTE
-  // -------------------------------------------------------
 
   if (
     perfil.tipo_acesso ===
@@ -866,13 +1376,9 @@ function botoesEquipe(
   }
 
 
-  // -------------------------------------------------------
-  // ## 11.2 VENDEDOR ATIVO
-  // -------------------------------------------------------
-
   if (
     perfil.tipo_acesso ===
-      'vendedor'
+    'vendedor'
   ) {
 
     return `
@@ -910,10 +1416,6 @@ function botoesEquipe(
   }
 
 
-  // -------------------------------------------------------
-  // ## 11.3 PERFIL ADMINISTRATIVO
-  // -------------------------------------------------------
-
   if (
     usuarioEhAdmEquipe()
   ) {
@@ -949,7 +1451,7 @@ function botoesEquipe(
 
 
 // =========================================================
-// ## 12. RENDERIZAÇÃO
+// ## 14. RENDERIZAÇÃO
 // =========================================================
 
 function renderizarEquipe() {
@@ -1068,6 +1570,17 @@ function renderizarEquipe() {
         <td>
 
           ${
+            selectTimeEquipe(
+              perfil
+            )
+          }
+
+        </td>
+
+
+        <td>
+
+          ${
             badgeAcessoEquipe(
               perfil
             )
@@ -1115,7 +1628,7 @@ function renderizarEquipe() {
 
 
 // =========================================================
-// ## 13. CARREGAR EQUIPE
+// ## 15. CARREGAR EQUIPE
 // =========================================================
 
 async function carregarGestaoEquipe() {
@@ -1155,11 +1668,8 @@ async function carregarGestaoEquipe() {
       <tr>
 
         <td
-          colspan="5"
-          style="
-            padding:30px;
-            text-align:center;
-          "
+          colspan="6"
+          class="equipe-loading-cell"
         >
           Carregando equipe...
         </td>
@@ -1176,9 +1686,6 @@ async function carregarGestaoEquipe() {
     equipePerfis =
       await listarPerfisEquipe();
 
-
-    // Pendentes primeiro.
-    // Depois ativos em ordem alfabética.
 
     equipePerfis.sort(
       (
@@ -1229,15 +1736,10 @@ async function carregarGestaoEquipe() {
         <tr>
 
           <td
-            colspan="5"
-            style="
-              padding:30px;
-              text-align:center;
-            "
+            colspan="6"
+            class="equipe-loading-cell"
           >
-
             Não foi possível carregar a equipe.
-
           </td>
 
         </tr>
@@ -1257,7 +1759,39 @@ async function carregarGestaoEquipe() {
 
 
 // =========================================================
-// ## 14. APROVAR USUÁRIO
+// ## 16. RECARREGAR METAS RELACIONADAS
+// =========================================================
+
+async function recarregarMetasEquipeSeDisponivel() {
+
+  if (
+    typeof carregarMetasEquipe !==
+    'function'
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    await carregarMetasEquipe();
+
+  } catch (erro) {
+
+    console.warn(
+      'Equipe atualizada, mas não foi possível recarregar metas:',
+      erro
+    );
+
+  }
+
+}
+
+
+// =========================================================
+// ## 17. APROVAR USUÁRIO
 // =========================================================
 
 async function aprovarUsuarioEquipe(
@@ -1273,6 +1807,21 @@ async function aprovarUsuarioEquipe(
 
 
   if (!perfil) {
+
+    return;
+
+  }
+
+
+  if (
+    perfil.tipo_acesso ===
+      'vendedor' &&
+    !perfil.time_equipe
+  ) {
+
+    alert(
+      'Defina o Time comercial do vendedor antes de aprovar o acesso.'
+    );
 
     return;
 
@@ -1307,15 +1856,7 @@ async function aprovarUsuarioEquipe(
 
     await carregarGestaoEquipe();
 
-
-    if (
-      typeof carregarMetasEquipe ===
-      'function'
-    ) {
-
-      await carregarMetasEquipe();
-
-    }
+    await recarregarMetasEquipeSeDisponivel();
 
 
   } catch (erro) {
@@ -1340,7 +1881,7 @@ async function aprovarUsuarioEquipe(
 
 
 // =========================================================
-// ## 15. BLOQUEAR VENDEDOR
+// ## 18. BLOQUEAR VENDEDOR
 // =========================================================
 
 async function bloquearUsuarioEquipe(
@@ -1368,7 +1909,7 @@ async function bloquearUsuarioEquipe(
     );
 
 
-  if (!confirmar) {
+  if (!confirmimar) {
 
     return;
 
@@ -1390,15 +1931,7 @@ async function bloquearUsuarioEquipe(
 
     await carregarGestaoEquipe();
 
-
-    if (
-      typeof carregarMetasEquipe ===
-      'function'
-    ) {
-
-      await carregarMetasEquipe();
-
-    }
+    await recarregarMetasEquipeSeDisponivel();
 
 
   } catch (erro) {
@@ -1423,7 +1956,7 @@ async function bloquearUsuarioEquipe(
 
 
 // =========================================================
-// ## 16. ALTERAR PERFIL
+// ## 19. ALTERAR PERFIL
 // =========================================================
 
 async function alterarPerfilUsuarioEquipe(
@@ -1497,15 +2030,7 @@ async function alterarPerfilUsuarioEquipe(
 
     await carregarGestaoEquipe();
 
-
-    if (
-      typeof carregarMetasEquipe ===
-      'function'
-    ) {
-
-      await carregarMetasEquipe();
-
-    }
+    await recarregarMetasEquipeSeDisponivel();
 
 
   } catch (erro) {
@@ -1533,7 +2058,151 @@ async function alterarPerfilUsuarioEquipe(
 
 
 // =========================================================
-// ## 17. LIMPAR FILTROS
+// ## 20. ALTERAR TIME DO VENDEDOR
+// =========================================================
+
+async function alterarTimeUsuarioEquipe(
+  userId,
+  novoTime
+) {
+
+  if (
+    !usuarioPodeGerenciarEquipe()
+  ) {
+
+    return;
+
+  }
+
+
+  const perfil =
+    equipePerfis.find(
+      item =>
+        item.user_id ===
+        userId
+    );
+
+
+  if (
+    !perfil ||
+    perfil.tipo_acesso !==
+      'vendedor'
+  ) {
+
+    renderizarEquipe();
+
+    return;
+
+  }
+
+
+  const timeNormalizado =
+    String(
+      novoTime || ''
+    )
+      .trim()
+      .toLowerCase();
+
+
+  if (
+    ![
+      'pharma',
+      'food',
+      'revenda'
+    ].includes(
+      timeNormalizado
+    )
+  ) {
+
+    renderizarEquipe();
+
+    return;
+
+  }
+
+
+  if (
+    perfil.time_equipe ===
+    timeNormalizado
+  ) {
+
+    return;
+
+  }
+
+
+  const timeAnterior =
+    nomeTimeGestaoEquipe(
+      perfil.time_equipe
+    );
+
+
+  const timeNovo =
+    nomeTimeGestaoEquipe(
+      timeNormalizado
+    );
+
+
+  const confirmar =
+    confirm(
+      `Alterar o Time de ${perfil.nome} ` +
+      `de ${timeAnterior} para ${timeNovo}?`
+    );
+
+
+  if (!confirmar) {
+
+    renderizarEquipe();
+
+    return;
+
+  }
+
+
+  try {
+
+    await definirTimeVendedor(
+      userId,
+      timeNormalizado
+    );
+
+
+    toastMsg(
+      `${perfil.nome} agora pertence ao Time ${timeNovo}`
+    );
+
+
+    await carregarGestaoEquipe();
+
+    await recarregarMetasEquipeSeDisponivel();
+
+
+  } catch (erro) {
+
+    console.error(
+      'Erro ao alterar Time do vendedor:',
+      erro
+    );
+
+
+    alert(
+      'Não foi possível alterar o Time do vendedor.\n\n' +
+      (
+        erro?.message ||
+        'Erro desconhecido.'
+      )
+    );
+
+
+    await carregarGestaoEquipe();
+
+  }
+
+}
+
+
+// =========================================================
+// ## 21. LIMPAR FILTROS
 // =========================================================
 
 function limparFiltrosEquipe() {
@@ -1550,6 +2219,12 @@ function limparFiltrosEquipe() {
     );
 
 
+  const time =
+    document.getElementById(
+      'equipeFiltroTime'
+    );
+
+
   const acesso =
     document.getElementById(
       'equipeFiltroAcesso'
@@ -1557,26 +2232,22 @@ function limparFiltrosEquipe() {
 
 
   if (busca) {
-
-    busca.value =
-      '';
-
+    busca.value = '';
   }
 
 
   if (perfil) {
+    perfil.value = '';
+  }
 
-    perfil.value =
-      '';
 
+  if (time) {
+    time.value = '';
   }
 
 
   if (acesso) {
-
-    acesso.value =
-      '';
-
+    acesso.value = '';
   }
 
 
@@ -1586,7 +2257,7 @@ function limparFiltrosEquipe() {
 
 
 // =========================================================
-// ## 18. SINCRONIZAR ACESSO
+// ## 22. SINCRONIZAR USUÁRIO / ACESSO
 // =========================================================
 
 async function sincronizarGestaoEquipe() {
@@ -1604,6 +2275,18 @@ async function sincronizarGestaoEquipe() {
 
     equipePerfilAtual =
       await obterMeuPerfil();
+
+
+    // IMPORTANTE:
+    // A sincronização do Time do Orçamento acontece
+    // para TODOS os perfis, inclusive vendedor.
+    //
+    // Por isso ela deve acontecer antes de esconder
+    // a Gestão da Equipe do vendedor.
+
+    sincronizarTimeOrcamentoComPerfil(
+      equipePerfilAtual
+    );
 
 
     if (
@@ -1660,7 +2343,7 @@ async function sincronizarGestaoEquipe() {
 
 
 // =========================================================
-// ## 19. INICIALIZAÇÃO
+// ## 23. INICIALIZAÇÃO
 // =========================================================
 
 function iniciarModuloEquipe() {
@@ -1679,8 +2362,6 @@ function iniciarModuloEquipe() {
 
     client.auth.onAuthStateChange(
       () => {
-
-        // Executa fora do callback imediato do Auth.
 
         setTimeout(
           sincronizarGestaoEquipe,

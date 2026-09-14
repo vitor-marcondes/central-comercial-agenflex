@@ -3,9 +3,10 @@
    Arquivo: metas.css
 
    Responsabilidade:
-   - Gestão mensal de metas dos vendedores
-   - Indicadores do período
-   - Tabela de definição de metas
+   - Gestão da Meta Oficial por Time
+   - Gestão mensal das metas individuais
+   - Indicadores de distribuição
+   - Tabela de vendedores
    ========================================================= */
 
 
@@ -19,6 +20,7 @@
   border-top: 1px solid #e2e8f0;
 }
 
+
 .metas-equipe-head {
   display: flex;
   align-items: flex-start;
@@ -27,21 +29,25 @@
   margin-bottom: 18px;
 }
 
+
 .metas-equipe-head h3 {
   margin: 0 0 5px;
   font-size: 18px;
   color: #0f172a;
 }
 
+
 .metas-equipe-head p {
   margin: 0;
+  max-width: 620px;
   font-size: 12px;
+  line-height: 1.5;
   color: #64748b;
 }
 
 
 /* =========================================================
-   ## 2. PERÍODO
+   ## 2. PERÍODO / TIME
    ========================================================= */
 
 .metas-periodo {
@@ -52,131 +58,417 @@
   margin-bottom: 18px;
 }
 
+
 .metas-periodo .field {
   min-width: 150px;
 }
 
 
-/* =========================================================
-   ## 3. INDICADORES
-   ========================================================= */
-
-.metas-resumo {
-  display: grid;
-  grid-template-columns:
-    repeat(
-      3,
-      minmax(180px, 1fr)
-    );
-  gap: 12px;
-  margin-bottom: 18px;
+.metas-periodo select {
+  width: 100%;
 }
 
-.meta-resumo-card {
-  padding: 16px;
+
+/* =========================================================
+   ## 3. META OFICIAL
+   ========================================================= */
+
+.meta-oficial-box {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 22px;
+
+  margin-bottom: 18px;
+  padding: 18px;
+
   border: 1px solid #dbe2ea;
   border-radius: 12px;
+
   background: #f8fafc;
 }
 
-.meta-resumo-card span {
-  display: block;
-  margin-bottom: 7px;
-  font-size: 10px;
-  font-weight: 900;
-  color: #64748b;
-  letter-spacing: .4px;
+
+.meta-oficial-info {
+  min-width: 180px;
 }
 
-.meta-resumo-card strong {
+
+.meta-oficial-info > span {
   display: block;
-  font-size: 23px;
+  margin-bottom: 5px;
+
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .45px;
+
+  color: #64748b;
+}
+
+
+.meta-oficial-info strong {
+  display: block;
+
+  margin-bottom: 4px;
+
+  font-size: 20px;
+
+  color: #0f172a;
+}
+
+
+.meta-oficial-info small {
+  font-size: 11px;
+
+  color: #64748b;
+}
+
+
+.meta-oficial-editor {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+
+.meta-oficial-editor .field {
+  min-width: 220px;
+  margin: 0;
+}
+
+
+#metaOficialInput {
+  width: 100%;
+  min-width: 210px;
+
+  padding: 9px 11px;
+
+  border: 1px solid #cfd6df;
+  border-radius: 8px;
+
+  background: #fff;
+
+  font-weight: 800;
+
   color: #0f172a;
 }
 
 
 /* =========================================================
-   ## 4. TABELA
+   ## 4. INDICADORES
+   ========================================================= */
+
+.metas-resumo {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(170px, 1fr)
+    );
+
+  gap: 12px;
+
+  margin-bottom: 22px;
+}
+
+
+.meta-resumo-card {
+  padding: 16px;
+
+  border: 1px solid #dbe2ea;
+  border-radius: 12px;
+
+  background: #f8fafc;
+}
+
+
+.meta-resumo-card span {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .4px;
+
+  color: #64748b;
+}
+
+
+.meta-resumo-card strong {
+  display: block;
+
+  font-size: 22px;
+
+  color: #0f172a;
+}
+
+
+.meta-resumo-card small {
+  display: block;
+
+  margin-top: 5px;
+
+  font-size: 10px;
+
+  color: #64748b;
+}
+
+
+/* ---------------------------------------------------------
+   ## 4.1 Meta oficial
+   --------------------------------------------------------- */
+
+.meta-resumo-card.oficial {
+  background: #f3f8ff;
+  border-color: #d7e8fb;
+}
+
+
+/* ---------------------------------------------------------
+   ## 4.2 Distribuição
+   --------------------------------------------------------- */
+
+.meta-resumo-card.distribuida {
+  background: #f8fafc;
+}
+
+
+/* ---------------------------------------------------------
+   ## 4.3 Diferença
+   --------------------------------------------------------- */
+
+.meta-resumo-card.diferenca.restante {
+  background: #fff9e9;
+  border-color: #f4df9b;
+}
+
+
+.meta-resumo-card.diferenca.restante strong {
+  color: #8a5a00;
+}
+
+
+.meta-resumo-card.diferenca.excedente {
+  background: #fff0f0;
+  border-color: #f2c8c8;
+}
+
+
+.meta-resumo-card.diferenca.excedente strong {
+  color: #a32929;
+}
+
+
+.meta-resumo-card.diferenca.equilibrada {
+  background: #eaf8ef;
+  border-color: #ccebd6;
+}
+
+
+.meta-resumo-card.diferenca.equilibrada strong {
+  color: #146c2e;
+}
+
+
+/* ---------------------------------------------------------
+   ## 4.4 Vendedores
+   --------------------------------------------------------- */
+
+.meta-resumo-card.vendedores {
+  background: #f4f0ff;
+  border-color: #ded3fa;
+}
+
+
+/* =========================================================
+   ## 5. DISTRIBUIÇÃO
+   ========================================================= */
+
+.metas-distribuicao-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin: 4px 0 12px;
+}
+
+
+.metas-distribuicao-head h4 {
+  margin: 0 0 4px;
+
+  font-size: 14px;
+
+  color: #0f172a;
+}
+
+
+.metas-distribuicao-head p {
+  margin: 0;
+
+  font-size: 11px;
+
+  color: #64748b;
+}
+
+
+/* =========================================================
+   ## 6. TABELA
    ========================================================= */
 
 .metas-table {
-  min-width: 760px;
+  min-width: 780px;
 }
+
 
 .metas-table td {
   vertical-align: middle;
 }
 
-.meta-vendedor-nome {
-  font-weight: 900;
-  color: #0f172a;
-}
 
-.meta-vendedor-email {
-  margin-top: 4px;
-  font-size: 11px;
+.metas-loading-cell {
+  padding: 30px !important;
+
+  text-align: center;
+
   color: #64748b;
 }
 
+
+.meta-vendedor-nome {
+  font-weight: 900;
+
+  color: #0f172a;
+}
+
+
+.meta-vendedor-email {
+  margin-top: 4px;
+
+  font-size: 11px;
+
+  color: #64748b;
+}
+
+
 .meta-atual {
   font-weight: 900;
+
   white-space: nowrap;
 }
 
+
 .meta-input {
   width: 170px;
+
   padding: 8px 10px;
+
   border: 1px solid #cfd6df;
   border-radius: 8px;
+
   background: #fff;
+
   font-weight: 800;
+
+  color: #0f172a;
+}
+
+
+.meta-input:focus,
+#metaOficialInput:focus {
+  outline: none;
+
+  border-color: #94a3b8;
+
+  box-shadow:
+    0 0 0 2px
+    rgba(
+      148,
+      163,
+      184,
+      .15
+    );
 }
 
 
 /* =========================================================
-   ## 5. SITUAÇÃO
+   ## 7. SITUAÇÃO
    ========================================================= */
 
 .meta-status {
   display: inline-flex;
+
   padding: 5px 8px;
+
   border-radius: 999px;
+
   font-size: 9px;
+
   font-weight: 900;
+
   white-space: nowrap;
 }
 
+
 .meta-status.definida {
   background: #e7f6ec;
+
   color: #146c2e;
 }
 
+
 .meta-status.nao-definida {
   background: #fff4d6;
+
   color: #7a5200;
 }
 
 
 /* =========================================================
-   ## 6. ESTADO VAZIO
+   ## 8. ESTADO VAZIO
    ========================================================= */
 
 #metasVazio {
   display: none;
+
   margin-top: 14px;
+
   padding: 20px;
+
   border: 1px dashed #cfd6df;
   border-radius: 10px;
+
   background: #f8fafc;
+
   text-align: center;
+
   font-size: 12px;
+
   color: #64748b;
 }
 
 
 /* =========================================================
-   ## 7. RESPONSIVIDADE
+   ## 9. RESPONSIVIDADE
    ========================================================= */
+
+@media (max-width: 1100px) {
+
+  .metas-resumo {
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(170px, 1fr)
+      );
+
+  }
+
+}
+
 
 @media (max-width: 850px) {
 
@@ -184,16 +476,50 @@
     grid-template-columns: 1fr;
   }
 
+
   .metas-equipe-head {
     flex-direction: column;
   }
 
+
+  .meta-oficial-box {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+
+  .meta-oficial-editor {
+    width: 100%;
+  }
+
+
+  .meta-oficial-editor .field {
+    flex: 1;
+  }
+
 }
+
 
 @media (max-width: 650px) {
 
   .metas-periodo .field {
     flex-basis: 100%;
+  }
+
+
+  .meta-oficial-editor {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+
+  .meta-oficial-editor .field {
+    width: 100%;
+  }
+
+
+  #metaOficialInput {
+    min-width: 0;
   }
 
 }

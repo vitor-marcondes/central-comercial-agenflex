@@ -5,10 +5,13 @@
 // Responsabilidade:
 // - Painel comercial por perfil
 // - Visão Vendedor / Gestor / ADM
-// - Meta mensal
+// - Filtro comercial por Time
+// - Meta individual do vendedor
+// - Meta Oficial por Time
 // - Resultado conquistado
-// - Filtros comerciais
+// - Visão consolidada dos Times
 // - Comparativo da equipe
+// - Filtros comerciais
 // - Tabela das propostas
 //
 // Dependências:
@@ -22,24 +25,42 @@
 // ## 1. ESTADO
 // =========================================================
 
-let painelDados = [];
-let painelPerfis = [];
-let painelVendedores = [];
-let painelMetas = [];
+let painelDados =
+  [];
 
-let painelPerfilAtual = null;
-let painelCarregando = false;
-let painelMetasCarregando = false;
+let painelPerfis =
+  [];
+
+let painelVendedores =
+  [];
+
+let painelMetas =
+  [];
+
+let painelMetasOficiais =
+  [];
+
+let painelPerfilAtual =
+  null;
+
+let painelCarregando =
+  false;
+
+let painelMetasCarregando =
+  false;
 
 
 // =========================================================
 // ## 2. AUXILIARES
 // =========================================================
 
-function escaparPainel(valor) {
+function escaparPainel(
+  valor
+) {
 
   if (
-    typeof esc === 'function'
+    typeof esc ===
+    'function'
   ) {
 
     return esc(
@@ -52,29 +73,53 @@ function escaparPainel(valor) {
   return String(
     valor ?? ''
   )
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
+    .replaceAll(
+      '&',
+      '&amp;'
+    )
+    .replaceAll(
+      '<',
+      '&lt;'
+    )
+    .replaceAll(
+      '>',
+      '&gt;'
+    )
+    .replaceAll(
+      '"',
+      '&quot;'
+    )
+    .replaceAll(
+      "'",
+      '&#039;'
+    );
 }
 
 
-function formatarMoedaPainel(valor) {
+function formatarMoedaPainel(
+  valor
+) {
 
   return new Intl.NumberFormat(
     'pt-BR',
     {
-      style: 'currency',
-      currency: 'BRL'
+      style:
+        'currency',
+
+      currency:
+        'BRL'
     }
   ).format(
-    Number(valor) || 0
+    Number(
+      valor
+    ) || 0
   );
 }
 
 
-function formatarDataPainel(valor) {
+function formatarDataPainel(
+  valor
+) {
 
   if (!valor) {
 
@@ -84,7 +129,9 @@ function formatarDataPainel(valor) {
 
 
   const iso =
-    String(valor)
+    String(
+      valor
+    )
       .slice(
         0,
         10
@@ -92,7 +139,8 @@ function formatarDataPainel(valor) {
 
 
   if (
-    typeof brDate === 'function'
+    typeof brDate ===
+    'function'
   ) {
 
     return brDate(
@@ -107,7 +155,9 @@ function formatarDataPainel(valor) {
     mes,
     dia
   ] =
-    iso.split('-');
+    iso.split(
+      '-'
+    );
 
 
   return `${dia}/${mes}/${ano}`;
@@ -141,7 +191,84 @@ function painelEhVendedor() {
 
 
 // =========================================================
-// ## 4. REVISÃO ATUAL
+// ## 4. TIMES
+// =========================================================
+
+function normalizarTimePainel(
+  time
+) {
+
+  const valor =
+    String(
+      time || ''
+    )
+      .trim()
+      .toLowerCase();
+
+
+  return [
+    'pharma',
+    'food',
+    'revenda'
+  ].includes(
+    valor
+  )
+    ? valor
+    : null;
+}
+
+
+function nomeTimePainel(
+  time
+) {
+
+  const nomes = {
+
+    pharma:
+      'Pharma',
+
+    food:
+      'Food',
+
+    revenda:
+      'Revenda'
+
+  };
+
+
+  return nomes[
+    normalizarTimePainel(
+      time
+    )
+  ] || 'Sem Time';
+}
+
+
+function nomeTimePainelMaiusculo(
+  time
+) {
+
+  const valor =
+    normalizarTimePainel(
+      time
+    );
+
+
+  if (!valor) {
+
+    return 'SEM TIME';
+
+  }
+
+
+  return nomeTimePainel(
+    valor
+  ).toUpperCase();
+}
+
+
+// =========================================================
+// ## 5. REVISÃO ATUAL
 // =========================================================
 
 function revisaoAtualPainel(
@@ -172,7 +299,10 @@ function revisaoAtualPainel(
 
     [...revisoes]
       .sort(
-        (a, b) =>
+        (
+          a,
+          b
+        ) =>
           Number(
             b.numero_revisao
           ) -
@@ -189,7 +319,7 @@ function revisaoAtualPainel(
 
 
 // =========================================================
-// ## 5. VALOR DA PROPOSTA
+// ## 6. VALOR DA PROPOSTA
 // =========================================================
 
 function calcularValorRevisaoPainel(
@@ -239,9 +369,11 @@ function calcularValorRevisaoPainel(
         100;
 
 
-      return total +
+      return (
+        total +
         subtotal +
-        ipi;
+        ipi
+      );
 
     },
     0
@@ -250,7 +382,7 @@ function calcularValorRevisaoPainel(
 
 
 // =========================================================
-// ## 6. NORMALIZAR DADOS
+// ## 7. NORMALIZAR DADOS
 // =========================================================
 
 function normalizarDadosPainel(
@@ -287,6 +419,11 @@ function normalizarDadosPainel(
               .vendedor_responsavel_id ||
             null,
 
+          timeDocumento:
+            normalizarTimePainel(
+              revisao.time_equipe
+            ),
+
           valor:
             calcularValorRevisaoPainel(
               revisao
@@ -303,7 +440,7 @@ function normalizarDadosPainel(
 
 
 // =========================================================
-// ## 7. NOMES
+// ## 8. NOMES
 // =========================================================
 
 function nomeOrigemPainel(
@@ -324,8 +461,9 @@ function nomeOrigemPainel(
   };
 
 
-  return nomes[origem] ||
-    'SEM ORIGEM';
+  return nomes[
+    origem
+  ] || 'SEM ORIGEM';
 }
 
 
@@ -350,8 +488,9 @@ function nomeStatusPainel(
   };
 
 
-  return nomes[status] ||
-    'PROPOSTA';
+  return nomes[
+    status
+  ] || 'PROPOSTA';
 }
 
 
@@ -377,13 +516,15 @@ function nomeMesPainel(
 
 
   return meses[
-    Number(mes)
+    Number(
+      mes
+    )
   ] || '';
 }
 
 
 // =========================================================
-// ## 8. VENDEDOR DO REGISTRO
+// ## 9. VENDEDOR DO REGISTRO
 // =========================================================
 
 function obterPerfilVendedorPainel(
@@ -424,7 +565,50 @@ function nomeVendedorRegistroPainel(
 
 
 // =========================================================
-// ## 9. PERÍODO DA META
+// ## 10. TIME DO REGISTRO
+// =========================================================
+
+function timeRegistroPainel(
+  registro
+) {
+
+  // Primeiro utilizamos o Time que ficou registrado
+  // na revisão atual da proposta.
+
+  const timeDocumento =
+    normalizarTimePainel(
+      registro
+        ?.timeDocumento ||
+      registro
+        ?.revisao
+        ?.time_equipe
+    );
+
+
+  if (timeDocumento) {
+
+    return timeDocumento;
+
+  }
+
+
+  // Fallback para registros antigos que ainda não
+  // possuíam time_equipe na revisão.
+
+  const vendedor =
+    obterPerfilVendedorPainel(
+      registro?.vendedorId
+    );
+
+
+  return normalizarTimePainel(
+    vendedor?.time_equipe
+  );
+}
+
+
+// =========================================================
+// ## 11. PERÍODO DA META
 // =========================================================
 
 function periodoAtualPainel() {
@@ -478,7 +662,194 @@ function periodoMetaPainel() {
 
 
 // =========================================================
-// ## 10. MONTAR ÁREA DE META
+// ## 12. MONTAR FILTRO DE TIME
+// =========================================================
+
+function montarFiltroTimePainel() {
+
+  if (
+    document.getElementById(
+      'painelFiltroTimeWrap'
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  const pagina =
+    document.getElementById(
+      'painelPage'
+    );
+
+
+  const filtros =
+    pagina?.querySelector(
+      '.painel-filtros'
+    );
+
+
+  if (!filtros) {
+
+    return;
+
+  }
+
+
+  const wrapper =
+    document.createElement(
+      'div'
+    );
+
+
+  wrapper.id =
+    'painelFiltroTimeWrap';
+
+
+  wrapper.className =
+    'field painel-filtro-time';
+
+
+  wrapper.hidden =
+    true;
+
+
+  wrapper.innerHTML = `
+
+    <label>
+      Time
+    </label>
+
+    <select id="painelFiltroTime">
+
+      <option value="">
+        Todos os Times
+      </option>
+
+      <option value="pharma">
+        Pharma
+      </option>
+
+      <option value="food">
+        Food
+      </option>
+
+      <option value="revenda">
+        Revenda
+      </option>
+
+    </select>
+
+  `;
+
+
+  const vendedorWrap =
+    document.getElementById(
+      'painelFiltroVendedorWrap'
+    );
+
+
+  if (
+    vendedorWrap &&
+    vendedorWrap.parentElement ===
+    filtros
+  ) {
+
+    filtros.insertBefore(
+      wrapper,
+      vendedorWrap
+    );
+
+  } else {
+
+    filtros.prepend(
+      wrapper
+    );
+
+  }
+
+
+  document
+    .getElementById(
+      'painelFiltroTime'
+    )
+    ?.addEventListener(
+      'change',
+      aoAlterarTimePainel
+    );
+
+}
+
+
+function atualizarFiltroTimePainel() {
+
+  const wrapper =
+    document.getElementById(
+      'painelFiltroTimeWrap'
+    );
+
+
+  const select =
+    document.getElementById(
+      'painelFiltroTime'
+    );
+
+
+  if (
+    !wrapper ||
+    !select
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    painelEhGestorOuAdm()
+  ) {
+
+    wrapper.hidden =
+      false;
+
+    return;
+
+  }
+
+
+  wrapper.hidden =
+    true;
+
+  select.value =
+    '';
+}
+
+
+function aoAlterarTimePainel() {
+
+  const vendedor =
+    document.getElementById(
+      'painelFiltroVendedor'
+    );
+
+
+  if (vendedor) {
+
+    vendedor.value =
+      '';
+
+  }
+
+
+  atualizarFiltroVendedoresPainel();
+
+  renderizarPainel();
+}
+
+
+// =========================================================
+// ## 13. MONTAR ÁREA DE META
 // =========================================================
 
 function montarResumoMetaPainel() {
@@ -545,7 +916,7 @@ function montarResumoMetaPainel() {
         </h3>
 
         <p id="painelMetaSubtitulo">
-          Acompanhamento mensal da meta.
+          Acompanhamento mensal.
         </p>
 
       </div>
@@ -557,7 +928,7 @@ function montarResumoMetaPainel() {
         <div class="field">
 
           <label>
-            Mês da meta
+            Mês
           </label>
 
           <select id="painelMetaMes">
@@ -621,7 +992,7 @@ function montarResumoMetaPainel() {
 
       <div class="painel-meta-card">
 
-        <span>
+        <span id="painelMetaLabel">
           META
         </span>
 
@@ -666,6 +1037,23 @@ function montarResumoMetaPainel() {
 
         <strong id="painelMetaPercentual">
           0%
+        </strong>
+
+      </div>
+
+
+      <div
+        id="painelMetaDistribuidaCard"
+        class="painel-meta-card distribuida"
+        hidden
+      >
+
+        <span>
+          METAS DISTRIBUÍDAS
+        </span>
+
+        <strong id="painelMetaDistribuida">
+          R$ 0,00
         </strong>
 
       </div>
@@ -764,7 +1152,91 @@ function montarResumoMetaPainel() {
 
 
 // =========================================================
-// ## 11. MONTAR COMPARATIVO
+// ## 14. RESUMO DOS TIMES
+// =========================================================
+
+function montarResumoTimesPainel() {
+
+  if (
+    document.getElementById(
+      'painelResumoTimes'
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  const metaArea =
+    document.getElementById(
+      'painelMetaResumo'
+    );
+
+
+  if (!metaArea) {
+
+    return;
+
+  }
+
+
+  const area =
+    document.createElement(
+      'div'
+    );
+
+
+  area.id =
+    'painelResumoTimes';
+
+
+  area.className =
+    'painel-times-resumo';
+
+
+  area.hidden =
+    true;
+
+
+  area.innerHTML = `
+
+    <div class="painel-times-head">
+
+      <div>
+
+        <h3>
+          Resultado por Time
+        </h3>
+
+        <p id="painelTimesPeriodo">
+          —
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <div
+      id="painelTimesCards"
+      class="painel-times-cards"
+    >
+    </div>
+
+  `;
+
+
+  metaArea.insertAdjacentElement(
+    'afterend',
+    area
+  );
+
+}
+
+
+// =========================================================
+// ## 15. MONTAR COMPARATIVO
 // =========================================================
 
 function montarComparativoPainel() {
@@ -826,11 +1298,11 @@ function montarComparativoPainel() {
 
       <div>
 
-        <h3>
+        <h3 id="painelComparativoTitulo">
           📈 Comparativo dos Vendedores
         </h3>
 
-        <p>
+        <p id="painelComparativoSubtitulo">
           Resultado do período da meta.
         </p>
 
@@ -849,6 +1321,10 @@ function montarComparativoPainel() {
 
             <th>
               Vendedor
+            </th>
+
+            <th>
+              Time
             </th>
 
             <th>
@@ -891,7 +1367,7 @@ function montarComparativoPainel() {
 
 
 // =========================================================
-// ## 12. META DE UM VENDEDOR
+// ## 16. METAS
 // =========================================================
 
 function metaDoVendedorPainel(
@@ -906,8 +1382,128 @@ function metaDoVendedorPainel(
 }
 
 
+function metaOficialTimePainel(
+  timeEquipe
+) {
+
+  const time =
+    normalizarTimePainel(
+      timeEquipe
+    );
+
+
+  if (!time) {
+
+    return null;
+
+  }
+
+
+  return painelMetasOficiais.find(
+    meta =>
+      meta.time_equipe ===
+      time
+  ) || null;
+}
+
+
+function vendedoresDoTimePainel(
+  timeEquipe
+) {
+
+  const time =
+    normalizarTimePainel(
+      timeEquipe
+    );
+
+
+  if (!time) {
+
+    return [
+      ...painelVendedores
+    ];
+
+  }
+
+
+  return painelVendedores.filter(
+    vendedor =>
+      normalizarTimePainel(
+        vendedor.time_equipe
+      ) ===
+      time
+  );
+}
+
+
+function somaMetasVendedoresPainel(
+  vendedores
+) {
+
+  return (
+    vendedores || []
+  ).reduce(
+    (
+      total,
+      vendedor
+    ) => {
+
+      const meta =
+        metaDoVendedorPainel(
+          vendedor.user_id
+        );
+
+
+      return (
+        total +
+        (
+          Number(
+            meta?.meta_valor
+          ) || 0
+        )
+      );
+
+    },
+    0
+  );
+}
+
+
+function somaMetasOficiaisPainel() {
+
+  return [
+    'pharma',
+    'food',
+    'revenda'
+  ].reduce(
+    (
+      total,
+      time
+    ) => {
+
+      const meta =
+        metaOficialTimePainel(
+          time
+        );
+
+
+      return (
+        total +
+        (
+          Number(
+            meta?.meta_valor
+          ) || 0
+        )
+      );
+
+    },
+    0
+  );
+}
+
+
 // =========================================================
-// ## 13. DATA DO CONCLUÍDO
+// ## 17. DATA DO CONCLUÍDO
 // =========================================================
 
 function dataConclusaoPainel(
@@ -949,7 +1545,9 @@ function registroNoPeriodoMetaPainel(
 
 
   const texto =
-    String(data)
+    String(
+      data
+    )
       .slice(
         0,
         10
@@ -961,7 +1559,9 @@ function registroNoPeriodoMetaPainel(
     dataMes
   ] =
     texto
-      .split('-')
+      .split(
+        '-'
+      )
       .map(
         Number
       );
@@ -969,15 +1569,19 @@ function registroNoPeriodoMetaPainel(
 
   return (
     dataAno ===
-      Number(ano) &&
+      Number(
+        ano
+      ) &&
     dataMes ===
-      Number(mes)
+      Number(
+        mes
+      )
   );
 }
 
 
 // =========================================================
-// ## 14. VALOR CONQUISTADO
+// ## 18. RESULTADO CONQUISTADO
 // =========================================================
 
 function conquistadoVendedorPainel(
@@ -1014,8 +1618,87 @@ function conquistadoVendedorPainel(
 }
 
 
+function conquistadoTimePainel(
+  timeEquipe,
+  ano,
+  mes
+) {
+
+  const time =
+    normalizarTimePainel(
+      timeEquipe
+    );
+
+
+  if (!time) {
+
+    return 0;
+
+  }
+
+
+  return painelDados
+    .filter(
+      registro =>
+        registro.proposta
+          .status_comercial ===
+          'concluido' &&
+
+        timeRegistroPainel(
+          registro
+        ) ===
+          time &&
+
+        registroNoPeriodoMetaPainel(
+          registro,
+          ano,
+          mes
+        )
+    )
+    .reduce(
+      (
+        total,
+        registro
+      ) =>
+        total +
+        registro.valor,
+      0
+    );
+}
+
+
+function conquistadoGeralPainel(
+  ano,
+  mes
+) {
+
+  return painelDados
+    .filter(
+      registro =>
+        registro.proposta
+          .status_comercial ===
+          'concluido' &&
+
+        registroNoPeriodoMetaPainel(
+          registro,
+          ano,
+          mes
+        )
+    )
+    .reduce(
+      (
+        total,
+        registro
+      ) =>
+        total +
+        registro.valor,
+      0
+    );
+}
+
+
 // =========================================================
-// ## 15. FILTRO DE VENDEDOR
+// ## 19. FILTRO DE VENDEDORES
 // =========================================================
 
 function atualizarFiltroVendedoresPainel() {
@@ -1042,9 +1725,17 @@ function atualizarFiltroVendedoresPainel() {
   }
 
 
+  const valorAnterior =
+    select.value;
+
+
   select.innerHTML =
     '';
 
+
+  // -------------------------------------------------------
+  // ## 19.1 Vendedor
+  // -------------------------------------------------------
 
   if (
     painelEhVendedor()
@@ -1082,8 +1773,34 @@ function atualizarFiltroVendedoresPainel() {
   }
 
 
+  // -------------------------------------------------------
+  // ## 19.2 Gestor / ADM
+  // -------------------------------------------------------
+
   wrapper.style.display =
     '';
+
+
+  const filtroTime =
+    document
+      .getElementById(
+        'painelFiltroTime'
+      )
+      ?.value || '';
+
+
+  const vendedoresDisponiveis =
+    filtroTime
+      ? painelVendedores.filter(
+          vendedor =>
+            normalizarTimePainel(
+              vendedor.time_equipe
+            ) ===
+            filtroTime
+        )
+      : [
+          ...painelVendedores
+        ];
 
 
   const todos =
@@ -1105,7 +1822,7 @@ function atualizarFiltroVendedoresPainel() {
   );
 
 
-  painelVendedores.forEach(
+  vendedoresDisponiveis.forEach(
     vendedor => {
 
       const option =
@@ -1132,8 +1849,33 @@ function atualizarFiltroVendedoresPainel() {
 
   const possuiSemResponsavel =
     painelDados.some(
-      registro =>
-        !registro.vendedorId
+      registro => {
+
+        if (
+          registro.vendedorId
+        ) {
+
+          return false;
+
+        }
+
+
+        if (
+          filtroTime &&
+          timeRegistroPainel(
+            registro
+          ) !==
+          filtroTime
+        ) {
+
+          return false;
+
+        }
+
+
+        return true;
+
+      }
     );
 
 
@@ -1161,16 +1903,38 @@ function atualizarFiltroVendedoresPainel() {
 
   }
 
+
+  const aindaExiste =
+    [
+      ...select.options
+    ].some(
+      option =>
+        option.value ===
+        valorAnterior
+    );
+
+
+  select.value =
+    aindaExiste
+      ? valorAnterior
+      : '';
 }
 
 
 // =========================================================
-// ## 16. FILTROS
+// ## 20. FILTROS
 // =========================================================
 
 function obterFiltrosPainel() {
 
   return {
+
+    time:
+      document
+        .getElementById(
+          'painelFiltroTime'
+        )
+        ?.value || '',
 
     origem:
       document
@@ -1229,7 +1993,7 @@ function dadosFiltradosPainel() {
 
 
       // ---------------------------------------------------
-      // VENDEDOR
+      // ## 20.1 Vendedor logado
       // ---------------------------------------------------
 
       if (
@@ -1256,7 +2020,33 @@ function dadosFiltradosPainel() {
 
         }
 
-      } else if (
+      }
+
+
+      // ---------------------------------------------------
+      // ## 20.2 Time — Gestor / ADM
+      // ---------------------------------------------------
+
+      if (
+        painelEhGestorOuAdm() &&
+        filtros.time &&
+        timeRegistroPainel(
+          registro
+        ) !==
+        filtros.time
+      ) {
+
+        return false;
+
+      }
+
+
+      // ---------------------------------------------------
+      // ## 20.3 Filtro de vendedor
+      // ---------------------------------------------------
+
+      if (
+        painelEhGestorOuAdm() &&
         filtros.vendedor ===
         '__sem_responsavel__'
       ) {
@@ -1270,6 +2060,7 @@ function dadosFiltradosPainel() {
         }
 
       } else if (
+        painelEhGestorOuAdm() &&
         filtros.vendedor &&
         registro.vendedorId !==
         filtros.vendedor
@@ -1281,7 +2072,7 @@ function dadosFiltradosPainel() {
 
 
       // ---------------------------------------------------
-      // ORIGEM
+      // ## 20.4 Origem
       // ---------------------------------------------------
 
       if (
@@ -1296,7 +2087,7 @@ function dadosFiltradosPainel() {
 
 
       // ---------------------------------------------------
-      // STATUS
+      // ## 20.5 Status
       // ---------------------------------------------------
 
       if (
@@ -1311,7 +2102,7 @@ function dadosFiltradosPainel() {
 
 
       // ---------------------------------------------------
-      // DATA
+      // ## 20.6 Data
       // ---------------------------------------------------
 
       const data =
@@ -1361,7 +2152,7 @@ function dadosFiltradosPainel() {
 
 
 // =========================================================
-// ## 17. BADGES
+// ## 21. BADGES
 // =========================================================
 
 function badgeOrigemPainel(
@@ -1414,6 +2205,43 @@ function badgeStatusPainel(
 }
 
 
+function badgeTimePainel(
+  time
+) {
+
+  const normalizado =
+    normalizarTimePainel(
+      time
+    );
+
+
+  if (!normalizado) {
+
+    return `
+      <span class="painel-badge time sem-time">
+        SEM TIME
+      </span>
+    `;
+
+  }
+
+
+  return `
+    <span
+      class="painel-badge time ${escaparPainel(normalizado)}"
+    >
+      ${
+        escaparPainel(
+          nomeTimePainelMaiusculo(
+            normalizado
+          )
+        )
+      }
+    </span>
+  `;
+}
+
+
 function badgeRevisaoPainel(
   revisao
 ) {
@@ -1453,7 +2281,7 @@ function badgeRevisaoPainel(
 
 
 // =========================================================
-// ## 18. INDICADORES DE STATUS
+// ## 22. INDICADORES DE STATUS
 // =========================================================
 
 function atualizarIndicadoresPainel(
@@ -1495,7 +2323,9 @@ function atualizarIndicadoresPainel(
 
 
       if (
-        !indicadores[status]
+        !indicadores[
+          status
+        ]
       ) {
 
         return;
@@ -1503,13 +2333,15 @@ function atualizarIndicadoresPainel(
       }
 
 
-      indicadores[status]
-        .quantidade +=
+      indicadores[
+        status
+      ].quantidade +=
         1;
 
 
-      indicadores[status]
-        .valor +=
+      indicadores[
+        status
+      ].valor +=
         registro.valor;
 
     }
@@ -1586,7 +2418,7 @@ function atualizarIndicadoresPainel(
 
 
 // =========================================================
-// ## 19. RESUMO DA META
+// ## 23. RESUMO DA META
 // =========================================================
 
 function atualizarResumoMetaPainel() {
@@ -1603,9 +2435,19 @@ function atualizarResumoMetaPainel() {
     );
 
 
-  if (
-    !titulo
-  ) {
+  const labelMeta =
+    document.getElementById(
+      'painelMetaLabel'
+    );
+
+
+  const distribuidaCard =
+    document.getElementById(
+      'painelMetaDistribuidaCard'
+    );
+
+
+  if (!titulo) {
 
     return;
 
@@ -1616,121 +2458,273 @@ function atualizarResumoMetaPainel() {
     periodoMetaPainel();
 
 
-  const filtroVendedor =
-    document
-      .getElementById(
-        'painelFiltroVendedor'
-      )
-      ?.value || '';
+  const filtros =
+    obterFiltrosPainel();
 
 
-  let vendedoresAlvo =
-    [];
+  const vendedorSelecionado =
+    (
+      filtros.vendedor &&
+      filtros.vendedor !==
+        '__sem_responsavel__'
+    )
+      ? obterPerfilVendedorPainel(
+          filtros.vendedor
+        )
+      : null;
 
+
+  let metaTotal =
+    0;
+
+
+  let conquistado =
+    0;
+
+
+  let distribuido =
+    0;
+
+
+  let mostrarDistribuido =
+    false;
+
+
+  // -------------------------------------------------------
+  // ## 23.1 Vendedor logado
+  // -------------------------------------------------------
 
   if (
     painelEhVendedor()
   ) {
 
-    vendedoresAlvo =
-      [
-        painelPerfilAtual
-      ];
+    const meta =
+      metaDoVendedorPainel(
+        painelPerfilAtual.user_id
+      );
+
+
+    metaTotal =
+      Number(
+        meta?.meta_valor
+      ) || 0;
+
+
+    conquistado =
+      conquistadoVendedorPainel(
+        painelPerfilAtual.user_id,
+        periodo.ano,
+        periodo.mes
+      );
 
 
     titulo.textContent =
       '🎯 Minha Meta';
 
-  } else if (
-    filtroVendedor &&
-    filtroVendedor !==
-    '__sem_responsavel__'
+
+    if (labelMeta) {
+
+      labelMeta.textContent =
+        'META';
+
+    }
+
+
+    if (subtitulo) {
+
+      subtitulo.textContent =
+        `${nomeMesPainel(
+          periodo.mes
+        )} de ${periodo.ano} • ` +
+        `${nomeTimePainel(
+          painelPerfilAtual.time_equipe
+        )}`;
+
+    }
+
+  }
+
+
+  // -------------------------------------------------------
+  // ## 23.2 Vendedor específico — Gestor / ADM
+  // -------------------------------------------------------
+
+  else if (
+    vendedorSelecionado
   ) {
 
-    const vendedor =
-      obterPerfilVendedorPainel(
-        filtroVendedor
+    const meta =
+      metaDoVendedorPainel(
+        vendedorSelecionado.user_id
       );
 
 
-    vendedoresAlvo =
-      vendedor
-        ? [vendedor]
-        : [];
+    metaTotal =
+      Number(
+        meta?.meta_valor
+      ) || 0;
+
+
+    conquistado =
+      conquistadoVendedorPainel(
+        vendedorSelecionado.user_id,
+        periodo.ano,
+        periodo.mes
+      );
 
 
     titulo.textContent =
-      vendedor
-        ? `🎯 Meta de ${vendedor.nome}`
-        : '🎯 Meta do Vendedor';
-
-  } else {
-
-    vendedoresAlvo =
-      [...painelVendedores];
+      `🎯 Meta de ${vendedorSelecionado.nome}`;
 
 
-    titulo.textContent =
-      '🎯 Meta da Equipe';
+    if (labelMeta) {
 
-  }
+      labelMeta.textContent =
+        'META INDIVIDUAL';
 
-
-  if (subtitulo) {
-
-    subtitulo.textContent =
-      `${nomeMesPainel(periodo.mes)} de ${periodo.ano}`;
-
-  }
+    }
 
 
-  const ids =
-    vendedoresAlvo.map(
-      vendedor =>
-        vendedor.user_id
-    );
+    if (subtitulo) {
 
-
-  const metaTotal =
-    vendedoresAlvo.reduce(
-      (
-        total,
-        vendedor
-      ) => {
-
-        const meta =
-          metaDoVendedorPainel(
-            vendedor.user_id
-          );
-
-
-        return total +
-          (
-            Number(
-              meta?.meta_valor
-            ) || 0
-          );
-
-      },
-      0
-    );
-
-
-  const conquistado =
-    ids.reduce(
-      (
-        total,
-        userId
-      ) =>
-        total +
-        conquistadoVendedorPainel(
-          userId,
-          periodo.ano,
+      subtitulo.textContent =
+        `${nomeMesPainel(
           periodo.mes
-        ),
-      0
-    );
+        )} de ${periodo.ano} • ` +
+        `${nomeTimePainel(
+          vendedorSelecionado.time_equipe
+        )}`;
 
+    }
+
+  }
+
+
+  // -------------------------------------------------------
+  // ## 23.3 Time específico — Gestor / ADM
+  // -------------------------------------------------------
+
+  else if (
+    filtros.time
+  ) {
+
+    const metaOficial =
+      metaOficialTimePainel(
+        filtros.time
+      );
+
+
+    const vendedores =
+      vendedoresDoTimePainel(
+        filtros.time
+      );
+
+
+    metaTotal =
+      Number(
+        metaOficial?.meta_valor
+      ) || 0;
+
+
+    conquistado =
+      conquistadoTimePainel(
+        filtros.time,
+        periodo.ano,
+        periodo.mes
+      );
+
+
+    distribuido =
+      somaMetasVendedoresPainel(
+        vendedores
+      );
+
+
+    mostrarDistribuido =
+      true;
+
+
+    titulo.textContent =
+      `🎯 Time ${nomeTimePainel(
+        filtros.time
+      )}`;
+
+
+    if (labelMeta) {
+
+      labelMeta.textContent =
+        'META OFICIAL';
+
+    }
+
+
+    if (subtitulo) {
+
+      subtitulo.textContent =
+        `${nomeMesPainel(
+          periodo.mes
+        )} de ${periodo.ano}`;
+
+    }
+
+  }
+
+
+  // -------------------------------------------------------
+  // ## 23.4 Consolidado — Gestor / ADM
+  // -------------------------------------------------------
+
+  else {
+
+    metaTotal =
+      somaMetasOficiaisPainel();
+
+
+    conquistado =
+      conquistadoGeralPainel(
+        periodo.ano,
+        periodo.mes
+      );
+
+
+    distribuido =
+      somaMetasVendedoresPainel(
+        painelVendedores
+      );
+
+
+    mostrarDistribuido =
+      true;
+
+
+    titulo.textContent =
+      '🎯 Resultado Geral';
+
+
+    if (labelMeta) {
+
+      labelMeta.textContent =
+        'META OFICIAL TOTAL';
+
+    }
+
+
+    if (subtitulo) {
+
+      subtitulo.textContent =
+        `${nomeMesPainel(
+          periodo.mes
+        )} de ${periodo.ano} • ` +
+        `Pharma + Food + Revenda`;
+
+    }
+
+  }
+
+
+  // -------------------------------------------------------
+  // ## 23.5 Cálculos
+  // -------------------------------------------------------
 
   const falta =
     Math.max(
@@ -1802,6 +2796,24 @@ function atualizarResumoMetaPainel() {
   );
 
 
+  definir(
+    'painelMetaDistribuida',
+    formatarMoedaPainel(
+      distribuido
+    )
+  );
+
+
+  if (
+    distribuidaCard
+  ) {
+
+    distribuidaCard.hidden =
+      !mostrarDistribuido;
+
+  }
+
+
   const barra =
     document.getElementById(
       'painelMetaProgressBar'
@@ -1825,7 +2837,243 @@ function atualizarResumoMetaPainel() {
 
 
 // =========================================================
-// ## 20. COMPARATIVO DA EQUIPE
+// ## 24. RESUMO CONSOLIDADO DOS TIMES
+// =========================================================
+
+function renderizarResumoTimesPainel() {
+
+  const area =
+    document.getElementById(
+      'painelResumoTimes'
+    );
+
+
+  const cards =
+    document.getElementById(
+      'painelTimesCards'
+    );
+
+
+  const periodoTexto =
+    document.getElementById(
+      'painelTimesPeriodo'
+    );
+
+
+  if (
+    !area ||
+    !cards
+  ) {
+
+    return;
+
+  }
+
+
+  const filtros =
+    obterFiltrosPainel();
+
+
+  const mostrar =
+    painelEhGestorOuAdm() &&
+    !filtros.time &&
+    !filtros.vendedor;
+
+
+  if (!mostrar) {
+
+    area.hidden =
+      true;
+
+    return;
+
+  }
+
+
+  area.hidden =
+    false;
+
+
+  const periodo =
+    periodoMetaPainel();
+
+
+  if (
+    periodoTexto
+  ) {
+
+    periodoTexto.textContent =
+      `${nomeMesPainel(
+        periodo.mes
+      )} de ${periodo.ano}`;
+
+  }
+
+
+  cards.innerHTML =
+    '';
+
+
+  [
+    'pharma',
+    'food',
+    'revenda'
+  ].forEach(
+    time => {
+
+      const metaOficial =
+        Number(
+          metaOficialTimePainel(
+            time
+          )?.meta_valor
+        ) || 0;
+
+
+      const vendedores =
+        vendedoresDoTimePainel(
+          time
+        );
+
+
+      const distribuido =
+        somaMetasVendedoresPainel(
+          vendedores
+        );
+
+
+      const conquistado =
+        conquistadoTimePainel(
+          time,
+          periodo.ano,
+          periodo.mes
+        );
+
+
+      const percentual =
+        metaOficial > 0
+          ? (
+              conquistado /
+              metaOficial
+            ) *
+            100
+          : 0;
+
+
+      const card =
+        document.createElement(
+          'div'
+        );
+
+
+      card.className =
+        `painel-time-card ${time}`;
+
+
+      card.innerHTML = `
+
+        <div class="painel-time-card-head">
+
+          <strong>
+            ${
+              escaparPainel(
+                nomeTimePainel(
+                  time
+                )
+              )
+            }
+          </strong>
+
+          ${
+            badgeTimePainel(
+              time
+            )
+          }
+
+        </div>
+
+
+        <div class="painel-time-card-grid">
+
+          <div>
+
+            <span>
+              META OFICIAL
+            </span>
+
+            <b>
+              ${
+                formatarMoedaPainel(
+                  metaOficial
+                )
+              }
+            </b>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              CONQUISTADO
+            </span>
+
+            <b>
+              ${
+                formatarMoedaPainel(
+                  conquistado
+                )
+              }
+            </b>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              DISTRIBUÍDO
+            </span>
+
+            <b>
+              ${
+                formatarMoedaPainel(
+                  distribuido
+                )
+              }
+            </b>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              ATINGIMENTO
+            </span>
+
+            <b>
+              ${percentual.toFixed(1)}%
+            </b>
+
+          </div>
+
+        </div>
+
+      `;
+
+
+      cards.appendChild(
+        card
+      );
+
+    }
+  );
+
+}
+
+
+// =========================================================
+// ## 25. COMPARATIVO DA EQUIPE
 // =========================================================
 
 function renderizarComparativoPainel() {
@@ -1842,6 +3090,18 @@ function renderizarComparativoPainel() {
     );
 
 
+  const titulo =
+    document.getElementById(
+      'painelComparativoTitulo'
+    );
+
+
+  const subtitulo =
+    document.getElementById(
+      'painelComparativoSubtitulo'
+    );
+
+
   if (
     !area ||
     !corpo
@@ -1852,17 +3112,13 @@ function renderizarComparativoPainel() {
   }
 
 
-  const filtroVendedor =
-    document
-      .getElementById(
-        'painelFiltroVendedor'
-      )
-      ?.value || '';
+  const filtros =
+    obterFiltrosPainel();
 
 
   if (
     !painelEhGestorOuAdm() ||
-    filtroVendedor
+    filtros.vendedor
   ) {
 
     area.hidden =
@@ -1877,72 +3133,134 @@ function renderizarComparativoPainel() {
     false;
 
 
-  corpo.innerHTML =
-    '';
-
-
   const periodo =
     periodoMetaPainel();
 
 
+  const vendedores =
+    filtros.time
+      ? vendedoresDoTimePainel(
+          filtros.time
+        )
+      : [
+          ...painelVendedores
+        ];
+
+
+  if (titulo) {
+
+    titulo.textContent =
+      filtros.time
+        ? `📈 Vendedores — ${nomeTimePainel(
+            filtros.time
+          )}`
+        : '📈 Comparativo dos Vendedores';
+
+  }
+
+
+  if (subtitulo) {
+
+    subtitulo.textContent =
+      `${nomeMesPainel(
+        periodo.mes
+      )} de ${periodo.ano}`;
+
+  }
+
+
+  corpo.innerHTML =
+    '';
+
+
   const linhas =
-    painelVendedores.map(
-      vendedor => {
+    vendedores
+      .map(
+        vendedor => {
 
-        const meta =
-          Number(
-            metaDoVendedorPainel(
-              vendedor.user_id
-            )?.meta_valor
-          ) || 0;
-
-
-        const conquistado =
-          conquistadoVendedorPainel(
-            vendedor.user_id,
-            periodo.ano,
-            periodo.mes
-          );
+          const meta =
+            Number(
+              metaDoVendedorPainel(
+                vendedor.user_id
+              )?.meta_valor
+            ) || 0;
 
 
-        const falta =
-          Math.max(
-            meta -
+          const conquistado =
+            conquistadoVendedorPainel(
+              vendedor.user_id,
+              periodo.ano,
+              periodo.mes
+            );
+
+
+          const falta =
+            Math.max(
+              meta -
+              conquistado,
+              0
+            );
+
+
+          const percentual =
+            meta > 0
+              ? (
+                  conquistado /
+                  meta
+                ) *
+                100
+              : 0;
+
+
+          return {
+
+            vendedor,
+
+            meta,
+
             conquistado,
-            0
-          );
+
+            falta,
+
+            percentual
+
+          };
+
+        }
+      )
+      .sort(
+        (
+          a,
+          b
+        ) =>
+          b.percentual -
+          a.percentual
+      );
 
 
-        const percentual =
-          meta > 0
-            ? (
-                conquistado /
-                meta
-              ) *
-              100
-            : 0;
+  if (
+    !linhas.length
+  ) {
+
+    corpo.innerHTML = `
+
+      <tr>
+
+        <td
+          colspan="6"
+          class="painel-loading"
+        >
+          Nenhum vendedor encontrado.
+        </td>
+
+      </tr>
+
+    `;
 
 
-        return {
+    return;
 
-          vendedor,
-          meta,
-          conquistado,
-          falta,
-          percentual
-
-        };
-
-      }
-    )
-    .sort(
-      (
-        a,
-        b
-      ) =>
-        b.percentual -
-        a.percentual
-    );
+  }
 
 
   linhas.forEach(
@@ -1970,15 +3288,30 @@ function renderizarComparativoPainel() {
 
 
         <td>
+
+          ${
+            badgeTimePainel(
+              linha.vendedor
+                .time_equipe
+            )
+          }
+
+        </td>
+
+
+        <td>
+
           ${
             formatarMoedaPainel(
               linha.meta
             )
           }
+
         </td>
 
 
         <td>
+
           <b>
             ${
               formatarMoedaPainel(
@@ -1986,15 +3319,18 @@ function renderizarComparativoPainel() {
               )
             }
           </b>
+
         </td>
 
 
         <td>
+
           ${
             formatarMoedaPainel(
               linha.falta
             )
           }
+
         </td>
 
 
@@ -2020,7 +3356,7 @@ function renderizarComparativoPainel() {
 
 
 // =========================================================
-// ## 21. RENDERIZAR TABELA PRINCIPAL
+// ## 26. RENDERIZAR TABELA PRINCIPAL
 // =========================================================
 
 function renderizarPainel() {
@@ -2087,6 +3423,9 @@ function renderizarPainel() {
   atualizarResumoMetaPainel();
 
 
+  renderizarResumoTimesPainel();
+
+
   renderizarComparativoPainel();
 
 
@@ -2116,11 +3455,13 @@ function renderizarPainel() {
       tr.innerHTML = `
 
         <td>
+
           <b>
             #${escaparPainel(
               proposta.numero
             )}
           </b>
+
         </td>
 
 
@@ -2136,12 +3477,14 @@ function renderizarPainel() {
           </b>
 
           <div class="painel-secondary">
+
             ${
               escaparPainel(
                 revisao.cliente ||
                 'Cliente não informado'
               )
             }
+
           </div>
 
         </td>
@@ -2175,47 +3518,57 @@ function renderizarPainel() {
 
 
         <td>
+
           ${
             formatarDataPainel(
               revisao.data_proposta
             )
           }
+
         </td>
 
 
         <td>
+
           ${
             badgeOrigemPainel(
               proposta.origem_comercial
             )
           }
+
         </td>
 
 
         <td>
+
           ${
             badgeStatusPainel(
               proposta.status_comercial
             )
           }
+
         </td>
 
 
         <td class="painel-value">
+
           ${
             formatarMoedaPainel(
               registro.valor
             )
           }
+
         </td>
 
 
         <td>
+
           ${
             badgeRevisaoPainel(
               revisao
             )
           }
+
         </td>
 
 
@@ -2251,7 +3604,7 @@ function renderizarPainel() {
 
 
 // =========================================================
-// ## 22. CARREGAR METAS
+// ## 27. CARREGAR METAS DO RESUMO
 // =========================================================
 
 async function carregarMetasResumoPainel() {
@@ -2276,8 +3629,9 @@ async function carregarMetasResumoPainel() {
       periodoMetaPainel();
 
 
-    painelMetas =
-      await listarMetasVendedor({
+    const tarefas = [
+
+      listarMetasVendedor({
 
         ano:
           periodo.ano,
@@ -2285,10 +3639,61 @@ async function carregarMetasResumoPainel() {
         mes:
           periodo.mes
 
-      });
+      })
+
+    ];
+
+
+    if (
+      painelEhGestorOuAdm()
+    ) {
+
+      tarefas.push(
+
+        listarMetasOficiaisEquipe({
+
+          ano:
+            periodo.ano,
+
+          mes:
+            periodo.mes
+
+        })
+
+      );
+
+    } else {
+
+      tarefas.push(
+        Promise.resolve(
+          []
+        )
+      );
+
+    }
+
+
+    const [
+      metasIndividuais,
+      metasOficiais
+    ] =
+      await Promise.all(
+        tarefas
+      );
+
+
+    painelMetas =
+      metasIndividuais || [];
+
+
+    painelMetasOficiais =
+      metasOficiais || [];
 
 
     atualizarResumoMetaPainel();
+
+
+    renderizarResumoTimesPainel();
 
 
     renderizarComparativoPainel();
@@ -2312,7 +3717,7 @@ async function carregarMetasResumoPainel() {
 
 
 // =========================================================
-// ## 23. CARREGAR PAINEL
+// ## 28. CARREGAR PAINEL
 // =========================================================
 
 async function carregarPainel() {
@@ -2326,7 +3731,12 @@ async function carregarPainel() {
   }
 
 
+  montarFiltroTimePainel();
+
   montarResumoMetaPainel();
+
+  montarResumoTimesPainel();
+
   montarComparativoPainel();
 
 
@@ -2405,32 +3815,72 @@ async function carregarPainel() {
     }
 
 
+    atualizarFiltroTimePainel();
+
+
     const periodo =
       periodoMetaPainel();
 
 
-    const [
-      propostas,
-      perfis,
-      metas
-    ] =
-      await Promise.all([
+    const tarefas = [
 
-        listarDadosPainelGestao({
-          limite: 500
-        }),
+      listarDadosPainelGestao({
+        limite: 500
+      }),
 
-        listarPerfisEquipe(),
+      listarPerfisEquipe(),
 
-        listarMetasVendedor({
+      listarMetasVendedor({
+
+        ano:
+          periodo.ano,
+
+        mes:
+          periodo.mes
+
+      })
+
+    ];
+
+
+    if (
+      painelEhGestorOuAdm()
+    ) {
+
+      tarefas.push(
+
+        listarMetasOficiaisEquipe({
+
           ano:
             periodo.ano,
 
           mes:
             periodo.mes
+
         })
 
-      ]);
+      );
+
+    } else {
+
+      tarefas.push(
+        Promise.resolve(
+          []
+        )
+      );
+
+    }
+
+
+    const [
+      propostas,
+      perfis,
+      metas,
+      metasOficiais
+    ] =
+      await Promise.all(
+        tarefas
+      );
 
 
     painelPerfis =
@@ -2443,7 +3893,7 @@ async function carregarPainel() {
           perfil =>
             perfil.ativo &&
             perfil.tipo_acesso ===
-            'vendedor'
+              'vendedor'
         )
         .sort(
           (
@@ -2463,6 +3913,10 @@ async function carregarPainel() {
 
     painelMetas =
       metas || [];
+
+
+    painelMetasOficiais =
+      metasOficiais || [];
 
 
     painelDados =
@@ -2536,7 +3990,7 @@ async function carregarPainel() {
 
 
 // =========================================================
-// ## 24. ABRIR PÁGINA
+// ## 29. ABRIR PÁGINA
 // =========================================================
 
 async function abrirPainel(
@@ -2555,10 +4009,16 @@ async function abrirPainel(
 
 
 // =========================================================
-// ## 25. LIMPAR FILTROS
+// ## 30. LIMPAR FILTROS
 // =========================================================
 
 function limparFiltrosPainel() {
+
+  const time =
+    document.getElementById(
+      'painelFiltroTime'
+    );
+
 
   const origem =
     document.getElementById(
@@ -2590,6 +4050,14 @@ function limparFiltrosPainel() {
     );
 
 
+  if (time) {
+
+    time.value =
+      '';
+
+  }
+
+
   if (origem) {
 
     origem.value =
@@ -2602,17 +4070,6 @@ function limparFiltrosPainel() {
 
     status.value =
       '';
-
-  }
-
-
-  if (vendedor) {
-
-    vendedor.value =
-      painelEhVendedor()
-        ? painelPerfilAtual
-            ?.user_id || ''
-        : '';
 
   }
 
@@ -2633,13 +4090,27 @@ function limparFiltrosPainel() {
   }
 
 
+  atualizarFiltroVendedoresPainel();
+
+
+  if (vendedor) {
+
+    vendedor.value =
+      painelEhVendedor()
+        ? painelPerfilAtual
+            ?.user_id || ''
+        : '';
+
+  }
+
+
   renderizarPainel();
 
 }
 
 
 // =========================================================
-// ## 26. ABRIR PROPOSTA
+// ## 31. ABRIR PROPOSTA
 // =========================================================
 
 async function abrirPropostaPainel(
@@ -2703,12 +4174,17 @@ async function abrirPropostaPainel(
 
 
 // =========================================================
-// ## 27. EVENTOS DOS FILTROS
+// ## 32. EVENTOS DOS FILTROS
 // =========================================================
 
 function iniciarPainel() {
 
+  montarFiltroTimePainel();
+
   montarResumoMetaPainel();
+
+  montarResumoTimesPainel();
+
   montarComparativoPainel();
 
 
