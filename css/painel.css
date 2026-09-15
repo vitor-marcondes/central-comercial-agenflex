@@ -9,6 +9,8 @@
    - Resultado consolidado
    - Comparativo dos vendedores
    - Tabela comercial
+   - Ações do Painel
+   - Transferência de propostas
    ========================================================= */
 
 
@@ -697,6 +699,16 @@
    ## 13. AÇÕES
    ========================================================= */
 
+.painel-actions {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  white-space: nowrap;
+}
+
+
 .painel-open {
   padding: 7px 11px;
 
@@ -704,8 +716,320 @@
 }
 
 
+.painel-transferir {
+  padding: 7px 11px;
+
+  white-space: nowrap;
+}
+
+
 /* =========================================================
-   ## 14. CARREGAMENTO / VAZIO
+   ## 14. MODAL DE TRANSFERÊNCIA
+   ========================================================= */
+
+.painel-transferencia-modal {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  overflow-y: auto;
+
+  background:
+    rgba(
+      15,
+      23,
+      42,
+      .58
+    );
+
+  backdrop-filter:
+    blur(3px);
+}
+
+
+.painel-transferencia-modal[hidden] {
+  display: none !important;
+}
+
+
+body.painel-modal-aberto {
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   ## 15. CAIXA DO MODAL
+   ========================================================= */
+
+.painel-transferencia-dialog {
+  width: min(
+    100%,
+    560px
+  );
+
+  max-height:
+    calc(
+      100vh - 48px
+    );
+
+  overflow-y: auto;
+
+  border: 1px solid #dbe2ea;
+  border-radius: 16px;
+
+  background: #fff;
+
+  box-shadow:
+    0 24px 70px
+    rgba(
+      15,
+      23,
+      42,
+      .24
+    );
+}
+
+
+/* =========================================================
+   ## 16. CABEÇALHO DO MODAL
+   ========================================================= */
+
+.painel-transferencia-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 22px 22px 18px;
+
+  border-bottom:
+    1px solid #e5eaf0;
+}
+
+
+.painel-transferencia-head > div:first-child {
+  min-width: 0;
+}
+
+
+.painel-transferencia-kicker {
+  display: block;
+
+  margin-bottom: 5px;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  letter-spacing: .6px;
+
+  color: #64748b;
+}
+
+
+.painel-transferencia-head h3 {
+  margin: 0;
+
+  font-size: 20px;
+  line-height: 1.25;
+
+  color: #0f172a;
+}
+
+
+.painel-transferencia-head p {
+  margin: 6px 0 0;
+
+  font-size: 12px;
+  line-height: 1.5;
+
+  color: #64748b;
+}
+
+
+.painel-transferencia-fechar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 34px;
+
+  width: 34px;
+  height: 34px;
+
+  padding: 0;
+
+  border: 1px solid #dbe2ea;
+  border-radius: 9px;
+
+  background: #fff;
+
+  color: #475569;
+
+  font-size: 23px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+
+.painel-transferencia-fechar:hover {
+  background: #f8fafc;
+
+  color: #0f172a;
+}
+
+
+/* =========================================================
+   ## 17. CORPO DO MODAL
+   ========================================================= */
+
+.painel-transferencia-body {
+  display: flex;
+  flex-direction: column;
+
+  gap: 18px;
+
+  padding: 22px;
+}
+
+
+.painel-transferencia-body .field {
+  margin: 0;
+}
+
+
+.painel-transferencia-body label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  color: #334155;
+}
+
+
+.painel-transferencia-body select,
+.painel-transferencia-body textarea {
+  width: 100%;
+}
+
+
+.painel-transferencia-body textarea {
+  min-height: 105px;
+
+  resize: vertical;
+}
+
+
+/* =========================================================
+   ## 18. RESPONSÁVEL ATUAL
+   ========================================================= */
+
+.painel-transferencia-atual {
+  padding: 15px 16px;
+
+  border: 1px solid #dbe2ea;
+  border-radius: 12px;
+
+  background: #f8fafc;
+}
+
+
+.painel-transferencia-atual span {
+  display: block;
+
+  margin-bottom: 5px;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  letter-spacing: .5px;
+
+  color: #64748b;
+}
+
+
+.painel-transferencia-atual strong {
+  display: block;
+
+  margin-bottom: 5px;
+
+  font-size: 16px;
+
+  color: #0f172a;
+}
+
+
+.painel-transferencia-atual small {
+  display: block;
+
+  font-size: 11px;
+  line-height: 1.5;
+
+  color: #64748b;
+}
+
+
+/* =========================================================
+   ## 19. INFORMAÇÕES DO DESTINO
+   ========================================================= */
+
+.painel-transferencia-destino-info {
+  margin-top: 7px;
+
+  font-size: 11px;
+
+  color: #64748b;
+}
+
+
+.painel-transferencia-ajuda {
+  margin-top: 7px;
+
+  font-size: 10px;
+
+  color: #64748b;
+}
+
+
+/* =========================================================
+   ## 20. RODAPÉ DO MODAL
+   ========================================================= */
+
+.painel-transferencia-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 9px;
+
+  padding: 16px 22px 20px;
+
+  border-top:
+    1px solid #e5eaf0;
+
+  background: #f8fafc;
+}
+
+
+.painel-transferencia-footer .btn {
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   ## 21. CARREGAMENTO / VAZIO
    ========================================================= */
 
 .painel-loading {
@@ -736,7 +1060,7 @@
 
 
 /* =========================================================
-   ## 15. RESPONSIVIDADE
+   ## 22. RESPONSIVIDADE
    ========================================================= */
 
 @media (max-width: 1200px) {
@@ -796,6 +1120,59 @@
 
   .painel-time-card-grid {
     grid-template-columns: 1fr;
+  }
+
+
+  .painel-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+
+  .painel-actions .btn {
+    width: 100%;
+  }
+
+
+  .painel-transferencia-modal {
+    align-items: flex-start;
+
+    padding: 12px;
+  }
+
+
+  .painel-transferencia-dialog {
+    width: 100%;
+
+    max-height:
+      calc(
+        100vh - 24px
+      );
+
+    border-radius: 13px;
+  }
+
+
+  .painel-transferencia-head {
+    padding: 18px 16px 15px;
+  }
+
+
+  .painel-transferencia-body {
+    padding: 18px 16px;
+  }
+
+
+  .painel-transferencia-footer {
+    flex-direction: column-reverse;
+    align-items: stretch;
+
+    padding: 14px 16px 18px;
+  }
+
+
+  .painel-transferencia-footer .btn {
+    width: 100%;
   }
 
 }

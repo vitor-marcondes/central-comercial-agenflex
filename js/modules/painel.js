@@ -13,6 +13,7 @@
 // - Comparativo da equipe
 // - Filtros comerciais
 // - Tabela das propostas
+// - Transferência de propostas por Gestor / ADM
 //
 // Dependências:
 // - js/services/painel.service.js
@@ -47,6 +48,14 @@ let painelCarregando =
   false;
 
 let painelMetasCarregando =
+  false;
+
+
+let painelTransferenciaAtual =
+  null;
+
+
+let painelTransferenciaProcessando =
   false;
 
 
@@ -3356,7 +3365,809 @@ function renderizarComparativoPainel() {
 
 
 // =========================================================
-// ## 26. RENDERIZAR TABELA PRINCIPAL
+// ## 26. TRANSFERÊNCIA DE PROPOSTA
+// =========================================================
+
+function montarModalTransferenciaPainel() {
+
+  if (
+    document.getElementById(
+      'painelTransferenciaModal'
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  const modal =
+    document.createElement(
+      'div'
+    );
+
+
+  modal.id =
+    'painelTransferenciaModal';
+
+  modal.className =
+    'painel-transferencia-modal';
+
+  modal.hidden =
+    true;
+
+
+  modal.innerHTML = `
+
+    <div
+      class="painel-transferencia-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="painelTransferenciaTitulo"
+    >
+
+      <div class="painel-transferencia-head">
+
+        <div>
+
+          <span class="painel-transferencia-kicker">
+            GESTÃO DE RESPONSÁVEL
+          </span>
+
+          <h3 id="painelTransferenciaTitulo">
+            Transferir proposta
+          </h3>
+
+          <p id="painelTransferenciaSubtitulo">
+            Selecione o novo responsável e registre o motivo.
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="painel-transferencia-fechar"
+          aria-label="Fechar"
+          onclick="fecharTransferenciaPainel()"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div class="painel-transferencia-body">
+
+        <div class="painel-transferencia-atual">
+
+          <span>
+            RESPONSÁVEL ATUAL
+          </span>
+
+          <strong id="painelTransferenciaResponsavelAtual">
+            —
+          </strong>
+
+          <small id="painelTransferenciaTimeAtual">
+            —
+          </small>
+
+        </div>
+
+
+        <div class="field">
+
+          <label for="painelTransferenciaVendedor">
+            Novo responsável
+          </label>
+
+          <select id="painelTransferenciaVendedor">
+
+            <option value="">
+              Selecione um vendedor
+            </option>
+
+          </select>
+
+          <div
+            id="painelTransferenciaDestinoInfo"
+            class="painel-transferencia-destino-info"
+          >
+            Selecione o novo responsável.
+          </div>
+
+        </div>
+
+
+        <div class="field">
+
+          <label for="painelTransferenciaMotivo">
+            Motivo da transferência
+          </label>
+
+          <textarea
+            id="painelTransferenciaMotivo"
+            rows="4"
+            maxlength="500"
+            placeholder="Ex.: redistribuição de carteira, troca de responsável ou atendimento por outro vendedor."
+          ></textarea>
+
+          <div class="painel-transferencia-ajuda">
+            Obrigatório • mínimo de 5 caracteres • máximo de 500
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="painel-transferencia-footer">
+
+        <button
+          type="button"
+          class="btn light"
+          onclick="fecharTransferenciaPainel()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          id="painelTransferenciaConfirmar"
+          class="btn navy"
+          onclick="confirmarTransferenciaPainel()"
+        >
+          Confirmar transferência
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  modal.addEventListener(
+    'click',
+    evento => {
+
+      if (
+        evento.target === modal
+      ) {
+
+        fecharTransferenciaPainel();
+
+      }
+
+    }
+  );
+
+
+  document.body.appendChild(
+    modal
+  );
+
+
+  document
+    .getElementById(
+      'painelTransferenciaVendedor'
+    )
+    ?.addEventListener(
+      'change',
+      atualizarDestinoTransferenciaPainel
+    );
+
+}
+
+
+function atualizarDestinoTransferenciaPainel() {
+
+  const select =
+    document.getElementById(
+      'painelTransferenciaVendedor'
+    );
+
+
+  const info =
+    document.getElementById(
+      'painelTransferenciaDestinoInfo'
+    );
+
+
+  if (
+    !select ||
+    !info
+  ) {
+
+    return;
+
+  }
+
+
+  const vendedor =
+    painelVendedores.find(
+      item =>
+        item.user_id ===
+        select.value
+    );
+
+
+  if (!vendedor) {
+
+    info.textContent =
+      'Selecione o novo responsável.';
+
+    return;
+
+  }
+
+
+  info.textContent =
+    `${vendedor.nome} • Time ${nomeTimePainel(
+      vendedor.time_equipe
+    )}`;
+
+}
+
+
+function abrirTransferenciaPainel(
+  propostaId
+) {
+
+  if (
+    !painelEhGestorOuAdm()
+  ) {
+
+    alert(
+      'Apenas Gestor ou ADM podem transferir propostas.'
+    );
+
+    return;
+
+  }
+
+
+  montarModalTransferenciaPainel();
+
+
+  const registro =
+    painelDados.find(
+      item =>
+        item.proposta.id ===
+        propostaId
+    );
+
+
+  if (!registro) {
+
+    alert(
+      'Não foi possível localizar a proposta no painel.'
+    );
+
+    return;
+
+  }
+
+
+  const vendedorAtual =
+    obterPerfilVendedorPainel(
+      registro.vendedorId
+    );
+
+
+  const candidatos =
+    painelVendedores.filter(
+      vendedor =>
+        vendedor.user_id !==
+        registro.vendedorId
+    );
+
+
+  if (!candidatos.length) {
+
+    alert(
+      'Não existe outro vendedor ativo disponível para receber esta proposta.'
+    );
+
+    return;
+
+  }
+
+
+  painelTransferenciaAtual =
+    registro;
+
+
+  const modal =
+    document.getElementById(
+      'painelTransferenciaModal'
+    );
+
+
+  const titulo =
+    document.getElementById(
+      'painelTransferenciaTitulo'
+    );
+
+
+  const subtitulo =
+    document.getElementById(
+      'painelTransferenciaSubtitulo'
+    );
+
+
+  const responsavelAtual =
+    document.getElementById(
+      'painelTransferenciaResponsavelAtual'
+    );
+
+
+  const timeAtual =
+    document.getElementById(
+      'painelTransferenciaTimeAtual'
+    );
+
+
+  const select =
+    document.getElementById(
+      'painelTransferenciaVendedor'
+    );
+
+
+  const motivo =
+    document.getElementById(
+      'painelTransferenciaMotivo'
+    );
+
+
+  if (
+    !modal ||
+    !select ||
+    !motivo
+  ) {
+
+    return;
+
+  }
+
+
+  if (titulo) {
+
+    titulo.textContent =
+      `Transferir proposta #${registro.proposta.numero}`;
+
+  }
+
+
+  if (subtitulo) {
+
+    subtitulo.textContent =
+      registro.revisao.nome_proposta ||
+      'Selecione o novo responsável e registre o motivo.';
+
+  }
+
+
+  if (responsavelAtual) {
+
+    responsavelAtual.textContent =
+      vendedorAtual?.nome ||
+      registro.revisao.vendedor_nome ||
+      'Sem responsável';
+
+  }
+
+
+  if (timeAtual) {
+
+    const timeDoResponsavel =
+      normalizarTimePainel(
+        vendedorAtual?.time_equipe
+      );
+
+
+    const timeDocumento =
+      timeRegistroPainel(
+        registro
+      );
+
+
+    timeAtual.textContent =
+      timeDoResponsavel
+        ? `Time atual do responsável: ${nomeTimePainel(
+            timeDoResponsavel
+          )} • Documento: ${nomeTimePainel(
+            timeDocumento
+          )}`
+        : `Documento: ${nomeTimePainel(
+            timeDocumento
+          )}`;
+
+  }
+
+
+  select.innerHTML = `
+
+    <option value="">
+      Selecione um vendedor
+    </option>
+
+  `;
+
+
+  candidatos.forEach(
+    vendedor => {
+
+      const option =
+        document.createElement(
+          'option'
+        );
+
+
+      option.value =
+        vendedor.user_id;
+
+
+      option.textContent =
+        `${vendedor.nome} — ${nomeTimePainel(
+          vendedor.time_equipe
+        )}`;
+
+
+      select.appendChild(
+        option
+      );
+
+    }
+  );
+
+
+  motivo.value =
+    '';
+
+
+  atualizarDestinoTransferenciaPainel();
+
+
+  modal.hidden =
+    false;
+
+
+  document.body.classList.add(
+    'painel-modal-aberto'
+  );
+
+
+  setTimeout(
+    () => {
+
+      select.focus();
+
+    },
+    30
+  );
+
+}
+
+
+function fecharTransferenciaPainel() {
+
+  if (
+    painelTransferenciaProcessando
+  ) {
+
+    return;
+
+  }
+
+
+  const modal =
+    document.getElementById(
+      'painelTransferenciaModal'
+    );
+
+
+  if (modal) {
+
+    modal.hidden =
+      true;
+
+  }
+
+
+  document.body.classList.remove(
+    'painel-modal-aberto'
+  );
+
+
+  painelTransferenciaAtual =
+    null;
+
+}
+
+
+async function confirmarTransferenciaPainel() {
+
+  if (
+    painelTransferenciaProcessando ||
+    !painelTransferenciaAtual
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    !painelEhGestorOuAdm()
+  ) {
+
+    alert(
+      'Apenas Gestor ou ADM podem transferir propostas.'
+    );
+
+    return;
+
+  }
+
+
+  const select =
+    document.getElementById(
+      'painelTransferenciaVendedor'
+    );
+
+
+  const motivoEl =
+    document.getElementById(
+      'painelTransferenciaMotivo'
+    );
+
+
+  const botao =
+    document.getElementById(
+      'painelTransferenciaConfirmar'
+    );
+
+
+  const vendedorNovoId =
+    String(
+      select?.value || ''
+    ).trim();
+
+
+  const motivo =
+    String(
+      motivoEl?.value || ''
+    ).trim();
+
+
+  if (!vendedorNovoId) {
+
+    alert(
+      'Selecione o novo vendedor responsável.'
+    );
+
+    select?.focus();
+
+    return;
+
+  }
+
+
+  if (
+    vendedorNovoId ===
+    painelTransferenciaAtual.vendedorId
+  ) {
+
+    alert(
+      'Selecione um vendedor diferente do responsável atual.'
+    );
+
+    return;
+
+  }
+
+
+  if (
+    motivo.length < 5
+  ) {
+
+    alert(
+      'Informe um motivo com pelo menos 5 caracteres.'
+    );
+
+    motivoEl?.focus();
+
+    return;
+
+  }
+
+
+  if (
+    motivo.length > 500
+  ) {
+
+    alert(
+      'O motivo pode ter no máximo 500 caracteres.'
+    );
+
+    motivoEl?.focus();
+
+    return;
+
+  }
+
+
+  const novoVendedor =
+    obterPerfilVendedorPainel(
+      vendedorNovoId
+    );
+
+
+  const confirmar =
+    window.confirm(
+      `Transferir a proposta #${painelTransferenciaAtual.proposta.numero} ` +
+      `para ${novoVendedor?.nome || 'o vendedor selecionado'}?\n\n` +
+      'A alteração será registrada no histórico de transferências.'
+    );
+
+
+  if (!confirmar) {
+
+    return;
+
+  }
+
+
+  painelTransferenciaProcessando =
+    true;
+
+
+  const textoOriginal =
+    botao?.textContent ||
+    'Confirmar transferência';
+
+
+  if (botao) {
+
+    botao.disabled =
+      true;
+
+    botao.textContent =
+      'Transferindo...';
+
+  }
+
+
+  if (select) {
+
+    select.disabled =
+      true;
+
+  }
+
+
+  if (motivoEl) {
+
+    motivoEl.disabled =
+      true;
+
+  }
+
+
+  try {
+
+    const propostaNumero =
+      painelTransferenciaAtual
+        .proposta
+        .numero;
+
+
+    await transferirProposta({
+
+      propostaId:
+        painelTransferenciaAtual
+          .proposta
+          .id,
+
+      vendedorNovoId,
+
+      motivo
+
+    });
+
+
+    const modal =
+      document.getElementById(
+        'painelTransferenciaModal'
+      );
+
+
+    if (modal) {
+
+      modal.hidden =
+        true;
+
+    }
+
+
+    document.body.classList.remove(
+      'painel-modal-aberto'
+    );
+
+
+    painelTransferenciaAtual =
+      null;
+
+
+    toastMsg(
+      `Proposta #${propostaNumero} transferida para ${novoVendedor?.nome || 'o novo responsável'}`
+    );
+
+
+    await carregarPainel();
+
+  } catch (erro) {
+
+    console.error(
+      'Erro ao transferir proposta:',
+      erro
+    );
+
+
+    toastMsg(
+      'Erro ao transferir proposta'
+    );
+
+
+    alert(
+      'Não foi possível transferir a proposta.\n\n' +
+      (
+        erro?.message ||
+        'Erro desconhecido.'
+      )
+    );
+
+  } finally {
+
+    painelTransferenciaProcessando =
+      false;
+
+
+    if (botao) {
+
+      botao.disabled =
+        false;
+
+      botao.textContent =
+        textoOriginal;
+
+    }
+
+
+    if (select) {
+
+      select.disabled =
+        false;
+
+    }
+
+
+    if (motivoEl) {
+
+      motivoEl.disabled =
+        false;
+
+    }
+
+  }
+
+}
+
+
+// =========================================================
+// ## 27. RENDERIZAR TABELA PRINCIPAL
 // =========================================================
 
 function renderizarPainel() {
@@ -3574,19 +4385,43 @@ function renderizarPainel() {
 
         <td>
 
-          <button
-            type="button"
-            class="btn navy painel-open"
-            onclick="
-              abrirPropostaPainel(
-                '${escaparPainel(
-                  proposta.id
-                )}'
-              )
-            "
-          >
-            Abrir
-          </button>
+          <div class="painel-actions">
+
+            <button
+              type="button"
+              class="btn navy painel-open"
+              onclick="
+                abrirPropostaPainel(
+                  '${escaparPainel(
+                    proposta.id
+                  )}'
+                )
+              "
+            >
+              Abrir
+            </button>
+
+            ${
+              painelEhGestorOuAdm()
+                ? `
+                  <button
+                    type="button"
+                    class="btn light painel-transferir"
+                    onclick="
+                      abrirTransferenciaPainel(
+                        '${escaparPainel(
+                          proposta.id
+                        )}'
+                      )
+                    "
+                  >
+                    Transferir
+                  </button>
+                `
+                : ''
+            }
+
+          </div>
 
         </td>
 
@@ -3604,7 +4439,7 @@ function renderizarPainel() {
 
 
 // =========================================================
-// ## 27. CARREGAR METAS DO RESUMO
+// ## 28. CARREGAR METAS DO RESUMO
 // =========================================================
 
 async function carregarMetasResumoPainel() {
@@ -3717,7 +4552,7 @@ async function carregarMetasResumoPainel() {
 
 
 // =========================================================
-// ## 28. CARREGAR PAINEL
+// ## 29. CARREGAR PAINEL
 // =========================================================
 
 async function carregarPainel() {
@@ -3738,6 +4573,8 @@ async function carregarPainel() {
   montarResumoTimesPainel();
 
   montarComparativoPainel();
+
+  montarModalTransferenciaPainel();
 
 
   const corpo =
@@ -3990,7 +4827,7 @@ async function carregarPainel() {
 
 
 // =========================================================
-// ## 29. ABRIR PÁGINA
+// ## 30. ABRIR PÁGINA
 // =========================================================
 
 async function abrirPainel(
@@ -4009,7 +4846,7 @@ async function abrirPainel(
 
 
 // =========================================================
-// ## 30. LIMPAR FILTROS
+// ## 31. LIMPAR FILTROS
 // =========================================================
 
 function limparFiltrosPainel() {
@@ -4110,7 +4947,7 @@ function limparFiltrosPainel() {
 
 
 // =========================================================
-// ## 31. ABRIR PROPOSTA
+// ## 32. ABRIR PROPOSTA
 // =========================================================
 
 async function abrirPropostaPainel(
@@ -4174,7 +5011,7 @@ async function abrirPropostaPainel(
 
 
 // =========================================================
-// ## 32. EVENTOS DOS FILTROS
+// ## 33. EVENTOS DOS FILTROS
 // =========================================================
 
 function iniciarPainel() {
@@ -4186,6 +5023,8 @@ function iniciarPainel() {
   montarResumoTimesPainel();
 
   montarComparativoPainel();
+
+  montarModalTransferenciaPainel();
 
 
   const ids = [
@@ -4212,6 +5051,27 @@ function iniciarPainel() {
         'change',
         renderizarPainel
       );
+
+    }
+  );
+
+
+  document.addEventListener(
+    'keydown',
+    evento => {
+
+      if (
+        evento.key === 'Escape' &&
+        !document
+          .getElementById(
+            'painelTransferenciaModal'
+          )
+          ?.hidden
+      ) {
+
+        fecharTransferenciaPainel();
+
+      }
 
     }
   );

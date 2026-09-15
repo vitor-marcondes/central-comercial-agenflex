@@ -10,7 +10,7 @@
 // - Definição do Time comercial do vendedor
 // - Consulta e manutenção de metas individuais
 // - Consulta e manutenção de metas oficiais dos Times
-// - Atribuição de vendedor responsável
+// - Transferência auditada de propostas entre vendedores
 //
 // Dependência:
 // - js/services/supabase-client.js
@@ -844,16 +844,75 @@ async function salvarMetaOficialEquipe({
 
 
 // =========================================================
-// ## 11. DEFINIR VENDEDOR RESPONSÁVEL
+// ## 11. TRANSFERIR PROPOSTA
 // =========================================================
 
-async function definirVendedorResponsavel(
+async function transferirProposta({
   propostaId,
-  vendedorId
-) {
+  vendedorNovoId,
+  motivo
+}) {
 
   const client =
     getSupabaseClient();
+
+
+  const propostaIdLimpo =
+    String(
+      propostaId || ''
+    ).trim();
+
+
+  const vendedorNovoIdLimpo =
+    String(
+      vendedorNovoId || ''
+    ).trim();
+
+
+  const motivoLimpo =
+    String(
+      motivo || ''
+    ).trim();
+
+
+  if (!propostaIdLimpo) {
+
+    throw new Error(
+      'Proposta não informada.'
+    );
+
+  }
+
+
+  if (!vendedorNovoIdLimpo) {
+
+    throw new Error(
+      'Selecione o novo vendedor responsável.'
+    );
+
+  }
+
+
+  if (
+    motivoLimpo.length < 5
+  ) {
+
+    throw new Error(
+      'Informe um motivo com pelo menos 5 caracteres.'
+    );
+
+  }
+
+
+  if (
+    motivoLimpo.length > 500
+  ) {
+
+    throw new Error(
+      'O motivo pode ter no máximo 500 caracteres.'
+    );
+
+  }
 
 
   const {
@@ -861,14 +920,17 @@ async function definirVendedorResponsavel(
     error
   } =
     await client.rpc(
-      'definir_vendedor_responsavel',
+      'transferir_proposta',
       {
 
         p_proposta_id:
-          propostaId,
+          propostaIdLimpo,
 
-        p_vendedor_id:
-          vendedorId
+        p_vendedor_novo_id:
+          vendedorNovoIdLimpo,
+
+        p_motivo:
+          motivoLimpo
 
       }
     );
