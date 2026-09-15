@@ -894,25 +894,29 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
          ## 5.7 MÉTRICAS E AÇÕES
          ================================================== -->
 
-    <div class="metrics">
+<div class="metrics">
 
-      <div class="metric">
-        <small>Subtotal</small>
-        <b id="mSubtotal">R$ 0,00</b>
-      </div>
+  <div class="metric">
+    <small>Subtotal bruto</small>
+    <b id="mSubtotal">R$ 0,00</b>
+  </div>
 
-      <div class="metric">
-        <small>IPI</small>
-        <b id="mIpi">R$ 0,00</b>
-      </div>
+  <div class="metric">
+    <small>Desconto concedido</small>
+    <b id="mDesconto">R$ 0,00</b>
+  </div>
 
-      <div class="metric">
-        <small>Total interno</small>
-        <b id="mTotal">R$ 0,00</b>
-      </div>
+  <div class="metric">
+    <small>IPI</small>
+    <b id="mIpi">R$ 0,00</b>
+  </div>
 
-    </div>
+  <div class="metric">
+    <small>Total interno</small>
+    <b id="mTotal">R$ 0,00</b>
+  </div>
 
+</div>
 
 <div class="toolbar">
 
@@ -979,11 +983,17 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
 <section class="panel preview-side">
 
   <div class="panel-head">
-    <h2>👁️ Prévia do PDF completo</h2>
+
+    <h2>
+      👁️ Prévia do PDF completo
+    </h2>
+
     <span id="pagesLabel">
       Paginação automática
     </span>
+
   </div>
+
 
   <div class="preview-wrap">
 
@@ -1001,11 +1011,17 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
           >
 
           <div class="quote-name">
+
             Proposta:
-            <span id="pOrcamento">—</span>
+
+            <span id="pOrcamento">
+              —
+            </span>
+
           </div>
 
         </div>
+
 
         <div class="company">
 
@@ -1015,25 +1031,35 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
           </h2>
 
           <div>
-            <b>http://www.agenflex.com.br</b>
+
+            <b>
+              http://www.agenflex.com.br
+            </b>
+
             <br><br>
 
             CNPJ: 07.348.604/0001-72
+
             <br>
 
             Inscrição Estadual: 708.195.163.116
+
             <br><br>
 
             R ANTONIO RAPOSO TAVARES, 71 - COND. PORTAL DO ANHANGUERA
+
             <br>
 
             MACUCO
+
             <br>
 
             Valinhos - SP - CEP: 13279-390
+
             <br>
 
             Telefone: (19) 3871-1007
+
           </div>
 
         </div>
@@ -1041,152 +1067,329 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
       </div>
 
 
+      <!-- ==================================================
+           ## 5.8.1 INFORMAÇÕES DO CLIENTE
+           ================================================== -->
+
       <div class="pdf-title">
         Informações do Cliente
       </div>
+
 
       <div
         id="pCliente"
         class="client-name"
       ></div>
 
+
       <div class="buyer-line">
-        <b>Comprador:</b>
+
+        <b>
+          Comprador:
+        </b>
+
         <span id="pComprador"></span>
+
       </div>
 
 
       <div class="client-grid">
 
         <div>
-          <b>CNPJ:</b>
+
+          <b>
+            CNPJ:
+          </b>
+
           <span id="pCnpj"></span>
+
         </div>
 
+
         <div>
-          <b>Endereço:</b>
+
+          <b>
+            Endereço:
+          </b>
+
           <span id="pEndereco"></span>
+
         </div>
 
+
         <div>
-          <b>Inscrição Estadual:</b>
+
+          <b>
+            Inscrição Estadual:
+          </b>
+
           <span id="pIe"></span>
+
         </div>
 
+
         <div>
-          <b>Bairro:</b>
+
+          <b>
+            Bairro:
+          </b>
+
           <span id="pBairro"></span>
+
         </div>
 
+
         <div>
-          <b>Telefone:</b>
+
+          <b>
+            Telefone:
+          </b>
+
           <span id="pTelefone"></span>
+
         </div>
 
+
         <div>
-          <b>Cidade:</b>
+
+          <b>
+            Cidade:
+          </b>
+
           <span id="pCidade"></span>
+
         </div>
 
+
         <div>
-          <b>Email:</b>
+
+          <b>
+            Email:
+          </b>
+
           <span id="pEmail"></span>
+
         </div>
 
       </div>
 
+
+      <!-- ==================================================
+           ## 5.8.2 ITENS DA PROPOSTA
+           ================================================== -->
 
       <div class="pdf-title">
         Itens da Proposta
       </div>
 
+
       <table class="pdf-items">
 
         <thead>
+
           <tr>
-            <th>Produto</th>
-            <th>NCM</th>
-            <th>Quant.</th>
-            <th>Unit.</th>
-            <th>IPI</th>
-            <th>Unit. c/ Imp.</th>
-            <th>Valor Total</th>
+
+            <th>
+              Produto
+            </th>
+
+            <th>
+              NCM
+            </th>
+
+            <th>
+              Quant.
+            </th>
+
+            <th>
+              Unit.
+            </th>
+
+            <th
+              id="pDescHeader"
+              style="display:none"
+            >
+              Desc.
+            </th>
+
+            <th>
+              IPI
+            </th>
+
+            <th id="pUnitFinalHeader">
+              Unit. c/ Imp.
+            </th>
+
+            <th>
+              Valor Total
+            </th>
+
           </tr>
+
         </thead>
+
 
         <tbody id="pdfRows"></tbody>
 
       </table>
 
 
+      <!-- ==================================================
+           ## 5.8.3 TOTAIS
+           ================================================== -->
+
       <table class="totals">
 
         <tr id="pSubtotalRow">
-          <td>Subtotal:</td>
+
+          <td id="pSubtotalLabel">
+            Subtotal:
+          </td>
+
           <td id="pSubtotal"></td>
+
         </tr>
 
-        <tr id="pIpiRow">
-          <td>IPI:</td>
-          <td id="pIpi"></td>
+
+        <tr
+          id="pDescontoRow"
+          style="display:none"
+        >
+
+          <td>
+            Desc.:
+          </td>
+
+          <td id="pDesconto"></td>
+
         </tr>
+
+
+        <tr id="pIpiRow">
+
+          <td>
+            IPI:
+          </td>
+
+          <td id="pIpi"></td>
+
+        </tr>
+
 
         <tr
           id="pTotalRow"
           class="total-row"
         >
-          <td>Total:</td>
+
+          <td>
+            Total:
+          </td>
+
           <td id="pTotal"></td>
+
         </tr>
 
       </table>
 
 
+      <!-- ==================================================
+           ## 5.8.4 OUTRAS INFORMAÇÕES
+           ================================================== -->
+
       <div class="pdf-title">
         Outras Informações
       </div>
 
+
       <div class="other">
 
         <div>
-          <strong>Orçamento - incluído em:</strong>
+
+          <strong>
+            Orçamento - incluído em:
+          </strong>
+
           <span id="pIncluido"></span>
+
         </div>
 
+
         <div>
-          <strong>Previsão de Faturamento:</strong>
+
+          <strong>
+            Previsão de Faturamento:
+          </strong>
+
           <span id="pPrevisao"></span>
+
         </div>
 
+
         <div>
-          <strong>Vendedor:</strong>
+
+          <strong>
+            Vendedor:
+          </strong>
+
           <span id="pVendedor"></span>
+
         </div>
 
+
         <div>
-          <strong>Projeto:</strong>
+
+          <strong>
+            Projeto:
+          </strong>
+
           <span id="pProjeto"></span>
+
         </div>
 
+
         <div>
-          <strong>Frete:</strong>
+
+          <strong>
+            Frete:
+          </strong>
+
           <span id="pFrete"></span>
+
         </div>
 
+
         <div>
-          <strong>Validade da proposta:</strong>
+
+          <strong>
+            Validade da proposta:
+          </strong>
+
           <span id="pValidade"></span>
+
         </div>
 
+
         <div>
-          <strong>Clichê:</strong>
+
+          <strong>
+            Clichê:
+          </strong>
+
           <span id="pCliche"></span>
+
         </div>
 
+
         <div>
-          <strong>Forma de pagamento:</strong>
+
+          <strong>
+            Forma de pagamento:
+          </strong>
+
           <span id="pPagamento"></span>
+
         </div>
+
 
         <div style="margin-top:12px">
 
@@ -1198,6 +1401,7 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
 
         </div>
 
+
         <div
           id="pRegras"
           class="rules"
@@ -1206,12 +1410,18 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
       </div>
 
 
+      <!-- ==================================================
+           ## 5.8.5 INFORMAÇÕES DE GERAÇÃO
+           ================================================== -->
+
       <div class="generated">
 
         Gerado em
+
         <span id="pGerado"></span>
 
         por
+
         <span id="pGeradoPor"></span>
 
         <br>
@@ -1222,6 +1432,7 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
 
     </div>
 
+
     <div id="artPages"></div>
 
   </div>
@@ -1231,7 +1442,6 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
 </div>
 
 </section>
-
 
 <!-- ======================================================
      ## 6. HISTÓRICO DE PROPOSTAS

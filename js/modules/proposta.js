@@ -46,10 +46,10 @@ let items = [
     quant: 0,
     unidade: 'UN',
     unit: 0,
+    desc: 0,
     ipi: 9.75
   }
 ];
-
 
 let propostaNuvemAtual = {
 
@@ -131,33 +131,128 @@ function revisaoEhEditavel() {
 // ## 2.1 Cálculo individual do item
 // ---------------------------------------------------------
 
-function calcItem(it) {
+function normalizarDescontoPercentual(
+  valor
+) {
+
+  const numero =
+    Number(valor) || 0;
+
+
+  return Math.min(
+    100,
+    Math.max(
+      0,
+      numero
+    )
+  );
+
+}
+
+
+function calcItem(
+  it
+) {
+
+  const quantidade =
+    Number(
+      it.quant
+    ) || 0;
+
+
+  const valorUnitario =
+    Number(
+      it.unit
+    ) || 0;
+
+
+  const descontoPercentual =
+    normalizarDescontoPercentual(
+      it.desc
+    );
+
+
+  const ipiPercentual =
+    Number(
+      it.ipi
+    ) || 0;
+
+
+  // -------------------------------------------------------
+  // Subtotal bruto
+  // -------------------------------------------------------
 
   const subtotal =
-    (+it.quant || 0) *
-    (+it.unit || 0);
+    quantidade *
+    valorUnitario;
 
+
+  // -------------------------------------------------------
+  // Desconto concedido
+  // -------------------------------------------------------
+
+  const desconto =
+    subtotal *
+    descontoPercentual /
+    100;
+
+
+  // -------------------------------------------------------
+  // Subtotal após desconto
+  // -------------------------------------------------------
+
+  const subtotalLiquido =
+    subtotal -
+    desconto;
+
+
+  // -------------------------------------------------------
+  // IPI sobre o valor após desconto
+  // -------------------------------------------------------
 
   const ipi =
-    subtotal *
-    (+it.ipi || 0) /
+    subtotalLiquido *
+    ipiPercentual /
     100;
+
+
+  // -------------------------------------------------------
+  // Total final
+  // -------------------------------------------------------
+
+  const total =
+    subtotalLiquido +
+    ipi;
 
 
   return {
 
     subtotal,
 
+    descontoPercentual,
+
+    desconto,
+
+    subtotalLiquido,
+
     ipi,
 
-    total:
-      subtotal + ipi,
+    total,
+
+    unitDesc:
+      quantidade
+        ? subtotalLiquido /
+          quantidade
+        : 0,
 
     unitImp:
-      (+it.quant || 0)
-        ? (subtotal + ipi) / (+it.quant)
+      quantidade
+        ? total /
+          quantidade
         : 0
+
   };
+
 }
 
 
@@ -166,16 +261,29 @@ function calcItem(it) {
 // ---------------------------------------------------------
 
 function addItem(
+
   base = {
+
     codigo: '',
+
     produto: '',
+
     detalhes: '',
+
     ncm: '',
+
     quant: 0,
+
     unidade: 'UN',
+
     unit: 0,
+
+    desc: 0,
+
     ipi: 9.75
+
   }
+
 ) {
 
   if (
@@ -186,16 +294,26 @@ function addItem(
       'A revisão enviada não pode ser alterada'
     );
 
+
     return;
+
   }
 
 
   items.push({
-    ...base
+
+    ...base,
+
+    desc:
+      normalizarDescontoPercentual(
+        base.desc
+      )
+
   });
 
 
   renderItems();
+
 }
 
 
@@ -209,17 +327,26 @@ function duplicateLast() {
       'A revisão enviada não pode ser alterada'
     );
 
+
     return;
+
   }
 
 
   addItem(
-    items[items.length - 1] || {}
+
+    items[
+      items.length - 1
+    ] || {}
+
   );
+
 }
 
 
-function deleteItem(i) {
+function deleteItem(
+  i
+) {
 
   if (
     !revisaoEhEditavel()
@@ -229,7 +356,9 @@ function deleteItem(i) {
       'A revisão enviada não pode ser alterada'
     );
 
+
     return;
+
   }
 
 
@@ -239,23 +368,37 @@ function deleteItem(i) {
   );
 
 
-  if (!items.length) {
+  if (
+    !items.length
+  ) {
 
     items.push({
+
       codigo: '',
+
       produto: '',
+
       detalhes: '',
+
       ncm: '',
+
       quant: 0,
+
       unidade: 'UN',
+
       unit: 0,
+
+      desc: 0,
+
       ipi: 9.75
+
     });
 
   }
 
 
   renderItems();
+
 }
 
 
@@ -274,6 +417,7 @@ function upd(
   ) {
 
     return;
+
   }
 
 
@@ -281,12 +425,27 @@ function upd(
     [
       'quant',
       'unit',
+      'desc',
       'ipi'
-    ].includes(k)
+    ].includes(
+      k
+    )
   ) {
 
     v =
       Number(v) || 0;
+
+  }
+
+
+  if (
+    k === 'desc'
+  ) {
+
+    v =
+      normalizarDescontoPercentual(
+        v
+      );
 
   }
 
@@ -296,6 +455,7 @@ function upd(
 
 
   refresh();
+
 }
 
 
@@ -309,7 +469,10 @@ function ncmSelect(
 ) {
 
   return `
-    <select onchange="upd(${i},'ncm',this.value)">
+
+    <select
+      onchange="upd(${i},'ncm',this.value)"
+    >
 
       <option
         value=""
@@ -318,12 +481,16 @@ function ncmSelect(
         Selecionar NCM
       </option>
 
-      <optgroup label="NCM PLÁSTICO">
+
+      <optgroup
+        label="NCM PLÁSTICO"
+      >
 
         <option
           value="3923.29.10 - 39"
           ${
-            it.ncm === '3923.29.10 - 39'
+            it.ncm ===
+            '3923.29.10 - 39'
               ? 'selected'
               : ''
           }
@@ -333,12 +500,16 @@ function ncmSelect(
 
       </optgroup>
 
-      <optgroup label="NCM PAPEL">
+
+      <optgroup
+        label="NCM PAPEL"
+      >
 
         <option
           value="4819.40.00"
           ${
-            it.ncm === '4819.40.00'
+            it.ncm ===
+            '4819.40.00'
               ? 'selected'
               : ''
           }
@@ -349,7 +520,9 @@ function ncmSelect(
       </optgroup>
 
     </select>
+
   `;
+
 }
 
 
@@ -363,24 +536,40 @@ function unitSelect(
 ) {
 
   return `
-    <select onchange="upd(${i},'unidade',this.value)">
+
+    <select
+      onchange="upd(${i},'unidade',this.value)"
+    >
 
       <option
         value="UN"
-        ${it.unidade === 'UN' ? 'selected' : ''}
+        ${
+          it.unidade ===
+          'UN'
+            ? 'selected'
+            : ''
+        }
       >
         UN
       </option>
 
+
       <option
         value="PCT"
-        ${it.unidade === 'PCT' ? 'selected' : ''}
+        ${
+          it.unidade ===
+          'PCT'
+            ? 'selected'
+            : ''
+        }
       >
         PCT
       </option>
 
     </select>
+
   `;
+
 }
 
 
@@ -395,83 +584,156 @@ function renderItems() {
 
 
   items.forEach(
-    (it, i) => {
+    (
+      it,
+      i
+    ) => {
 
       const tr =
-        document.createElement('tr');
+        document.createElement(
+          'tr'
+        );
 
 
       const c =
-        calcItem(it);
+        calcItem(
+          it
+        );
 
 
       tr.innerHTML = `
+
         <td>
+
           <input
             value="${esc(it.codigo)}"
             oninput="upd(${i},'codigo',this.value)"
           >
+
         </td>
 
+
         <td>
+
           <input
             value="${esc(it.produto)}"
             placeholder="Produto"
             oninput="upd(${i},'produto',this.value)"
           >
 
+
           <textarea
             placeholder="Observações do item"
             oninput="upd(${i},'detalhes',this.value)"
           >${esc(it.detalhes)}</textarea>
+
         </td>
 
-        <td>
-          ${ncmSelect(it, i)}
-        </td>
 
         <td>
+
+          ${ncmSelect(
+            it,
+            i
+          )}
+
+        </td>
+
+
+        <td>
+
           <input
             type="number"
+            min="0"
             value="${it.quant}"
             oninput="upd(${i},'quant',this.value)"
           >
+
         </td>
 
-        <td>
-          ${unitSelect(it, i)}
-        </td>
 
         <td>
+
+          ${unitSelect(
+            it,
+            i
+          )}
+
+        </td>
+
+
+        <td>
+
           <input
             type="number"
+            min="0"
             step="0.0001"
             value="${it.unit}"
             oninput="upd(${i},'unit',this.value)"
           >
+
         </td>
 
+
         <td>
+
+          <input
+            type="number"
+            min="0"
+            max="100"
+            step="0.01"
+            value="${
+              normalizarDescontoPercentual(
+                it.desc
+              )
+            }"
+            oninput="upd(${i},'desc',this.value)"
+          >
+
+        </td>
+
+
+        <td>
+
+          ${BRL.format(
+            c.desconto
+          )}
+
+        </td>
+
+
+        <td>
+
           <input
             type="number"
             step="0.01"
             value="${it.ipi}"
             oninput="upd(${i},'ipi',this.value)"
           >
+
         </td>
 
-        <td>
-          ${BRL.format(c.total)}
-        </td>
 
         <td>
+
+          ${BRL.format(
+            c.total
+          )}
+
+        </td>
+
+
+        <td>
+
           <button
             class="del"
             onclick="deleteItem(${i})"
           >
             ×
           </button>
+
         </td>
+
       `;
 
 
@@ -485,7 +747,9 @@ function renderItems() {
 
   refresh();
 
+
   atualizarBloqueioCamposRevisao();
+
 }
 
 
@@ -496,14 +760,28 @@ function renderItems() {
 function totals() {
 
   return items.reduce(
-    (acumulador, it) => {
+
+    (
+      acumulador,
+      it
+    ) => {
 
       const c =
-        calcItem(it);
+        calcItem(
+          it
+        );
 
 
       acumulador.sub +=
         c.subtotal;
+
+
+      acumulador.desconto +=
+        c.desconto;
+
+
+      acumulador.liquido +=
+        c.subtotalLiquido;
 
 
       acumulador.ipi +=
@@ -517,14 +795,24 @@ function totals() {
       return acumulador;
 
     },
-    {
-      sub: 0,
-      ipi: 0,
-      total: 0
-    }
-  );
-}
 
+    {
+
+      sub: 0,
+
+      desconto: 0,
+
+      liquido: 0,
+
+      ipi: 0,
+
+      total: 0
+
+    }
+
+  );
+
+}
 
 // =========================================================
 // ## 3. TIME E LOGOTIPO DA PROPOSTA
@@ -572,15 +860,32 @@ function refresh() {
   // ## 4.1 Totais exibidos na interface
   // -------------------------------------------------------
 
-  mSubtotal.textContent =
-    BRL.format(t.sub);
+mSubtotal.textContent =
+  BRL.format(
+    t.sub
+  );
 
-  mIpi.textContent =
-    BRL.format(t.ipi);
 
-  mTotal.textContent =
-    BRL.format(t.total);
+document
+  .getElementById(
+    'mDesconto'
+  )
+  .textContent =
+    BRL.format(
+      t.desconto
+    );
 
+
+mIpi.textContent =
+  BRL.format(
+    t.ipi
+  );
+
+
+mTotal.textContent =
+  BRL.format(
+    t.total
+  );
 
   // -------------------------------------------------------
   // ## 4.2 Dados principais do cliente no PDF
@@ -621,37 +926,67 @@ function refresh() {
   // ## 4.3 Totais do PDF
   // -------------------------------------------------------
 
-  pSubtotal.textContent =
-    N2.format(t.sub);
+pSubtotal.textContent =
+  N2.format(
+    t.sub
+  );
 
-  pIpi.textContent =
-    N2.format(t.ipi);
 
-  pTotal.textContent =
-    N2.format(t.total);
+document
+  .getElementById(
+    'pDesconto'
+  )
+  .textContent =
+    '- ' +
+    N2.format(
+      t.desconto
+    );
 
+
+pIpi.textContent =
+  N2.format(
+    t.ipi
+  );
+
+
+pTotal.textContent =
+  N2.format(
+    t.total
+  );
 
   const mostrarTotais =
     mostrarTotalPdf.checked;
 
 
-  pSubtotalRow.style.display =
-    mostrarTotais
+pSubtotalRow.style.display =
+  mostrarTotais
+    ? 'table-row'
+    : 'none';
+
+
+document
+  .getElementById(
+    'pDescontoRow'
+  )
+  .style.display =
+    (
+      mostrarTotais &&
+      t.desconto > 0
+    )
       ? 'table-row'
       : 'none';
 
 
-  pIpiRow.style.display =
-    mostrarTotais
-      ? 'table-row'
-      : 'none';
+pIpiRow.style.display =
+  mostrarTotais
+    ? 'table-row'
+    : 'none';
 
 
-  pTotalRow.style.display =
-    mostrarTotais
-      ? 'table-row'
-      : 'none';
-
+pTotalRow.style.display =
+  mostrarTotais
+    ? 'table-row'
+    : 'none';
 
   // -------------------------------------------------------
   // ## 4.4 Informações comerciais
@@ -732,100 +1067,159 @@ function refresh() {
   // ## 4.6 Itens exibidos no PDF
   // -------------------------------------------------------
 
-  pdfRows.innerHTML =
-    '';
+pdfRows.innerHTML =
+  '';
 
 
-  items.forEach(
-    it => {
+items.forEach(
+  it => {
 
-      const c =
-        calcItem(it);
-
-
-      const tr =
-        document.createElement('tr');
+    const c =
+      calcItem(it);
 
 
-      tr.innerHTML = `
-        <td>
-          ${
-            esc(
-              (
-                it.codigo
-                  ? it.codigo + ' - '
-                  : ''
-              ) +
-              it.produto
-            )
-          }
-
-          ${
-            it.detalhes
-              ? `
-                <div class="item-notes">
-                  ${
-                    esc(it.detalhes)
-                      .replace(
-                        /\n/g,
-                        '<br>'
-                      )
-                  }
-                </div>
-              `
-              : ''
-          }
-        </td>
-
-        <td>
-          ${esc(it.ncm)}
-        </td>
-
-        <td>
-          ${N2.format(it.quant)}
-          ${esc(it.unidade)}
-        </td>
-
-        <td>
-          ${N4.format(it.unit)}
-        </td>
-
-        <td>
-          ${N2.format(c.ipi)}
-
-          ${
-            it.ipi
-              ? `
-                <div>
-                  (
-                  ${
-                    String(it.ipi)
-                      .replace('.', ',')
-                  }
-                  %)
-                </div>
-              `
-              : ''
-          }
-        </td>
-
-        <td>
-          ${N4.format(c.unitImp)}
-        </td>
-
-        <td>
-          ${N2.format(c.total)}
-        </td>
-      `;
-
-
-      pdfRows.appendChild(
-        tr
+    const tr =
+      document.createElement(
+        'tr'
       );
 
-    }
-  );
 
+    const descontoPercentual =
+      normalizarDescontoPercentual(
+        it.desc
+      );
+
+
+    tr.innerHTML = `
+
+      <td>
+
+        ${
+          esc(
+            (
+              it.codigo
+                ? it.codigo + ' - '
+                : ''
+            ) +
+            it.produto
+          )
+        }
+
+
+        ${
+          it.detalhes
+            ? `
+              <div class="item-notes">
+                ${
+                  esc(
+                    it.detalhes
+                  ).replace(
+                    /\n/g,
+                    '<br>'
+                  )
+                }
+              </div>
+            `
+            : ''
+        }
+
+      </td>
+
+
+      <td>
+        ${esc(it.ncm)}
+      </td>
+
+
+      <td>
+
+        ${N2.format(it.quant)}
+        ${esc(it.unidade)}
+
+      </td>
+
+
+      <td>
+        ${N4.format(it.unit)}
+      </td>
+
+
+      <td>
+
+        ${
+          descontoPercentual > 0
+            ? `
+              <b>
+                ${
+                  String(
+                    descontoPercentual
+                  ).replace(
+                    '.',
+                    ','
+                  )
+                }%
+              </b>
+
+              <div>
+                ${N2.format(
+                  c.desconto
+                )}
+              </div>
+            `
+            : '—'
+        }
+
+      </td>
+
+
+      <td>
+
+        ${N2.format(c.ipi)}
+
+        ${
+          it.ipi
+            ? `
+              <div>
+                (
+                ${
+                  String(
+                    it.ipi
+                  ).replace(
+                    '.',
+                    ','
+                  )
+                }%
+                )
+              </div>
+            `
+            : ''
+        }
+
+      </td>
+
+
+      <td>
+        ${N4.format(
+          c.unitImp
+        )}
+      </td>
+
+
+      <td>
+        ${N2.format(
+          c.total
+        )}
+      </td>
+
+    `;
+
+
+    pdfRows.appendChild(
+      tr
+    );
+
+  }
+);
 
   // -------------------------------------------------------
   // ## 4.7 Artes anexadas
@@ -1869,17 +2263,24 @@ function montarItensBanco() {
 
     .filter(
       it =>
+
         String(
           it.codigo || ''
-        ).trim() ||
+        ).trim()
+
+        ||
 
         String(
           it.produto || ''
-        ).trim() ||
+        ).trim()
+
+        ||
 
         Number(
           it.quant || 0
-        ) > 0 ||
+        ) > 0
+
+        ||
 
         Number(
           it.unit || 0
@@ -1894,44 +2295,57 @@ function montarItensBanco() {
             it.codigo || ''
           ).trim(),
 
+
         produto:
           String(
             it.produto || ''
           ).trim(),
+
 
         observacoes:
           String(
             it.detalhes || ''
           ),
 
+
         ncm:
           String(
             it.ncm || ''
           ),
+
 
         quantidade:
           Number(
             it.quant
           ) || 0,
 
+
         unidade:
           it.unidade === 'PCT'
             ? 'PCT'
             : 'UN',
+
 
         valor_unitario:
           Number(
             it.unit
           ) || 0,
 
+
+        desconto_percentual:
+          normalizarDescontoPercentual(
+            it.desc
+          ),
+
+
         ipi_percentual:
           Number(
             it.ipi
           ) || 0
+
       })
     );
 }
-
 
 // =========================================================
 // ## 9. SALVAMENTO DA PROPOSTA NO SUPABASE
@@ -3866,89 +4280,95 @@ function aplicarPropostaNoFormulario(
   );
 
 
-  // -------------------------------------------------------
-  // ## 12.7 Conversão dos itens vindos do banco
-  // -------------------------------------------------------
+// -------------------------------------------------------
+// ## 12.7 Conversão dos itens vindos do banco
+// -------------------------------------------------------
 
-  const itensBanco =
-    Array.isArray(
-      revisaoAtual.itens_revisao
+const itensBanco =
+  Array.isArray(
+    revisaoAtual.itens_revisao
+  )
+    ? revisaoAtual.itens_revisao
+    : [];
+
+
+items =
+  itensBanco
+
+    .sort(
+      (a, b) =>
+        Number(
+          a.ordem || 0
+        ) -
+        Number(
+          b.ordem || 0
+        )
     )
-      ? revisaoAtual.itens_revisao
-      : [];
 
+    .map(
+      it => ({
 
-  items =
-    itensBanco
+        codigo:
+          it.codigo ||
+          '',
 
-      .sort(
-        (a, b) =>
+        produto:
+          it.produto ||
+          '',
+
+        detalhes:
+          it.observacoes ||
+          '',
+
+        ncm:
+          it.ncm ||
+          '',
+
+        quant:
           Number(
-            a.ordem || 0
-          ) -
+            it.quantidade
+          ) || 0,
+
+        unidade:
+          it.unidade ||
+          'UN',
+
+        unit:
           Number(
-            b.ordem || 0
-          )
-      )
+            it.valor_unitario
+          ) || 0,
 
-      .map(
-        it => ({
+        desc:
+          Number(
+            it.desconto_percentual
+          ) || 0,
 
-          codigo:
-            it.codigo ||
-            '',
+        ipi:
+          Number(
+            it.ipi_percentual
+          ) || 0
 
-          produto:
-            it.produto ||
-            '',
-
-          detalhes:
-            it.observacoes ||
-            '',
-
-          ncm:
-            it.ncm ||
-            '',
-
-          quant:
-            Number(
-              it.quantidade
-            ) || 0,
-
-          unidade:
-            it.unidade ||
-            'UN',
-
-          unit:
-            Number(
-              it.valor_unitario
-            ) || 0,
-
-          ipi:
-            Number(
-              it.ipi_percentual
-            ) || 0
-        })
-      );
+      })
+    );
 
 
-  if (!items.length) {
+if (!items.length) {
 
-    items = [
-      {
-        codigo: '',
-        produto: '',
-        detalhes: '',
-        ncm: '',
-        quant: 0,
-        unidade: 'UN',
-        unit: 0,
-        ipi: 9.75
-      }
-    ];
+  items = [
+    {
+      codigo: '',
+      produto: '',
+      detalhes: '',
+      ncm: '',
+      quant: 0,
+      unidade: 'UN',
+      unit: 0,
+      desc: 0,
+      ipi: 9.75
+    }
+  ];
 
-  }
-
+}
 
   // -------------------------------------------------------
   // ## 12.8 Limpeza das artes temporárias
