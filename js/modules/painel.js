@@ -4165,6 +4165,34 @@ async function confirmarTransferenciaPainel() {
 
 }
 
+// =========================================================
+// ## 26.1 CONSULTAR REVISÕES PELO PAINEL
+// =========================================================
+
+function abrirRevisoesPainel(
+  propostaId
+) {
+
+  if (
+    typeof abrirRevisoesHistorico !==
+    'function'
+  ) {
+
+    alert(
+      'O histórico de revisões ainda não está disponível.\n\n' +
+      'Atualize a página e tente novamente.'
+    );
+
+    return;
+
+  }
+
+
+  abrirRevisoesHistorico(
+    propostaId
+  );
+
+}
 
 // =========================================================
 // ## 27. RENDERIZAR TABELA PRINCIPAL
@@ -4389,6 +4417,21 @@ function renderizarPainel() {
 
             <button
               type="button"
+              class="btn light painel-revisoes"
+              onclick="
+                abrirRevisoesPainel(
+                  '${escaparPainel(
+                    proposta.id
+                  )}'
+                )
+              "
+            >
+              Revisões
+            </button>
+
+
+            <button
+              type="button"
               class="btn navy painel-open"
               onclick="
                 abrirPropostaPainel(
@@ -4400,6 +4443,7 @@ function renderizarPainel() {
             >
               Abrir
             </button>
+
 
             ${
               painelEhGestorOuAdm()
@@ -4967,10 +5011,19 @@ async function abrirPropostaPainel(
       );
 
 
+    if (
+      typeof instalarSuporteRevisoesHistoricas ===
+      'function'
+    ) {
+
+      instalarSuporteRevisoesHistoricas();
+
+    }
+
+
     aplicarPropostaNoFormulario(
       proposta
     );
-
 
     showPage(
       'orcamentoPage',

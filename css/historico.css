@@ -8,6 +8,8 @@
    - Organizar tabela
    - Diferenciar revisão e status comercial
    - Exibir origem comercial
+   - Exibir modal R0/R1/R2/R3...
+   - Exibir aviso de revisão histórica em somente leitura
    ========================================================= */
 
 
@@ -59,7 +61,7 @@
    ========================================================= */
 
 .history-table {
-  min-width: 1080px;
+  min-width: 1120px;
 }
 
 
@@ -142,12 +144,22 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+
   gap: 6px;
 }
 
 
 .history-revision > b {
   font-size: 13px;
+}
+
+
+.history-revision-count {
+  font-size: 10px;
+
+  color: var(--muted);
+
+  white-space: nowrap;
 }
 
 
@@ -174,10 +186,6 @@
 }
 
 
-/* =========================================================
-   ## 6. STATUS DA REVISÃO
-   ========================================================= */
-
 .history-badge.rascunho {
   background: #fff4d6;
   color: #7a5200;
@@ -189,10 +197,6 @@
   color: #146c2e;
 }
 
-
-/* =========================================================
-   ## 7. STATUS COMERCIAL
-   ========================================================= */
 
 .history-badge.commercial {
   min-width: 110px;
@@ -223,24 +227,58 @@
 }
 
 
-/* =========================================================
-   ## 8. AÇÕES
-   ========================================================= */
+.history-current-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-.history-open {
-  padding: 7px 11px;
+  padding: 5px 8px;
+
+  border-radius: 999px;
+
+  background: #eaf4ff;
+  color: #145da0;
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .35px;
+
   white-space: nowrap;
 }
 
 
 /* =========================================================
-   ## 9. ESTADOS DA LISTAGEM
+   ## 6. AÇÕES DA TABELA
+   ========================================================= */
+
+.history-actions {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  white-space: nowrap;
+}
+
+
+.history-open,
+.history-revisions {
+  padding: 7px 11px;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   ## 7. ESTADOS DA LISTAGEM
    ========================================================= */
 
 .history-loading,
 .history-empty {
   text-align: center;
+
   padding: 28px !important;
+
   color: var(--muted);
 }
 
@@ -263,7 +301,353 @@
 
 
 /* =========================================================
-   ## 10. RESPONSIVIDADE
+   ## 8. MODAL DE REVISÕES
+   ========================================================= */
+
+.history-revisions-modal {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 10020;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  overflow-y: auto;
+
+  background:
+    rgba(
+      15,
+      23,
+      42,
+      .60
+    );
+
+  backdrop-filter:
+    blur(3px);
+}
+
+
+.history-revisions-modal[hidden] {
+  display: none !important;
+}
+
+
+body.history-modal-open {
+  overflow: hidden;
+}
+
+
+.history-revisions-dialog {
+  width: min(
+    100%,
+    760px
+  );
+
+  max-height:
+    calc(
+      100vh - 48px
+    );
+
+  overflow-y: auto;
+
+  border: 1px solid #dbe2ea;
+  border-radius: 16px;
+
+  background: #fff;
+
+  box-shadow:
+    0 24px 70px
+    rgba(
+      15,
+      23,
+      42,
+      .24
+    );
+}
+
+
+.history-revisions-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 22px;
+
+  border-bottom:
+    1px solid #e5eaf0;
+}
+
+
+.history-revisions-head > div:first-child {
+  min-width: 0;
+}
+
+
+.history-revisions-kicker {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #64748b;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  letter-spacing: .6px;
+}
+
+
+.history-revisions-head h3 {
+  margin: 0;
+
+  color: #0f172a;
+
+  font-size: 20px;
+  line-height: 1.25;
+}
+
+
+.history-revisions-head p {
+  margin: 6px 0 0;
+
+  color: #64748b;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+
+.history-revisions-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 34px;
+
+  width: 34px;
+  height: 34px;
+
+  padding: 0;
+
+  border: 1px solid #dbe2ea;
+  border-radius: 9px;
+
+  background: #fff;
+
+  color: #475569;
+
+  font-size: 23px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+
+.history-revisions-close:hover {
+  background: #f8fafc;
+
+  color: #0f172a;
+}
+
+
+.history-revisions-content {
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+
+  padding: 18px 22px 22px;
+}
+
+
+.history-revisions-loading,
+.history-revisions-empty,
+.history-revisions-error {
+  padding: 30px 18px;
+
+  border: 1px dashed #cfd6df;
+  border-radius: 12px;
+
+  background: #f8fafc;
+
+  color: #64748b;
+
+  text-align: center;
+}
+
+
+.history-revisions-error b,
+.history-revisions-error span {
+  display: block;
+}
+
+
+.history-revisions-error span {
+  margin-top: 6px;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   ## 9. CARD DE CADA REVISÃO
+   ========================================================= */
+
+.history-revision-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 18px;
+
+  padding: 16px;
+
+  border: 1px solid #dbe2ea;
+  border-radius: 13px;
+
+  background: #fff;
+}
+
+
+.history-revision-card.current {
+  border-color: #b9d7f5;
+
+  background: #f8fbff;
+}
+
+
+.history-revision-card-main {
+  min-width: 0;
+
+  flex: 1 1 auto;
+}
+
+
+.history-revision-card-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 7px;
+}
+
+
+.history-revision-card-title > strong {
+  color: #0f172a;
+
+  font-size: 18px;
+}
+
+
+.history-revision-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 7px 14px;
+
+  margin-top: 9px;
+
+  color: #64748b;
+
+  font-size: 11px;
+}
+
+
+.history-revision-card-client {
+  margin-top: 7px;
+
+  color: #334155;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+
+.history-revision-card-actions {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  flex: 0 0 auto;
+}
+
+
+.history-revision-card-actions .btn {
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   ## 10. AVISO DE REVISÃO HISTÓRICA
+   ========================================================= */
+
+.revisao-historica-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin: 0 0 18px;
+  padding: 14px 16px;
+
+  border: 1px solid #f2dfab;
+  border-radius: 12px;
+
+  background: #fff9e9;
+
+  color: #5f4500;
+}
+
+
+.revisao-historica-banner[hidden] {
+  display: none !important;
+}
+
+
+.revisao-historica-banner strong,
+.revisao-historica-banner span {
+  display: block;
+}
+
+
+.revisao-historica-banner strong {
+  margin-bottom: 4px;
+
+  font-size: 12px;
+  font-weight: 900;
+}
+
+
+.revisao-historica-banner span {
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+
+/* Revisão antiga:
+   mantém PDF,
+   esconde ações de edição. */
+
+body.consulta-historica-ativa #btnSalvarPropostaNuvem,
+body.consulta-historica-ativa #btnEnviarRevisao,
+body.consulta-historica-ativa #btnCriarNovaRevisao,
+body.consulta-historica-ativa [onclick="saveDraft()"],
+body.consulta-historica-ativa [onclick="clearForm()"] {
+  display: none !important;
+}
+
+
+/* =========================================================
+   ## 11. RESPONSIVIDADE
    ========================================================= */
 
 @media (max-width: 1100px) {
@@ -288,12 +672,72 @@
 
 
   .history-filter {
-    flex-basis: calc(50% - 6px);
+    flex-basis:
+      calc(
+        50% - 6px
+      );
   }
 
 
   .history-table {
-    min-width: 1040px;
+    min-width: 1080px;
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .history-revisions-modal {
+    align-items: flex-start;
+
+    padding: 12px;
+  }
+
+
+  .history-revisions-dialog {
+    width: 100%;
+
+    max-height:
+      calc(
+        100vh - 24px
+      );
+
+    border-radius: 13px;
+  }
+
+
+  .history-revisions-head {
+    padding: 18px 16px 15px;
+  }
+
+
+  .history-revisions-content {
+    padding: 14px 16px 18px;
+  }
+
+
+  .history-revision-card {
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+
+  .history-revision-card-actions {
+    width: 100%;
+  }
+
+
+  .history-revision-card-actions .btn {
+    flex: 1 1 0;
+  }
+
+
+  .revisao-historica-banner {
+    align-items: stretch;
+
+    flex-direction: column;
   }
 
 }
