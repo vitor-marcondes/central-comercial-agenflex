@@ -603,15 +603,24 @@ function renderItems() {
 
       tr.innerHTML = `
 
+        <!-- ===============================================
+             CÓDIGO
+             =============================================== -->
+
         <td>
 
           <input
             value="${esc(it.codigo)}"
+            placeholder="Código"
             oninput="upd(${i},'codigo',this.value)"
           >
 
         </td>
 
+
+        <!-- ===============================================
+             PRODUTO / OBSERVAÇÕES
+             =============================================== -->
 
         <td>
 
@@ -630,6 +639,10 @@ function renderItems() {
         </td>
 
 
+        <!-- ===============================================
+             NCM
+             =============================================== -->
+
         <td>
 
           ${ncmSelect(
@@ -639,6 +652,10 @@ function renderItems() {
 
         </td>
 
+
+        <!-- ===============================================
+             QUANTIDADE
+             =============================================== -->
 
         <td>
 
@@ -652,6 +669,10 @@ function renderItems() {
         </td>
 
 
+        <!-- ===============================================
+             UNIDADE
+             =============================================== -->
+
         <td>
 
           ${unitSelect(
@@ -662,6 +683,10 @@ function renderItems() {
         </td>
 
 
+        <!-- ===============================================
+             VALOR UNITÁRIO
+             =============================================== -->
+
         <td>
 
           <input
@@ -669,31 +694,48 @@ function renderItems() {
             min="0"
             step="0.0001"
             value="${it.unit}"
+            placeholder="0,0000"
             oninput="upd(${i},'unit',this.value)"
           >
 
         </td>
 
 
+        <!-- ===============================================
+             DESCONTO %
+             =============================================== -->
+
         <td>
 
-          <input
-            type="number"
-            min="0"
-            max="100"
-            step="0.01"
-            value="${
-              normalizarDescontoPercentual(
-                it.desc
-              )
-            }"
-            oninput="upd(${i},'desc',this.value)"
-          >
+          <div class="percent-field">
+
+            <input
+              type="number"
+              min="0"
+              max="100"
+              step="0.01"
+              value="${
+                normalizarDescontoPercentual(
+                  it.desc
+                )
+              }"
+              oninput="upd(${i},'desc',this.value)"
+            >
+
+            <span>
+              %
+            </span>
+
+          </div>
 
         </td>
 
 
-        <td>
+        <!-- ===============================================
+             DESCONTO EM REAIS
+             =============================================== -->
+
+        <td class="item-money">
 
           ${BRL.format(
             c.desconto
@@ -702,19 +744,36 @@ function renderItems() {
         </td>
 
 
+        <!-- ===============================================
+             IPI %
+             =============================================== -->
+
         <td>
 
-          <input
-            type="number"
-            step="0.01"
-            value="${it.ipi}"
-            oninput="upd(${i},'ipi',this.value)"
-          >
+          <div class="percent-field">
+
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              value="${it.ipi}"
+              oninput="upd(${i},'ipi',this.value)"
+            >
+
+            <span>
+              %
+            </span>
+
+          </div>
 
         </td>
 
 
-        <td>
+        <!-- ===============================================
+             TOTAL
+             =============================================== -->
+
+        <td class="item-total">
 
           ${BRL.format(
             c.total
@@ -723,11 +782,16 @@ function renderItems() {
         </td>
 
 
-        <td>
+        <!-- ===============================================
+             EXCLUIR
+             =============================================== -->
+
+        <td class="item-delete">
 
           <button
             class="del"
             onclick="deleteItem(${i})"
+            title="Excluir item"
           >
             ×
           </button>
@@ -751,7 +815,6 @@ function renderItems() {
   atualizarBloqueioCamposRevisao();
 
 }
-
 
 // ---------------------------------------------------------
 // ## 2.7 Totais da proposta
@@ -857,66 +920,128 @@ function refresh() {
 
 
   // -------------------------------------------------------
-  // ## 4.1 Totais exibidos na interface
+  // ## 4.0 Regra de exibição do desconto
   // -------------------------------------------------------
 
-mSubtotal.textContent =
-  BRL.format(
-    t.sub
-  );
+  const temDesconto =
+    t.desconto > 0.000001;
 
 
-document
-  .getElementById(
-    'mDesconto'
-  )
-  .textContent =
+  // -------------------------------------------------------
+  // ## 4.1 Totais exibidos na interface interna
+  // -------------------------------------------------------
+
+  mSubtotal.textContent =
     BRL.format(
-      t.desconto
+      t.sub
     );
 
 
-mIpi.textContent =
-  BRL.format(
-    t.ipi
-  );
+  const mDesconto =
+    document.getElementById(
+      'mDesconto'
+    );
 
 
-mTotal.textContent =
-  BRL.format(
-    t.total
-  );
+  if (
+    mDesconto
+  ) {
+
+    mDesconto.textContent =
+      BRL.format(
+        t.desconto
+      );
+
+
+    // -----------------------------------------------------
+    // Internamente usamos apenas "Desc."
+    // -----------------------------------------------------
+
+    const metricDesconto =
+      mDesconto.closest(
+        '.metric'
+      );
+
+
+    if (
+      metricDesconto
+    ) {
+
+      const tituloDesconto =
+        metricDesconto.querySelector(
+          'small'
+        );
+
+
+      if (
+        tituloDesconto
+      ) {
+
+        tituloDesconto.textContent =
+          'Desc.';
+
+      }
+
+    }
+
+  }
+
+
+  mIpi.textContent =
+    BRL.format(
+      t.ipi
+    );
+
+
+  mTotal.textContent =
+    BRL.format(
+      t.total
+    );
+
 
   // -------------------------------------------------------
   // ## 4.2 Dados principais do cliente no PDF
   // -------------------------------------------------------
 
   pOrcamento.textContent =
-    orcamento.value || '—';
+    orcamento.value ||
+    '—';
+
 
   pCliente.textContent =
-    (cliente.value || '').toUpperCase();
+    (
+      cliente.value ||
+      ''
+    ).toUpperCase();
+
 
   pComprador.textContent =
     comprador.value;
 
+
   pCnpj.textContent =
     cnpj.value;
+
 
   pIe.textContent =
     ie.value;
 
+
   pTelefone.textContent =
     telefone.value;
+
 
   pEmail.textContent =
     email.value;
 
+
   pEndereco.textContent =
     endereco.value;
 
+
   pBairro.textContent =
     bairro.value;
+
 
   pCidade.textContent =
     cidade.value;
@@ -926,91 +1051,202 @@ mTotal.textContent =
   // ## 4.3 Totais do PDF
   // -------------------------------------------------------
 
-pSubtotal.textContent =
-  N2.format(
-    t.sub
-  );
-
-
-document
-  .getElementById(
-    'pDesconto'
-  )
-  .textContent =
-    '- ' +
-    N2.format(
-      t.desconto
-    );
-
-
-pIpi.textContent =
-  N2.format(
-    t.ipi
-  );
-
-
-pTotal.textContent =
-  N2.format(
-    t.total
-  );
-
   const mostrarTotais =
     mostrarTotalPdf.checked;
 
 
-pSubtotalRow.style.display =
-  mostrarTotais
-    ? 'table-row'
-    : 'none';
+  pSubtotal.textContent =
+    N2.format(
+      t.sub
+    );
 
 
-document
-  .getElementById(
-    'pDescontoRow'
-  )
-  .style.display =
-    (
-      mostrarTotais &&
-      t.desconto > 0
-    )
+  const pSubtotalLabel =
+    document.getElementById(
+      'pSubtotalLabel'
+    );
+
+
+  if (
+    pSubtotalLabel
+  ) {
+
+    pSubtotalLabel.textContent =
+      temDesconto
+        ? 'Subtotal bruto:'
+        : 'Subtotal:';
+
+  }
+
+
+  const pDesconto =
+    document.getElementById(
+      'pDesconto'
+    );
+
+
+  if (
+    pDesconto
+  ) {
+
+    pDesconto.textContent =
+      temDesconto
+        ? '- ' +
+          N2.format(
+            t.desconto
+          )
+        : '';
+
+  }
+
+
+  pIpi.textContent =
+    N2.format(
+      t.ipi
+    );
+
+
+  pTotal.textContent =
+    N2.format(
+      t.total
+    );
+
+
+  // -------------------------------------------------------
+  // Subtotal
+  // -------------------------------------------------------
+
+  pSubtotalRow.style.display =
+    mostrarTotais
       ? 'table-row'
       : 'none';
 
 
-pIpiRow.style.display =
-  mostrarTotais
-    ? 'table-row'
-    : 'none';
+  // -------------------------------------------------------
+  // Desconto
+  //
+  // REGRA:
+  // Sem desconto = absolutamente nada aparece para cliente.
+  // -------------------------------------------------------
+
+  const pDescontoRow =
+    document.getElementById(
+      'pDescontoRow'
+    );
 
 
-pTotalRow.style.display =
-  mostrarTotais
-    ? 'table-row'
-    : 'none';
+  if (
+    pDescontoRow
+  ) {
+
+    pDescontoRow.style.display =
+      (
+        mostrarTotais &&
+        temDesconto
+      )
+        ? 'table-row'
+        : 'none';
+
+  }
+
+
+  // -------------------------------------------------------
+  // IPI
+  // -------------------------------------------------------
+
+  pIpiRow.style.display =
+    mostrarTotais
+      ? 'table-row'
+      : 'none';
+
+
+  // -------------------------------------------------------
+  // Total
+  // -------------------------------------------------------
+
+  pTotalRow.style.display =
+    mostrarTotais
+      ? 'table-row'
+      : 'none';
+
+
+  // -------------------------------------------------------
+  // Cabeçalho da coluna de desconto do PDF
+  // -------------------------------------------------------
+
+  const pDescHeader =
+    document.getElementById(
+      'pDescHeader'
+    );
+
+
+  if (
+    pDescHeader
+  ) {
+
+    pDescHeader.style.display =
+      temDesconto
+        ? 'table-cell'
+        : 'none';
+
+  }
+
+
+  // -------------------------------------------------------
+  // Nome da coluna de valor unitário final
+  // -------------------------------------------------------
+
+  const pUnitFinalHeader =
+    document.getElementById(
+      'pUnitFinalHeader'
+    );
+
+
+  if (
+    pUnitFinalHeader
+  ) {
+
+    pUnitFinalHeader.textContent =
+      temDesconto
+        ? 'Unit. final'
+        : 'Unit. c/ Imp.';
+
+  }
+
 
   // -------------------------------------------------------
   // ## 4.4 Informações comerciais
   // -------------------------------------------------------
 
   pIncluido.textContent =
-    brDate(orcData.value) +
+    brDate(
+      orcData.value
+    ) +
     ' às ' +
-    new Date().toLocaleTimeString(
-      'pt-BR',
-      {
-        hour: '2-digit',
-        minute: '2-digit'
-      }
-    );
+    new Date()
+      .toLocaleTimeString(
+        'pt-BR',
+        {
+          hour:
+            '2-digit',
+
+          minute:
+            '2-digit'
+        }
+      );
 
 
   pPrevisao.textContent =
-    brDate(previsao.value);
+    brDate(
+      previsao.value
+    );
 
 
   pVendedor.textContent =
-    (vendedor.value || '')
-      .toUpperCase();
+    (
+      vendedor.value ||
+      ''
+    ).toUpperCase();
 
 
   pProjeto.textContent =
@@ -1037,8 +1273,10 @@ pTotalRow.style.display =
 
 
   pDestinacao.textContent =
-    (destinacao.value || '')
-      .toUpperCase();
+    (
+      destinacao.value ||
+      ''
+    ).toUpperCase();
 
 
   pRegras.textContent =
@@ -1050,13 +1288,15 @@ pTotalRow.style.display =
   // -------------------------------------------------------
 
   pGerado.textContent =
-    new Date().toLocaleDateString(
-      'pt-BR'
-    ) +
+    new Date()
+      .toLocaleDateString(
+        'pt-BR'
+      ) +
     ' às ' +
-    new Date().toLocaleTimeString(
-      'pt-BR'
-    );
+    new Date()
+      .toLocaleTimeString(
+        'pt-BR'
+      );
 
 
   pGeradoPor.textContent =
@@ -1067,159 +1307,217 @@ pTotalRow.style.display =
   // ## 4.6 Itens exibidos no PDF
   // -------------------------------------------------------
 
-pdfRows.innerHTML =
-  '';
+  pdfRows.innerHTML =
+    '';
 
 
-items.forEach(
-  it => {
+  items.forEach(
+    it => {
 
-    const c =
-      calcItem(it);
-
-
-    const tr =
-      document.createElement(
-        'tr'
-      );
+      const c =
+        calcItem(
+          it
+        );
 
 
-    const descontoPercentual =
-      normalizarDescontoPercentual(
-        it.desc
-      );
+      const tr =
+        document.createElement(
+          'tr'
+        );
 
 
-    tr.innerHTML = `
-
-      <td>
-
-        ${
-          esc(
-            (
-              it.codigo
-                ? it.codigo + ' - '
-                : ''
-            ) +
-            it.produto
-          )
-        }
+      const descontoPercentual =
+        normalizarDescontoPercentual(
+          it.desc
+        );
 
 
-        ${
-          it.detalhes
-            ? `
-              <div class="item-notes">
+      // ---------------------------------------------------
+      // Célula do desconto
+      //
+      // Só existe visualmente quando a proposta realmente
+      // possui algum desconto.
+      // ---------------------------------------------------
+
+      const celulaDesconto =
+        temDesconto
+          ? `
+
+              <td>
+
                 ${
-                  esc(
-                    it.detalhes
-                  ).replace(
-                    /\n/g,
-                    '<br>'
-                  )
+                  descontoPercentual > 0
+                    ? `
+
+                        <b>
+
+                          ${
+                            String(
+                              descontoPercentual
+                            ).replace(
+                              '.',
+                              ','
+                            )
+                          }%
+
+                        </b>
+
+
+                        <div>
+
+                          ${N2.format(
+                            c.desconto
+                          )}
+
+                        </div>
+
+                      `
+                    : '—'
                 }
-              </div>
+
+              </td>
+
             `
-            : ''
-        }
-
-      </td>
+          : '';
 
 
-      <td>
-        ${esc(it.ncm)}
-      </td>
+      tr.innerHTML = `
+
+        <td>
+
+          ${
+            esc(
+              (
+                it.codigo
+                  ? it.codigo +
+                    ' - '
+                  : ''
+              ) +
+              it.produto
+            )
+          }
 
 
-      <td>
+          ${
+            it.detalhes
+              ? `
 
-        ${N2.format(it.quant)}
-        ${esc(it.unidade)}
+                  <div class="item-notes">
 
-      </td>
+                    ${
+                      esc(
+                        it.detalhes
+                      ).replace(
+                        /\n/g,
+                        '<br>'
+                      )
+                    }
 
+                  </div>
 
-      <td>
-        ${N4.format(it.unit)}
-      </td>
+                `
+              : ''
+          }
 
-
-      <td>
-
-        ${
-          descontoPercentual > 0
-            ? `
-              <b>
-                ${
-                  String(
-                    descontoPercentual
-                  ).replace(
-                    '.',
-                    ','
-                  )
-                }%
-              </b>
-
-              <div>
-                ${N2.format(
-                  c.desconto
-                )}
-              </div>
-            `
-            : '—'
-        }
-
-      </td>
+        </td>
 
 
-      <td>
+        <td>
 
-        ${N2.format(c.ipi)}
+          ${esc(
+            it.ncm
+          )}
 
-        ${
-          it.ipi
-            ? `
-              <div>
-                (
-                ${
-                  String(
-                    it.ipi
-                  ).replace(
-                    '.',
-                    ','
-                  )
-                }%
-                )
-              </div>
-            `
-            : ''
-        }
-
-      </td>
+        </td>
 
 
-      <td>
-        ${N4.format(
-          c.unitImp
-        )}
-      </td>
+        <td>
+
+          ${N2.format(
+            it.quant
+          )}
+
+          ${esc(
+            it.unidade
+          )}
+
+        </td>
 
 
-      <td>
-        ${N2.format(
-          c.total
-        )}
-      </td>
+        <td>
 
-    `;
+          ${N4.format(
+            it.unit
+          )}
+
+        </td>
 
 
-    pdfRows.appendChild(
-      tr
-    );
+        ${celulaDesconto}
 
-  }
-);
+
+        <td>
+
+          ${N2.format(
+            c.ipi
+          )}
+
+
+          ${
+            it.ipi
+              ? `
+
+                  <div>
+
+                    (
+
+                    ${
+                      String(
+                        it.ipi
+                      ).replace(
+                        '.',
+                        ','
+                      )
+                    }%
+
+                    )
+
+                  </div>
+
+                `
+              : ''
+          }
+
+        </td>
+
+
+        <td>
+
+          ${N4.format(
+            c.unitImp
+          )}
+
+        </td>
+
+
+        <td>
+
+          ${N2.format(
+            c.total
+          )}
+
+        </td>
+
+      `;
+
+
+      pdfRows.appendChild(
+        tr
+      );
+
+    }
+  );
+
 
   // -------------------------------------------------------
   // ## 4.7 Artes anexadas
@@ -1257,8 +1555,8 @@ items.forEach(
       `• alterações não salvas`;
 
   }
-}
 
+}
 
 // =========================================================
 // ## 5. ARTES TEMPORÁRIAS DA PROPOSTA

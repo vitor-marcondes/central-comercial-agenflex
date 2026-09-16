@@ -69,7 +69,9 @@ async function listarDadosPainelGestao({
           itens_revisao (
             quantidade,
             valor_unitario,
-            ipi_percentual
+            desconto_percentual,
+            ipi_percentual,
+            valor_total
           )
         )
       `)

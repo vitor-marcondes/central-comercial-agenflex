@@ -328,42 +328,340 @@ main {
   overflow: auto;
 }
 
+/* =========================================================
+   ## TABELA DE ITENS DO ORÇAMENTO
+   ========================================================= */
+
 table.editor {
+
   width: 100%;
-  min-width: 1030px;
+
+  min-width: 1180px;
+
   border-collapse: collapse;
+
 }
+
+
+/* ---------------------------------------------------------
+   Cabeçalho
+   --------------------------------------------------------- */
 
 table.editor th {
+
   background: var(--navy);
+
   color: #fff;
-  padding: 9px 8px;
+
+  padding: 9px 7px;
+
   text-align: left;
+
   font-size: 12px;
+
+  white-space: nowrap;
+
+  vertical-align: middle;
+
 }
+
+
+/* ---------------------------------------------------------
+   Cabeçalho de IPI
+   --------------------------------------------------------- */
 
 table.editor th.tax {
+
   background: var(--red);
+
 }
+
+
+/* ---------------------------------------------------------
+   Células
+   --------------------------------------------------------- */
 
 table.editor td {
+
   padding: 7px;
+
   border-bottom: 1px solid #edf0f4;
+
   vertical-align: middle;
+
   font-size: 13px;
+
 }
 
-table.editor input,table.editor textarea,table.editor select {
+
+/* ---------------------------------------------------------
+   Inputs / selects / textarea
+   --------------------------------------------------------- */
+
+table.editor input,
+table.editor textarea,
+table.editor select {
+
   width: 100%;
+
+  min-width: 0;
+
+  box-sizing: border-box;
+
   border: 1px solid #d5dae1;
+
   border-radius: 6px;
+
   padding: 7px;
+
   background: #fff;
+
+  font-size: 13px;
+
 }
+
 
 table.editor textarea {
+
   min-height: 48px;
+
   resize: vertical;
+
+}
+
+
+/* =========================================================
+   ## LARGURA DAS COLUNAS
+   ========================================================= */
+
+
+/* Código */
+
+table.editor th:nth-child(1),
+table.editor td:nth-child(1) {
+
+  width: 95px;
+
+}
+
+
+/* Produto */
+
+table.editor th:nth-child(2),
+table.editor td:nth-child(2) {
+
+  width: 230px;
+
+}
+
+
+/* NCM */
+
+table.editor th:nth-child(3),
+table.editor td:nth-child(3) {
+
+  width: 145px;
+
+}
+
+
+/* Quantidade */
+
+table.editor th:nth-child(4),
+table.editor td:nth-child(4) {
+
+  width: 90px;
+
+}
+
+
+/* Unidade */
+
+table.editor th:nth-child(5),
+table.editor td:nth-child(5) {
+
+  width: 80px;
+
+}
+
+
+/* Valor unitário */
+
+table.editor th:nth-child(6),
+table.editor td:nth-child(6) {
+
+  width: 110px;
+
+}
+
+
+/* Desc. % */
+
+table.editor th:nth-child(7),
+table.editor td:nth-child(7) {
+
+  width: 100px;
+
+}
+
+
+/* Desc. R$ */
+
+table.editor th:nth-child(8),
+table.editor td:nth-child(8) {
+
+  width: 115px;
+
+  white-space: nowrap;
+
+}
+
+
+/* IPI % */
+
+table.editor th:nth-child(9),
+table.editor td:nth-child(9) {
+
+  width: 100px;
+
+}
+
+
+/* Total */
+
+table.editor th:nth-child(10),
+table.editor td:nth-child(10) {
+
+  width: 120px;
+
+  white-space: nowrap;
+
+  font-weight: 800;
+
+}
+
+
+/* Excluir */
+
+table.editor th:nth-child(11),
+table.editor td:nth-child(11) {
+
+  width: 45px;
+
+  text-align: center;
+
+}
+
+
+/* =========================================================
+   ## CAMPOS PERCENTUAIS
+   ========================================================= */
+
+table.editor td:nth-child(7) input,
+table.editor td:nth-child(9) input {
+
+  text-align: center;
+
+  font-weight: 700;
+
+}
+
+
+/* =========================================================
+   ## VALOR DO DESCONTO
+   ========================================================= */
+
+table.editor td:nth-child(8) {
+
+  font-weight: 700;
+
+  color: #333;
+
+}
+
+
+/* =========================================================
+   ## TOTAL DO ITEM
+   ========================================================= */
+
+table.editor td:nth-child(10) {
+
+  font-weight: 900;
+
+  color: var(--navy);
+
+}
+/* =========================================================
+   ## CAMPOS PERCENTUAIS DOS ITENS
+   ========================================================= */
+
+.percent-field {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  width: 100%;
+
+}
+
+
+.percent-field input {
+
+  min-width: 0;
+
+  flex: 1;
+
+  text-align: center;
+
+}
+
+
+.percent-field span {
+
+  flex: 0 0 auto;
+
+  font-weight: 900;
+
+  color: #344054;
+
+}
+
+
+/* =========================================================
+   ## VALORES MONETÁRIOS
+   ========================================================= */
+
+.item-money {
+
+  white-space: nowrap;
+
+  font-weight: 700;
+
+}
+
+
+.item-total {
+
+  white-space: nowrap;
+
+  font-weight: 900;
+
+  color: var(--navy);
+
+}
+
+
+/* =========================================================
+   ## BOTÃO EXCLUIR
+   ========================================================= */
+
+.item-delete {
+
+  text-align: center;
+
 }
 
 .del {

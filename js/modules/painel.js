@@ -343,52 +343,54 @@ function calcularValorRevisaoPainel(
       : [];
 
 
-  return itens.reduce(
+  // -------------------------------------------------------
+  // O banco é a fonte oficial do valor de cada item.
+  //
+  // valor_total já considera:
+  // - quantidade
+  // - valor unitário com precisão
+  // - desconto
+  // - IPI após desconto
+  // -------------------------------------------------------
+
+  const totalRevisao =
+    itens.reduce(
+      (
+        total,
+        item
+      ) => {
+
+        return (
+          total +
+          (
+            Number(
+              item.valor_total
+            ) || 0
+          )
+        );
+
+      },
+      0
+    );
+
+
+  // -------------------------------------------------------
+  // A proposta comercial fecha em centavos.
+  //
+  // As 4 casas do valor unitário continuam sendo utilizadas
+  // nos cálculos. O arredondamento ocorre somente depois que
+  // o valor final da proposta foi calculado.
+  // -------------------------------------------------------
+
+  return Math.round(
     (
-      total,
-      item
-    ) => {
+      totalRevisao +
+      Number.EPSILON
+    ) *
+    100
+  ) / 100;
 
-      const quantidade =
-        Number(
-          item.quantidade
-        ) || 0;
-
-
-      const valorUnitario =
-        Number(
-          item.valor_unitario
-        ) || 0;
-
-
-      const ipiPercentual =
-        Number(
-          item.ipi_percentual
-        ) || 0;
-
-
-      const subtotal =
-        quantidade *
-        valorUnitario;
-
-
-      const ipi =
-        subtotal *
-        ipiPercentual /
-        100;
-
-
-      return (
-        total +
-        subtotal +
-        ipi
-      );
-
-    },
-    0
-  );
 }
-
 
 // =========================================================
 // ## 7. NORMALIZAR DADOS
