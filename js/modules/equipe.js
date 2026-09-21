@@ -3,14 +3,15 @@
 // Arquivo: equipe.js
 //
 // Responsabilidade:
-// - Identificar Vendedor / Gestor / ADM
+// - Identificar Vendedor / Gestor / Diretor / ADM
 // - Sincronizar o Time do vendedor com o Orçamento
-// - Exibir Gestão da Equipe somente para Gestor / ADM
+// - Exibir Gestão da Equipe para Gestor / Diretor / ADM
 // - Listar usuários
 // - Mostrar contas pendentes
 // - Aprovar / bloquear vendedores
 // - Permitir que ADM altere o perfil
 // - Permitir que Gestor / ADM alterem o Time do vendedor
+// - Manter Diretor em modo somente leitura
 // - Exibir ação de redefinição de senha
 //
 // Dependências:
@@ -81,6 +82,9 @@ function nomePerfilEquipe(
     gestor:
       'GESTOR',
 
+    diretor:
+      'DIRETOR',
+
     adm:
       'ADM'
 
@@ -134,6 +138,20 @@ function nomeTimeGestaoEquipe(
 // ## 3. PERMISSÕES
 // =========================================================
 
+function usuarioPodeVisualizarEquipe() {
+
+  return [
+    'gestor',
+    'diretor',
+    'adm'
+  ].includes(
+    equipePerfilAtual
+      ?.tipo_acesso
+  );
+
+}
+
+
 function usuarioPodeGerenciarEquipe() {
 
   return [
@@ -142,6 +160,17 @@ function usuarioPodeGerenciarEquipe() {
   ].includes(
     equipePerfilAtual
       ?.tipo_acesso
+  );
+
+}
+
+
+function usuarioEhDiretorEquipe() {
+
+  return (
+    equipePerfilAtual
+      ?.tipo_acesso ===
+    'diretor'
   );
 
 }
@@ -257,12 +286,6 @@ function sincronizarTimeOrcamentoComPerfil(
       propostaSalvaAbertaEquipe();
 
 
-    // Se for uma NOVA proposta, o Time vem
-    // obrigatoriamente do perfil do vendedor.
-    //
-    // Se uma proposta JÁ SALVA estiver aberta,
-    // preservamos o Time gravado naquela revisão.
-
     if (
       !propostaSalva
     ) {
@@ -280,9 +303,6 @@ function sincronizarTimeOrcamentoComPerfil(
 
     }
 
-
-    // Vendedor não pode escolher outro Time
-    // pela interface.
 
     campo.disabled =
       true;
@@ -307,9 +327,6 @@ function sincronizarTimeOrcamentoComPerfil(
 
     }
 
-
-    // Atualiza imediatamente a identidade visual
-    // do PDF de acordo com o Time.
 
     if (
       typeof updateTeamLogo ===
@@ -372,7 +389,37 @@ function sincronizarTimeOrcamentoComPerfil(
 
 
   // -------------------------------------------------------
-  // ## 4.2.3 Perfil não reconhecido
+  // ## 4.2.3 Diretor
+  // -------------------------------------------------------
+
+  if (
+    tipo ===
+    'diretor'
+  ) {
+
+    campo.disabled =
+      true;
+
+
+    campo.title =
+      'Diretor possui visão executiva e não opera propostas.';
+
+
+    if (label) {
+
+      label.textContent =
+        'Time (somente leitura)';
+
+    }
+
+
+    return;
+
+  }
+
+
+  // -------------------------------------------------------
+  // ## 4.2.4 Perfil não reconhecido
   // -------------------------------------------------------
 
   campo.disabled =
@@ -460,10 +507,6 @@ function montarInterfaceGestaoEquipe() {
     <div class="panel-body">
 
 
-      <!-- ================================================
-           INDICADORES
-           ================================================ -->
-
       <div class="equipe-cards">
 
 
@@ -518,13 +561,8 @@ function montarInterfaceGestaoEquipe() {
 
         </div>
 
-
       </div>
 
-
-      <!-- ================================================
-           FILTROS
-           ================================================ -->
 
       <div class="equipe-toolbar">
 
@@ -562,6 +600,10 @@ function montarInterfaceGestaoEquipe() {
 
             <option value="gestor">
               Gestor
+            </option>
+
+            <option value="diretor">
+              Diretor
             </option>
 
             <option value="adm">
@@ -648,13 +690,8 @@ function montarInterfaceGestaoEquipe() {
           ↻ Atualizar
         </button>
 
-
       </div>
 
-
-      <!-- ================================================
-           TABELA
-           ================================================ -->
 
       <div class="table-wrap">
 
@@ -1182,6 +1219,18 @@ function selectPerfilEquipe(
       </option>
 
       <option
+        value="diretor"
+        ${
+          perfil.tipo_acesso ===
+          'diretor'
+            ? 'selected'
+            : ''
+        }
+      >
+        Diretor
+      </option>
+
+      <option
         value="adm"
         ${
           perfil.tipo_acesso ===
@@ -1334,6 +1383,19 @@ function selectTimeEquipe(
 function botoesEquipe(
   perfil
 ) {
+
+  if (
+    !usuarioPodeGerenciarEquipe()
+  ) {
+
+    return `
+      <span class="equipe-user-email">
+        Somente leitura
+      </span>
+    `;
+
+  }
+
 
   if (
     perfil.tipo_acesso ===
@@ -1643,7 +1705,7 @@ async function carregarGestaoEquipe() {
 
 
   if (
-    !usuarioPodeGerenciarEquipe()
+    !usuarioPodeVisualizarEquipe()
   ) {
 
     return;
@@ -1798,6 +1860,15 @@ async function aprovarUsuarioEquipe(
   userId
 ) {
 
+  if (
+    !usuarioPodeGerenciarEquipe()
+  ) {
+
+    return;
+
+  }
+
+
   const perfil =
     equipePerfis.find(
       item =>
@@ -1888,6 +1959,15 @@ async function bloquearUsuarioEquipe(
   userId
 ) {
 
+  if (
+    !usuarioPodeGerenciarEquipe()
+  ) {
+
+    return;
+
+  }
+
+
   const perfil =
     equipePerfis.find(
       item =>
@@ -1909,7 +1989,7 @@ async function bloquearUsuarioEquipe(
     );
 
 
-  if (!confirmimar) {
+  if (!confirmar) {
 
     return;
 
@@ -2277,13 +2357,6 @@ async function sincronizarGestaoEquipe() {
       await obterMeuPerfil();
 
 
-    // IMPORTANTE:
-    // A sincronização do Time do Orçamento acontece
-    // para TODOS os perfis, inclusive vendedor.
-    //
-    // Por isso ela deve acontecer antes de esconder
-    // a Gestão da Equipe do vendedor.
-
     sincronizarTimeOrcamentoComPerfil(
       equipePerfilAtual
     );
@@ -2291,7 +2364,7 @@ async function sincronizarGestaoEquipe() {
 
     if (
       !equipePerfilAtual ||
-      !usuarioPodeGerenciarEquipe()
+      !usuarioPodeVisualizarEquipe()
     ) {
 
       if (painel) {

@@ -7,10 +7,12 @@
 // - Validar a sessão atual ao abrir a Central
 // - Exibir usuário e tipo de acesso na interface
 // - Executar login e logout
+// - Limpar rascunho local ao sair
 // - Mostrar mensagens de autenticação
 //
 // Dependências:
 // - js/services/auth.service.js
+// - js/core/core.js
 // - Elementos de autenticação presentes no index.html
 //
 // Separação de responsabilidades:
@@ -41,6 +43,13 @@ function mensagemLogin(
     );
 
 
+  if (!elemento) {
+
+    return;
+
+  }
+
+
   elemento.textContent =
     texto;
 
@@ -56,16 +65,56 @@ function mensagemLogin(
     );
 
   }
+
 }
 
 
 // =========================================================
-// ## 2. CONTROLE DAS TELAS DE AUTENTICAÇÃO
+// ## 2. NOMES DOS PERFIS
+// =========================================================
+
+function nomePerfilAuth(
+  tipoAcesso
+) {
+
+  const tipo =
+    String(
+      tipoAcesso || ''
+    )
+      .trim()
+      .toLowerCase();
+
+
+  const nomes = {
+
+    vendedor:
+      'Vendedor',
+
+    gestor:
+      'Gestor',
+
+    diretor:
+      'Diretor',
+
+    adm:
+      'Administrador'
+
+  };
+
+
+  return nomes[tipo] ||
+    'Usuário';
+
+}
+
+
+// =========================================================
+// ## 3. CONTROLE DAS TELAS DE AUTENTICAÇÃO
 // =========================================================
 
 
 // ---------------------------------------------------------
-// ## 2.1 Mostrar tela de login
+// ## 3.1 Mostrar tela de login
 // ---------------------------------------------------------
 
 function mostrarTelaLogin() {
@@ -75,29 +124,42 @@ function mostrarTelaLogin() {
   );
 
 
-  document
-    .getElementById(
+  const tela =
+    document.getElementById(
       'loginScreen'
-    )
-    .hidden =
+    );
+
+
+  if (tela) {
+
+    tela.hidden =
       false;
+
+  }
+
 }
 
 
 // ---------------------------------------------------------
-// ## 2.2 Mostrar a Central após autenticação
+// ## 3.2 Mostrar a Central após autenticação
 // ---------------------------------------------------------
 
 function mostrarCentral(
   perfil
 ) {
 
-  document
-    .getElementById(
+  const telaLogin =
+    document.getElementById(
       'loginScreen'
-    )
-    .hidden =
+    );
+
+
+  if (telaLogin) {
+
+    telaLogin.hidden =
       true;
+
+  }
 
 
   document.body.classList.remove(
@@ -106,41 +168,68 @@ function mostrarCentral(
 
 
   // -------------------------------------------------------
-  // ## 2.2.1 Nome do usuário
+  // ## 3.2.1 Nome do usuário
   // -------------------------------------------------------
 
-  document
-    .getElementById(
+  const nomeUsuario =
+    document.getElementById(
       'authUserName'
-    )
-    .textContent =
+    );
+
+
+  if (nomeUsuario) {
+
+    nomeUsuario.textContent =
       perfil.nome ||
       'Usuário';
 
+  }
+
 
   // -------------------------------------------------------
-  // ## 2.2.2 Tipo de acesso
+  // ## 3.2.2 Tipo de acesso
   // -------------------------------------------------------
 
-  document
-    .getElementById(
+  const tipoUsuario =
+    document.getElementById(
       'authUserRole'
+    );
+
+
+  if (tipoUsuario) {
+
+    tipoUsuario.textContent =
+      nomePerfilAuth(
+        perfil.tipo_acesso
+      );
+
+  }
+
+
+  // -------------------------------------------------------
+  // ## 3.2.3 Preenchimento inicial do vendedor
+  // -------------------------------------------------------
+  //
+  // Vendedor:
+  // → pode trabalhar nas próprias propostas.
+  //
+  // Gestor:
+  // → pode trabalhar nas próprias propostas.
+  //
+  // ADM:
+  // → possui acesso total e pode operar quando necessário.
+  //
+  // Diretor:
+  // → possui visão executiva e não opera propostas.
+  // -------------------------------------------------------
+
+  const tipo =
+    String(
+      perfil.tipo_acesso || ''
     )
-    .textContent =
+      .trim()
+      .toLowerCase();
 
-      perfil.tipo_acesso === 'adm'
-
-        ? 'Administrador'
-
-        : 'Vendedor';
-
-
-  // -------------------------------------------------------
-  // ## 2.2.3 Preenchimento inicial do vendedor
-  // -------------------------------------------------------
-
-  // O campo "Vendedor" pode começar preenchido
-  // automaticamente com o usuário autenticado.
 
   const campoVendedor =
     document.getElementById(
@@ -150,7 +239,14 @@ function mostrarCentral(
 
   if (
     campoVendedor &&
-    !campoVendedor.value
+    !campoVendedor.value &&
+    [
+      'vendedor',
+      'gestor',
+      'adm'
+    ].includes(
+      tipo
+    )
   ) {
 
     campoVendedor.value =
@@ -158,13 +254,14 @@ function mostrarCentral(
       '';
 
   }
+
 }
 
 
 // =========================================================
-// ## 3. VALIDAÇÃO DA SESSÃO ATUAL
+// ## 4. VALIDAÇÃO DA SESSÃO ATUAL
 // =========================================================
-
+//
 // Executada ao abrir a Central.
 //
 // Fluxo:
@@ -178,13 +275,14 @@ function mostrarCentral(
 // → busca perfil
 // → verifica se está ativo
 // → libera a Central
+// =========================================================
 
 async function validarUsuarioLogado() {
 
   try {
 
     // -----------------------------------------------------
-    // ## 3.1 Verificar usuário no Supabase Auth
+    // ## 4.1 Verificar usuário no Supabase Auth
     // -----------------------------------------------------
 
     const user =
@@ -196,11 +294,12 @@ async function validarUsuarioLogado() {
       mostrarTelaLogin();
 
       return;
+
     }
 
 
     // -----------------------------------------------------
-    // ## 3.2 Buscar perfil interno
+    // ## 4.2 Buscar perfil interno
     // -----------------------------------------------------
 
     const perfil =
@@ -222,11 +321,12 @@ async function validarUsuarioLogado() {
 
 
       return;
+
     }
 
 
     // -----------------------------------------------------
-    // ## 3.3 Verificar se o usuário está ativo
+    // ## 4.3 Verificar se o usuário está ativo
     // -----------------------------------------------------
 
     if (
@@ -246,16 +346,18 @@ async function validarUsuarioLogado() {
 
 
       return;
+
     }
 
 
     // -----------------------------------------------------
-    // ## 3.4 Liberar acesso à Central
+    // ## 4.4 Liberar acesso à Central
     // -----------------------------------------------------
 
     mostrarCentral(
       perfil
     );
+
 
   } catch (erro) {
 
@@ -274,11 +376,12 @@ async function validarUsuarioLogado() {
     );
 
   }
+
 }
 
 
 // =========================================================
-// ## 4. LOGIN
+// ## 5. LOGIN
 // =========================================================
 
 async function realizarLogin(
@@ -287,11 +390,12 @@ async function realizarLogin(
 
   // Evita o envio tradicional do formulário,
   // que recarregaria a página.
+
   event.preventDefault();
 
 
   // -------------------------------------------------------
-  // ## 4.1 Leitura dos campos
+  // ## 5.1 Leitura dos campos
   // -------------------------------------------------------
 
   const email =
@@ -323,19 +427,23 @@ async function realizarLogin(
 
 
   // -------------------------------------------------------
-  // ## 4.2 Estado visual durante o login
+  // ## 5.2 Estado visual durante o login
   // -------------------------------------------------------
 
-  botao.disabled =
-    true;
+  if (botao) {
+
+    botao.disabled =
+      true;
 
 
-  botao.textContent =
-    'Entrando...';
+    botao.textContent =
+      'Entrando...';
+
+  }
 
 
   // -------------------------------------------------------
-  // ## 4.3 Autenticação e validação do perfil
+  // ## 5.3 Autenticação e validação do perfil
   // -------------------------------------------------------
 
   try {
@@ -386,6 +494,7 @@ async function realizarLogin(
       perfil
     );
 
+
   } catch (erro) {
 
     console.error(
@@ -395,7 +504,7 @@ async function realizarLogin(
 
 
     // -----------------------------------------------------
-    // ## 4.4 Tratamento das mensagens de erro
+    // ## 5.4 Tratamento das mensagens de erro
     // -----------------------------------------------------
 
     let mensagem =
@@ -448,32 +557,96 @@ async function realizarLogin(
       'error'
     );
 
+
   } finally {
 
     // -----------------------------------------------------
-    // ## 4.5 Restaurar botão
+    // ## 5.5 Restaurar botão
     // -----------------------------------------------------
 
-    botao.disabled =
-      false;
+    if (botao) {
+
+      botao.disabled =
+        false;
 
 
-    botao.textContent =
-      'Entrar';
+      botao.textContent =
+        'Entrar';
+
+    }
 
   }
+
 }
 
 
 // =========================================================
-// ## 5. LOGOUT
+// ## 6. RASCUNHO LOCAL
+// =========================================================
+
+
+// ---------------------------------------------------------
+// ## 6.1 Limpar rascunho ao sair
+// ---------------------------------------------------------
+//
+// Regra definida para a Central:
+//
+// Ao fazer logout:
+// → o rascunho local é apagado.
+//
+// Propostas salvas continuam disponíveis normalmente
+// através do Histórico / Supabase.
+// ---------------------------------------------------------
+
+function limparRascunhoLocalAoSair() {
+
+  try {
+
+    if (
+      typeof LS_KEY !==
+        'undefined' &&
+      LS_KEY
+    ) {
+
+      localStorage.removeItem(
+        LS_KEY
+      );
+
+    }
+
+  } catch (erro) {
+
+    console.warn(
+      'Não foi possível limpar o rascunho local:',
+      erro
+    );
+
+  }
+
+}
+
+
+// =========================================================
+// ## 7. LOGOUT
 // =========================================================
 
 async function sairDaCentral() {
 
   try {
 
+    // -----------------------------------------------------
+    // ## 7.1 Apagar o rascunho local
+    // -----------------------------------------------------
+
+    limparRascunhoLocalAoSair();
+
+
+    // -----------------------------------------------------
+    // ## 7.2 Encerrar sessão
+    // -----------------------------------------------------
+
     await logoutCentral();
+
 
   } catch (erro) {
 
@@ -482,45 +655,57 @@ async function sairDaCentral() {
       erro
     );
 
+
   } finally {
 
-    // Recarrega a aplicação para voltar ao estado inicial.
+    // -----------------------------------------------------
+    // ## 7.3 Recarregar a aplicação
+    // -----------------------------------------------------
+
     window.location.reload();
 
   }
+
 }
 
 
 // =========================================================
-// ## 6. INICIALIZAÇÃO DA INTERFACE DE AUTENTICAÇÃO
+// ## 8. INICIALIZAÇÃO DA INTERFACE DE AUTENTICAÇÃO
 // =========================================================
 
 async function iniciarInterfaceAuth() {
 
   // -------------------------------------------------------
-  // ## 6.1 Evento do formulário de login
+  // ## 8.1 Evento do formulário de login
   // -------------------------------------------------------
 
-  document
-    .getElementById(
+  const formulario =
+    document.getElementById(
       'loginForm'
-    )
-    .addEventListener(
+    );
+
+
+  if (formulario) {
+
+    formulario.addEventListener(
       'submit',
       realizarLogin
     );
 
+  }
+
 
   // -------------------------------------------------------
-  // ## 6.2 Verificação inicial da sessão
+  // ## 8.2 Verificação inicial da sessão
   // -------------------------------------------------------
 
   await validarUsuarioLogado();
+
 }
 
 
 // =========================================================
-// ## 7. INÍCIO DO MÓDULO
+// ## 9. INÍCIO DO MÓDULO
 // =========================================================
 
 // Inicia automaticamente a autenticação

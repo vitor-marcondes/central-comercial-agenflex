@@ -2103,6 +2103,160 @@ function rememberSeller() {
 
 
 // =========================================================
+// ## 6.4 VALIDADE COMERCIAL
+// =========================================================
+
+function normalizarValidadeInterface(
+  valor
+) {
+
+  const atual =
+    String(
+      valor || ''
+    )
+      .trim()
+      .toUpperCase();
+
+
+  if (
+    [
+      'HOJE',
+      '0 DIA',
+      '0 DIAS'
+    ].includes(
+      atual
+    )
+  ) {
+
+    return 'HOJE';
+
+  }
+
+
+  if (
+    [
+      '3 DIA',
+      '3 DIAS'
+    ].includes(
+      atual
+    )
+  ) {
+
+    return '3 DIAS';
+
+  }
+
+
+  if (
+    [
+      '5 DIA',
+      '5 DIAS'
+    ].includes(
+      atual
+    )
+  ) {
+
+    return '5 DIAS';
+
+  }
+
+
+  return '7 DIAS';
+
+}
+
+
+function sincronizarValidadeInterface() {
+
+  const campo =
+    document.getElementById(
+      'validade'
+    );
+
+
+  if (!campo) {
+
+    return;
+
+  }
+
+
+  const atual =
+    normalizarValidadeInterface(
+      campo.value
+    );
+
+
+  campo.value =
+    atual;
+
+
+  document
+    .querySelectorAll(
+      '.validade-option'
+    )
+    .forEach(
+      botao => {
+
+        const ativo =
+          botao.dataset.validade ===
+          atual;
+
+
+        botao.classList.toggle(
+          'active',
+          ativo
+        );
+
+
+        botao.setAttribute(
+          'aria-pressed',
+          ativo
+            ? 'true'
+            : 'false'
+        );
+
+      }
+    );
+
+}
+
+
+function selecionarValidade(
+  valor
+) {
+
+  const campo =
+    document.getElementById(
+      'validade'
+    );
+
+
+  if (
+    !campo ||
+    campo.disabled ||
+    !revisaoEhEditavel()
+  ) {
+
+    return;
+
+  }
+
+
+  campo.value =
+    normalizarValidadeInterface(
+      valor
+    );
+
+
+  sincronizarValidadeInterface();
+
+
+  refresh();
+
+}
+
+// =========================================================
 // ## 7. RASCUNHO LOCAL
 // =========================================================
 
@@ -2256,6 +2410,8 @@ function loadDraft() {
 
     if (!raw) {
 
+      sincronizarValidadeInterface();
+
       atualizarInterfaceGestaoComercial();
 
       atualizarInterfaceRevisao();
@@ -2408,6 +2564,8 @@ function loadDraft() {
 
     }
 
+
+    sincronizarValidadeInterface();
 
     atualizarInterfaceGestaoComercial();
 
@@ -3035,6 +3193,22 @@ function atualizarBloqueioCamposRevisao() {
 
 
   document
+  .querySelectorAll(
+    '.validade-option'
+  )
+  .forEach(
+    botao => {
+
+      botao.disabled =
+        bloqueada;
+
+    }
+  );
+
+
+sincronizarValidadeInterface();
+
+  document
     .querySelectorAll(
       '#itemsEditor input, ' +
       '#itemsEditor textarea, ' +
@@ -3185,60 +3359,54 @@ function atualizarInterfaceRevisao() {
   // Criar próxima revisão
   // -------------------------------------------------------
 
-  if (
-    botaoNovaRevisao
-  ) {
+if (
+  botaoNovaRevisao
+) {
 
-    const podeCriar =
-      propostaSalva &&
-      revisaoSalva &&
-      enviada;
-
-
-    botaoNovaRevisao.hidden =
-      !podeCriar;
+  const numeroAtual =
+    Number(
+      propostaNuvemAtual.numeroRevisao
+    );
 
 
-    botaoNovaRevisao.disabled =
-      !podeCriar;
+  const limiteAtingido =
+    Number.isFinite(
+      numeroAtual
+    ) &&
+    numeroAtual >= 2;
 
 
-    if (
-      podeCriar
-    ) {
-
-      const proxima =
-        Number(
-          propostaNuvemAtual.numeroRevisao
-        ) + 1;
-
-
-      botaoNovaRevisao.textContent =
-        `➕ Criar R${proxima}`;
-
-    }
-
-  }
-
-
-  atualizarBloqueioCamposRevisao();
-
-
-  if (
+  const podeCriar =
     propostaSalva &&
-    enviada
+    revisaoSalva &&
+    enviada &&
+    !limiteAtingido;
+
+
+  botaoNovaRevisao.hidden =
+    !podeCriar;
+
+
+  botaoNovaRevisao.disabled =
+    !podeCriar;
+
+
+  if (
+    podeCriar
   ) {
 
-    saveStatus.textContent =
-      `Proposta #${propostaNuvemAtual.numero} ` +
-      `• R${propostaNuvemAtual.numeroRevisao} ` +
-      `• ENVIADA`;
+    const proxima =
+      numeroAtual + 1;
+
+
+    botaoNovaRevisao.textContent =
+      `➕ Criar R${proxima}`;
 
   }
 
 }
 
-
+}
 // ---------------------------------------------------------
 // ## 10.3 Enviar revisão atual
 // ---------------------------------------------------------
@@ -3467,15 +3635,38 @@ async function criarNovaRevisaoAtual() {
   }
 
 
-  const atual =
-    Number(
-      propostaNuvemAtual.numeroRevisao
-    );
+const atual =
+  Number(
+    propostaNuvemAtual.numeroRevisao
+  );
 
 
-  const proxima =
-    atual + 1;
+if (
+  !Number.isFinite(
+    atual
+  ) ||
+  atual >= 2
+) {
 
+  toastMsg(
+    'Limite de revisões atingido'
+  );
+
+
+  alert(
+    'Esta proposta já atingiu o limite de 3 versões: R0, R1 e R2.'
+  );
+
+
+  atualizarInterfaceRevisao();
+
+
+  return;
+}
+
+
+const proxima =
+  atual + 1;
 
   const confirmou =
     confirm(
@@ -4389,6 +4580,8 @@ function aplicarPropostaNoFormulario(
     revisaoAtual.validade ||
     '7 DIAS'
   );
+
+  sincronizarValidadeInterface();
 
 
   definir(

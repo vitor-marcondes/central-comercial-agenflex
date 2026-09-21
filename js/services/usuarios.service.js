@@ -10,7 +10,7 @@
 // - Definição do Time comercial do vendedor
 // - Consulta e manutenção de metas individuais
 // - Consulta e manutenção de metas oficiais dos Times
-// - Transferência auditada de propostas entre vendedores
+// - Transferência auditada de propostas entre responsáveis comerciais
 //
 // Dependência:
 // - js/services/supabase-client.js
@@ -317,6 +317,7 @@ async function definirTipoAcesso(
     ![
       'vendedor',
       'gestor',
+      'diretor',
       'adm'
     ].includes(
       tipoNormalizado
@@ -887,7 +888,7 @@ async function transferirProposta({
   if (!vendedorNovoIdLimpo) {
 
     throw new Error(
-      'Selecione o novo vendedor responsável.'
+      'Selecione o novo responsável comercial.'
     );
 
   }

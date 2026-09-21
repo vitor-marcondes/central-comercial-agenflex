@@ -308,19 +308,93 @@
         >
       </div>
 
-      <div class="field">
-        <label>Validade</label>
+<div class="field">
 
-        <select id="validade">
-          <option>HOJE</option>
-          <option>3 DIAS</option>
-          <option>5 DIAS</option>
-          <option selected>7 DIAS</option>
-          <option>15 DIAS</option>
-          <option>30 DIAS</option>
-        </select>
-      </div>
+  <label>
+    Validade
+  </label>
 
+  <div
+    id="validadeSelector"
+    class="validade-selector"
+    role="group"
+    aria-label="Validade da proposta"
+  >
+
+    <button
+      type="button"
+      class="validade-option"
+      data-validade="HOJE"
+      aria-pressed="false"
+      onclick="selecionarValidade('HOJE')"
+    >
+      HOJE
+    </button>
+
+    <button
+      type="button"
+      class="validade-option"
+      data-validade="3 DIAS"
+      aria-pressed="false"
+      onclick="selecionarValidade('3 DIAS')"
+    >
+      3 DIAS
+    </button>
+
+    <button
+      type="button"
+      class="validade-option"
+      data-validade="5 DIAS"
+      aria-pressed="false"
+      onclick="selecionarValidade('5 DIAS')"
+    >
+      5 DIAS
+    </button>
+
+    <button
+      type="button"
+      class="validade-option active"
+      data-validade="7 DIAS"
+      aria-pressed="true"
+      onclick="selecionarValidade('7 DIAS')"
+    >
+      7 DIAS
+    </button>
+
+  </div>
+
+
+  <!--
+    Mantemos este select oculto para compatibilidade
+    com toda a lógica já existente de proposta.js.
+  -->
+  <select
+    id="validade"
+    class="validade-select-hidden"
+    tabindex="-1"
+    aria-hidden="true"
+  >
+    <option value="HOJE">
+      HOJE
+    </option>
+
+    <option value="3 DIAS">
+      3 DIAS
+    </option>
+
+    <option value="5 DIAS">
+      5 DIAS
+    </option>
+
+    <option
+      value="7 DIAS"
+      selected
+    >
+      7 DIAS
+    </option>
+  </select>
+
+</div>
       <div class="field">
         <label>Time (interno)</label>
 

@@ -1670,3 +1670,91 @@ body.auth-pending > .toast {
 .cnpj-consulta-status.error {
   color: #b42318;
 }
+
+/* =========================================================
+   VALIDADE COMERCIAL
+   ========================================================= */
+
+.validade-selector {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
+
+  gap: 6px;
+}
+
+
+.validade-option {
+  min-height: 40px;
+
+  padding: 8px 6px;
+
+  border:
+    1px solid var(--line);
+
+  border-radius: 8px;
+
+  background: #fff;
+
+  color: var(--navy);
+
+  font-size: 11px;
+
+  font-weight: 900;
+
+  cursor: pointer;
+
+  transition:
+    background .15s ease,
+    color .15s ease,
+    border-color .15s ease,
+    transform .15s ease;
+}
+
+
+.validade-option:hover:not(:disabled) {
+  border-color: var(--navy);
+
+  transform:
+    translateY(-1px);
+}
+
+
+.validade-option.active {
+  background: var(--navy);
+
+  border-color: var(--navy);
+
+  color: #fff;
+}
+
+
+.validade-option:disabled {
+  opacity: .55;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+
+.validade-select-hidden {
+  display: none;
+}
+
+
+@media (max-width: 650px) {
+
+  .validade-selector {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+}
