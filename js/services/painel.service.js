@@ -62,6 +62,7 @@ async function listarDadosPainelGestao({
           time_equipe,
 
           data_proposta,
+          validade,
 
           status,
           enviado_em,

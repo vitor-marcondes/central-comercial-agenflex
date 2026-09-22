@@ -275,6 +275,425 @@ function nomeTimePainelMaiusculo(
   ).toUpperCase();
 }
 
+// =========================================================
+// ## 4.1 VALIDADE COMERCIAL
+// =========================================================
+
+function validadeDiasPainel(
+  validade
+) {
+
+  const valor =
+    String(
+      validade || ''
+    )
+      .trim()
+      .toUpperCase();
+
+
+  if (
+    [
+      'HOJE',
+      '0 DIA',
+      '0 DIAS'
+    ].includes(
+      valor
+    )
+  ) {
+
+    return 0;
+
+  }
+
+
+  const numero =
+    Number(
+      valor.match(
+        /\d+/
+      )?.[0]
+    );
+
+
+  return Number.isFinite(
+    numero
+  )
+    ? numero
+    : null;
+}
+
+
+function dataSaoPauloPainel(
+  valor = new Date()
+) {
+
+  const data =
+    valor instanceof Date
+      ? valor
+      : new Date(
+        valor
+      );
+
+
+  if (
+    Number.isNaN(
+      data.getTime()
+    )
+  ) {
+
+    return null;
+
+  }
+
+
+  const partes =
+    new Intl.DateTimeFormat(
+      'en-US',
+      {
+        timeZone:
+          'America/Sao_Paulo',
+
+        year:
+          'numeric',
+
+        month:
+          '2-digit',
+
+        day:
+          '2-digit'
+      }
+    )
+      .formatToParts(
+        data
+      );
+
+
+  const obter =
+    tipo =>
+      partes.find(
+        parte =>
+          parte.type ===
+          tipo
+      )?.value;
+
+
+  const ano =
+    obter(
+      'year'
+    );
+
+
+  const mes =
+    obter(
+      'month'
+    );
+
+
+  const dia =
+    obter(
+      'day'
+    );
+
+
+  if (
+    !ano ||
+    !mes ||
+    !dia
+  ) {
+
+    return null;
+
+  }
+
+
+  return `${ano}-${mes}-${dia}`;
+}
+
+
+function adicionarDiasDataPainel(
+  dataIso,
+  dias
+) {
+
+  if (
+    !dataIso ||
+    !Number.isFinite(
+      Number(
+        dias
+      )
+    )
+  ) {
+
+    return null;
+
+  }
+
+
+  const partes =
+    String(
+      dataIso
+    )
+      .split(
+        '-'
+      )
+      .map(
+        Number
+      );
+
+
+  if (
+    partes.length !== 3
+  ) {
+
+    return null;
+
+  }
+
+
+  const [
+    ano,
+    mes,
+    dia
+  ] =
+    partes;
+
+
+  const data =
+    new Date(
+      Date.UTC(
+        ano,
+        mes - 1,
+        dia
+      )
+    );
+
+
+  data.setUTCDate(
+    data.getUTCDate() +
+    Number(
+      dias
+    )
+  );
+
+
+  return data
+    .toISOString()
+    .slice(
+      0,
+      10
+    );
+}
+
+
+function diferencaDiasPainel(
+  dataInicial,
+  dataFinal
+) {
+
+  if (
+    !dataInicial ||
+    !dataFinal
+  ) {
+
+    return 0;
+
+  }
+
+
+  const converter =
+    valor => {
+
+      const [
+        ano,
+        mes,
+        dia
+      ] =
+        String(
+          valor
+        )
+          .split(
+            '-'
+          )
+          .map(
+            Number
+          );
+
+
+      return Date.UTC(
+        ano,
+        mes - 1,
+        dia
+      );
+
+    };
+
+
+  return Math.round(
+    (
+      converter(
+        dataFinal
+      ) -
+      converter(
+        dataInicial
+      )
+    ) /
+    86400000
+  );
+}
+
+
+function calcularValidadePainel(
+  proposta,
+  revisao
+) {
+
+  const retorno = {
+
+    dias:
+      null,
+
+    validadeAte:
+      null,
+
+    situacao:
+      'sem_validade',
+
+    diasVencida:
+      0
+
+  };
+
+
+  if (
+    !revisao ||
+    String(
+      revisao.status || ''
+    ).toLowerCase() !==
+    'enviada' ||
+    !revisao.enviado_em
+  ) {
+
+    return retorno;
+
+  }
+
+
+  // Proposta encerrada não entra no acompanhamento
+  // comercial de vencidas.
+
+  if (
+    [
+      'concluido',
+      'nao_conquistado'
+    ].includes(
+      proposta
+        ?.status_comercial
+    )
+  ) {
+
+    retorno.situacao =
+      'encerrada';
+
+
+    return retorno;
+
+  }
+
+
+  const dias =
+    validadeDiasPainel(
+      revisao.validade
+    );
+
+
+  if (
+    dias === null
+  ) {
+
+    return retorno;
+
+  }
+
+
+  const dataEnvio =
+    dataSaoPauloPainel(
+      revisao.enviado_em
+    );
+
+
+  if (!dataEnvio) {
+
+    return retorno;
+
+  }
+
+
+  const validadeAte =
+    adicionarDiasDataPainel(
+      dataEnvio,
+      dias
+    );
+
+
+  if (!validadeAte) {
+
+    return retorno;
+
+  }
+
+
+  const hoje =
+    dataSaoPauloPainel();
+
+
+  retorno.dias =
+    dias;
+
+
+  retorno.validadeAte =
+    validadeAte;
+
+
+  if (
+    validadeAte <
+    hoje
+  ) {
+
+    retorno.situacao =
+      'vencida';
+
+
+    retorno.diasVencida =
+      diferencaDiasPainel(
+        validadeAte,
+        hoje
+      );
+
+
+    return retorno;
+
+  }
+
+
+  if (
+    validadeAte ===
+    hoje
+  ) {
+
+    retorno.situacao =
+      'vence_hoje';
+
+
+    return retorno;
+
+  }
+
+
+  retorno.situacao =
+    'vigente';
+
+
+  return retorno;
+}
 
 // =========================================================
 // ## 5. REVISÃO ATUAL
@@ -413,11 +832,15 @@ function normalizarDadosPainel(
 
 
         if (!revisao) {
+          const validade =
+            calcularValidadePainel(
+              proposta,
+              revisao
+            );
 
           return null;
 
         }
-
 
         return {
 
@@ -438,8 +861,19 @@ function normalizarDadosPainel(
           valor:
             calcularValorRevisaoPainel(
               revisao
-            )
+            ),
 
+          validadeDias:
+            validade.dias,
+
+          validadeAte:
+            validade.validadeAte,
+
+          situacaoValidade:
+            validade.situacao,
+
+          diasVencida:
+            validade.diasVencida
         };
 
       }
@@ -944,37 +1378,35 @@ function montarResumoMetaPainel() {
 
           <select id="painelMetaMes">
 
-            ${
-              Array.from(
-                {
-                  length: 12
-                },
-                (
-                  _,
-                  indice
-                ) => {
+            ${Array.from(
+    {
+      length: 12
+    },
+    (
+      _,
+      indice
+    ) => {
 
-                  const mes =
-                    indice + 1;
+      const mes =
+        indice + 1;
 
 
-                  return `
+      return `
                     <option
                       value="${mes}"
-                      ${
-                        mes ===
-                        periodo.mes
-                          ? 'selected'
-                          : ''
-                      }
+                      ${mes ===
+          periodo.mes
+          ? 'selected'
+          : ''
+        }
                     >
                       ${nomeMesPainel(mes)}
                     </option>
                   `;
 
-                }
-              ).join('')
-            }
+    }
+  ).join('')
+    }
 
           </select>
 
@@ -1103,7 +1535,7 @@ function montarResumoMetaPainel() {
       periodo.ano - 1;
 
     ano <=
-      periodo.ano + 2;
+    periodo.ano + 2;
 
     ano++
   ) {
@@ -1580,13 +2012,13 @@ function registroNoPeriodoMetaPainel(
 
   return (
     dataAno ===
-      Number(
-        ano
-      ) &&
+    Number(
+      ano
+    ) &&
     dataMes ===
-      Number(
-        mes
-      )
+    Number(
+      mes
+    )
   );
 }
 
@@ -1605,11 +2037,11 @@ function conquistadoVendedorPainel(
     .filter(
       registro =>
         registro.vendedorId ===
-          userId &&
+        userId &&
 
         registro.proposta
           .status_comercial ===
-          'concluido' &&
+        'concluido' &&
 
         registroNoPeriodoMetaPainel(
           registro,
@@ -1653,12 +2085,12 @@ function conquistadoTimePainel(
       registro =>
         registro.proposta
           .status_comercial ===
-          'concluido' &&
+        'concluido' &&
 
         timeRegistroPainel(
           registro
         ) ===
-          time &&
+        time &&
 
         registroNoPeriodoMetaPainel(
           registro,
@@ -1688,7 +2120,7 @@ function conquistadoGeralPainel(
       registro =>
         registro.proposta
           .status_comercial ===
-          'concluido' &&
+        'concluido' &&
 
         registroNoPeriodoMetaPainel(
           registro,
@@ -1803,15 +2235,15 @@ function atualizarFiltroVendedoresPainel() {
   const vendedoresDisponiveis =
     filtroTime
       ? painelVendedores.filter(
-          vendedor =>
-            normalizarTimePainel(
-              vendedor.time_equipe
-            ) ===
-            filtroTime
-        )
+        vendedor =>
+          normalizarTimePainel(
+            vendedor.time_equipe
+          ) ===
+          filtroTime
+      )
       : [
-          ...painelVendedores
-        ];
+        ...painelVendedores
+      ];
 
 
   const todos =
@@ -2102,6 +2534,20 @@ function dadosFiltradosPainel() {
       // ---------------------------------------------------
 
       if (
+        filtros.status ===
+        '__vencida__'
+      ) {
+
+        if (
+          registro.situacaoValidade !==
+          'vencida'
+        ) {
+
+          return false;
+
+        }
+
+      } else if (
         filtros.status &&
         proposta.status_comercial !==
         filtros.status
@@ -2111,7 +2557,6 @@ function dadosFiltradosPainel() {
 
       }
 
-
       // ---------------------------------------------------
       // ## 20.6 Data
       // ---------------------------------------------------
@@ -2119,11 +2564,11 @@ function dadosFiltradosPainel() {
       const data =
         revisao.data_proposta
           ? String(
-              revisao.data_proposta
-            ).slice(
-              0,
-              10
-            )
+            revisao.data_proposta
+          ).slice(
+            0,
+            10
+          )
           : '';
 
 
@@ -2179,13 +2624,12 @@ function badgeOrigemPainel(
     <span
       class="painel-badge origem ${escaparPainel(classe)}"
     >
-      ${
-        escaparPainel(
-          nomeOrigemPainel(
-            origem
-          )
-        )
-      }
+      ${escaparPainel(
+    nomeOrigemPainel(
+      origem
+    )
+  )
+    }
     </span>
   `;
 }
@@ -2204,17 +2648,147 @@ function badgeStatusPainel(
     <span
       class="painel-badge status ${escaparPainel(normalizado)}"
     >
-      ${
-        escaparPainel(
-          nomeStatusPainel(
-            normalizado
-          )
-        )
-      }
+      ${escaparPainel(
+    nomeStatusPainel(
+      normalizado
+    )
+  )
+    }
     </span>
   `;
 }
 
+function badgeValidadePainel(
+  registro
+) {
+
+  const situacao =
+    registro
+      ?.situacaoValidade ||
+    'sem_validade';
+
+
+  const validadeAte =
+    registro
+      ?.validadeAte ||
+    null;
+
+
+  if (
+    situacao ===
+    'vencida'
+  ) {
+
+    const dias =
+      Number(
+        registro.diasVencida
+      ) || 0;
+
+
+    return `
+
+      <div class="painel-validade">
+
+        <span class="painel-badge validade vencida">
+          VENCIDA
+        </span>
+
+        <small>
+          ${dias === 1
+        ? 'há 1 dia'
+        : `há ${dias} dias`
+      }
+        </small>
+
+      </div>
+
+    `;
+
+  }
+
+
+  if (
+    situacao ===
+    'vence_hoje'
+  ) {
+
+    return `
+
+      <div class="painel-validade">
+
+        <span class="painel-badge validade vence-hoje">
+          VENCE HOJE
+        </span>
+
+      </div>
+
+    `;
+
+  }
+
+
+  if (
+    situacao ===
+    'vigente'
+  ) {
+
+    return `
+
+      <div class="painel-validade">
+
+        <span class="painel-badge validade vigente">
+          VIGENTE
+        </span>
+
+        <small>
+          até ${escaparPainel(
+      formatarDataPainel(
+        validadeAte
+      )
+    )
+      }
+        </small>
+
+      </div>
+
+    `;
+
+  }
+
+
+  if (
+    situacao ===
+    'encerrada'
+  ) {
+
+    return `
+
+      <div class="painel-validade">
+
+        <span class="painel-badge validade encerrada">
+          ENCERRADA
+        </span>
+
+      </div>
+
+    `;
+
+  }
+
+
+  return `
+
+    <div class="painel-validade">
+
+      <span class="painel-badge validade sem-validade">
+        —
+      </span>
+
+    </div>
+
+  `;
+
+}
 
 function badgeTimePainel(
   time
@@ -2241,13 +2815,12 @@ function badgeTimePainel(
     <span
       class="painel-badge time ${escaparPainel(normalizado)}"
     >
-      ${
-        escaparPainel(
-          nomeTimePainelMaiusculo(
-            normalizado
-          )
-        )
-      }
+      ${escaparPainel(
+    nomeTimePainelMaiusculo(
+      normalizado
+    )
+  )
+    }
     </span>
   `;
 }
@@ -2270,19 +2843,18 @@ function badgeRevisaoPainel(
 
       <b>
         R${escaparPainel(
-          revisao.numero_revisao
-        )}
+    revisao.numero_revisao
+  )}
       </b>
 
       <span
         class="painel-revisao-status ${escaparPainel(status)}"
       >
-        ${
-          status ===
-            'enviada'
-              ? 'ENVIADA'
-              : 'RASCUNHO'
-        }
+        ${status ===
+      'enviada'
+      ? 'ENVIADA'
+      : 'RASCUNHO'
+    }
       </span>
 
     </div>
@@ -2311,6 +2883,11 @@ function atualizarIndicadoresPainel(
       valor: 0
     },
 
+    vencida: {
+      quantidade: 0,
+      valor: 0
+    },
+
     concluido: {
       quantidade: 0,
       valor: 0
@@ -2335,7 +2912,7 @@ function atualizarIndicadoresPainel(
 
       if (
         !indicadores[
-          status
+        status
         ]
       ) {
 
@@ -2354,6 +2931,20 @@ function atualizarIndicadoresPainel(
         status
       ].valor +=
         registro.valor;
+
+      if (
+        registro.situacaoValidade ===
+        'vencida'
+      ) {
+
+        indicadores.vencida.quantidade +=
+          1;
+
+
+        indicadores.vencida.valor +=
+          registro.valor;
+
+      }
 
     }
   );
@@ -2409,6 +3000,13 @@ function atualizarIndicadoresPainel(
     'painelQtdAndamento',
     'painelValorAndamento',
     indicadores.andamento
+  );
+
+
+  atualizar(
+    'painelQtdVencida',
+    'painelValorVencida',
+    indicadores.vencida
   );
 
 
@@ -2477,11 +3075,11 @@ function atualizarResumoMetaPainel() {
     (
       filtros.vendedor &&
       filtros.vendedor !==
-        '__sem_responsavel__'
+      '__sem_responsavel__'
     )
       ? obterPerfilVendedorPainel(
-          filtros.vendedor
-        )
+        filtros.vendedor
+      )
       : null;
 
 
@@ -2748,10 +3346,10 @@ function atualizarResumoMetaPainel() {
   const percentual =
     metaTotal > 0
       ? (
-          conquistado /
-          metaTotal
-        ) *
-        100
+        conquistado /
+        metaTotal
+      ) *
+      100
       : 0;
 
 
@@ -2963,10 +3561,10 @@ function renderizarResumoTimesPainel() {
       const percentual =
         metaOficial > 0
           ? (
-              conquistado /
-              metaOficial
-            ) *
-            100
+            conquistado /
+            metaOficial
+          ) *
+          100
           : 0;
 
 
@@ -2985,20 +3583,18 @@ function renderizarResumoTimesPainel() {
         <div class="painel-time-card-head">
 
           <strong>
-            ${
-              escaparPainel(
-                nomeTimePainel(
-                  time
-                )
-              )
-            }
+            ${escaparPainel(
+        nomeTimePainel(
+          time
+        )
+      )
+        }
           </strong>
 
-          ${
-            badgeTimePainel(
-              time
-            )
-          }
+          ${badgeTimePainel(
+          time
+        )
+        }
 
         </div>
 
@@ -3012,11 +3608,10 @@ function renderizarResumoTimesPainel() {
             </span>
 
             <b>
-              ${
-                formatarMoedaPainel(
-                  metaOficial
-                )
-              }
+              ${formatarMoedaPainel(
+          metaOficial
+        )
+        }
             </b>
 
           </div>
@@ -3029,11 +3624,10 @@ function renderizarResumoTimesPainel() {
             </span>
 
             <b>
-              ${
-                formatarMoedaPainel(
-                  conquistado
-                )
-              }
+              ${formatarMoedaPainel(
+          conquistado
+        )
+        }
             </b>
 
           </div>
@@ -3046,11 +3640,10 @@ function renderizarResumoTimesPainel() {
             </span>
 
             <b>
-              ${
-                formatarMoedaPainel(
-                  distribuido
-                )
-              }
+              ${formatarMoedaPainel(
+          distribuido
+        )
+        }
             </b>
 
           </div>
@@ -3151,11 +3744,11 @@ function renderizarComparativoPainel() {
   const vendedores =
     filtros.time
       ? vendedoresDoTimePainel(
-          filtros.time
-        )
+        filtros.time
+      )
       : [
-          ...painelVendedores
-        ];
+        ...painelVendedores
+      ];
 
 
   if (titulo) {
@@ -3163,8 +3756,8 @@ function renderizarComparativoPainel() {
     titulo.textContent =
       filtros.time
         ? `📈 Vendedores — ${nomeTimePainel(
-            filtros.time
-          )}`
+          filtros.time
+        )}`
         : '📈 Comparativo dos Vendedores';
 
   }
@@ -3216,10 +3809,10 @@ function renderizarComparativoPainel() {
           const percentual =
             meta > 0
               ? (
-                  conquistado /
-                  meta
-                ) *
-                100
+                conquistado /
+                meta
+              ) *
+              100
               : 0;
 
 
@@ -3288,11 +3881,10 @@ function renderizarComparativoPainel() {
         <td>
 
           <b>
-            ${
-              escaparPainel(
-                linha.vendedor.nome
-              )
-            }
+            ${escaparPainel(
+        linha.vendedor.nome
+      )
+        }
           </b>
 
         </td>
@@ -3300,23 +3892,21 @@ function renderizarComparativoPainel() {
 
         <td>
 
-          ${
-            badgeTimePainel(
-              linha.vendedor
-                .time_equipe
-            )
-          }
+          ${badgeTimePainel(
+          linha.vendedor
+            .time_equipe
+        )
+        }
 
         </td>
 
 
         <td>
 
-          ${
-            formatarMoedaPainel(
-              linha.meta
-            )
-          }
+          ${formatarMoedaPainel(
+          linha.meta
+        )
+        }
 
         </td>
 
@@ -3324,11 +3914,10 @@ function renderizarComparativoPainel() {
         <td>
 
           <b>
-            ${
-              formatarMoedaPainel(
-                linha.conquistado
-              )
-            }
+            ${formatarMoedaPainel(
+          linha.conquistado
+        )
+        }
           </b>
 
         </td>
@@ -3336,11 +3925,10 @@ function renderizarComparativoPainel() {
 
         <td>
 
-          ${
-            formatarMoedaPainel(
-              linha.falta
-            )
-          }
+          ${formatarMoedaPainel(
+          linha.falta
+        )
+        }
 
         </td>
 
@@ -3778,13 +4366,13 @@ function abrirTransferenciaPainel(
     timeAtual.textContent =
       timeDoResponsavel
         ? `Time atual do responsável: ${nomeTimePainel(
-            timeDoResponsavel
-          )} • Documento: ${nomeTimePainel(
-            timeDocumento
-          )}`
+          timeDoResponsavel
+        )} • Documento: ${nomeTimePainel(
+          timeDocumento
+        )}`
         : `Documento: ${nomeTimePainel(
-            timeDocumento
-          )}`;
+          timeDocumento
+        )}`;
 
   }
 
@@ -4239,7 +4827,7 @@ function renderizarPainel() {
 
     contador.textContent =
       lista.length ===
-      painelDados.length
+        painelDados.length
         ? `${lista.length} proposta(s)`
         : `${lista.length} de ${painelDados.length} proposta(s)`;
 
@@ -4299,8 +4887,8 @@ function renderizarPainel() {
 
           <b>
             #${escaparPainel(
-              proposta.numero
-            )}
+        proposta.numero
+      )}
           </b>
 
         </td>
@@ -4309,22 +4897,20 @@ function renderizarPainel() {
         <td>
 
           <b>
-            ${
-              escaparPainel(
-                revisao.nome_proposta ||
-                'Sem nome'
-              )
-            }
+            ${escaparPainel(
+        revisao.nome_proposta ||
+        'Sem nome'
+      )
+        }
           </b>
 
           <div class="painel-secondary">
 
-            ${
-              escaparPainel(
-                revisao.cliente ||
-                'Cliente não informado'
-              )
-            }
+            ${escaparPainel(
+          revisao.cliente ||
+          'Cliente não informado'
+        )
+        }
 
           </div>
 
@@ -4333,86 +4919,85 @@ function renderizarPainel() {
 
         <td>
 
-          ${
-            escaparPainel(
-              nomeVendedorRegistroPainel(
-                registro
-              )
-            )
-          }
+          ${escaparPainel(
+          nomeVendedorRegistroPainel(
+            registro
+          )
+        )
+        }
 
-          ${
-            !vendedorPerfil
-              ? `
+          ${!vendedorPerfil
+          ? `
                 <div class="painel-secondary">
-                  ${
-                    registro.vendedorId
-                      ? 'USUÁRIO NÃO LOCALIZADO'
-                      : 'SEM VÍNCULO'
-                  }
+                  ${registro.vendedorId
+            ? 'USUÁRIO NÃO LOCALIZADO'
+            : 'SEM VÍNCULO'
+          }
                 </div>
               `
-              : ''
-          }
+          : ''
+        }
 
         </td>
 
 
         <td>
 
-          ${
-            formatarDataPainel(
-              revisao.data_proposta
-            )
-          }
+          ${formatarDataPainel(
+          revisao.data_proposta
+        )
+        }
 
         </td>
 
 
         <td>
 
-          ${
-            badgeOrigemPainel(
-              proposta.origem_comercial
-            )
-          }
+          ${badgeOrigemPainel(
+          proposta.origem_comercial
+        )
+        }
 
         </td>
 
 
         <td>
 
-          ${
-            badgeStatusPainel(
-              proposta.status_comercial
-            )
-          }
+          ${badgeStatusPainel(
+          proposta.status_comercial
+        )
+        }
 
         </td>
 
 
         <td class="painel-value">
 
-          ${
-            formatarMoedaPainel(
-              registro.valor
-            )
-          }
+          ${formatarMoedaPainel(
+          registro.valor
+        )
+        }
 
         </td>
 
 
         <td>
 
-          ${
-            badgeRevisaoPainel(
-              revisao
-            )
-          }
+          ${badgeRevisaoPainel(
+          revisao
+        )
+        }
+
+        <td>
+
+          ${badgeValidadePainel(
+          registro
+        )
+        }
 
         </td>
 
-
+        
         <td>
 
           <div class="painel-actions">
@@ -4423,8 +5008,8 @@ function renderizarPainel() {
               onclick="
                 abrirRevisoesPainel(
                   '${escaparPainel(
-                    proposta.id
-                  )}'
+          proposta.id
+        )}'
                 )
               "
             >
@@ -4438,8 +5023,8 @@ function renderizarPainel() {
               onclick="
                 abrirPropostaPainel(
                   '${escaparPainel(
-                    proposta.id
-                  )}'
+          proposta.id
+        )}'
                 )
               "
             >
@@ -4447,25 +5032,24 @@ function renderizarPainel() {
             </button>
 
 
-            ${
-              painelEhGestorOuAdm()
-                ? `
+            ${painelEhGestorOuAdm()
+          ? `
                   <button
                     type="button"
                     class="btn light painel-transferir"
                     onclick="
                       abrirTransferenciaPainel(
                         '${escaparPainel(
-                          proposta.id
-                        )}'
+            proposta.id
+          )}'
                       )
                     "
                   >
                     Transferir
                   </button>
                 `
-                : ''
-            }
+          : ''
+        }
 
           </div>
 
@@ -4776,7 +5360,7 @@ async function carregarPainel() {
           perfil =>
             perfil.ativo &&
             perfil.tipo_acesso ===
-              'vendedor'
+            'vendedor'
         )
         .sort(
           (
@@ -4981,7 +5565,7 @@ function limparFiltrosPainel() {
     vendedor.value =
       painelEhVendedor()
         ? painelPerfilAtual
-            ?.user_id || ''
+          ?.user_id || ''
         : '';
 
   }

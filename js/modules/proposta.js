@@ -242,13 +242,13 @@ function calcItem(
     unitDesc:
       quantidade
         ? subtotalLiquido /
-          quantidade
+        quantidade
         : 0,
 
     unitImp:
       quantidade
         ? total /
-          quantidade
+        quantidade
         : 0
 
   };
@@ -336,7 +336,7 @@ function duplicateLast() {
   addItem(
 
     items[
-      items.length - 1
+    items.length - 1
     ] || {}
 
   );
@@ -488,12 +488,11 @@ function ncmSelect(
 
         <option
           value="3923.29.10 - 39"
-          ${
-            it.ncm ===
-            '3923.29.10 - 39'
-              ? 'selected'
-              : ''
-          }
+          ${it.ncm ===
+      '3923.29.10 - 39'
+      ? 'selected'
+      : ''
+    }
         >
           3923.29.10 - 39
         </option>
@@ -507,12 +506,11 @@ function ncmSelect(
 
         <option
           value="4819.40.00"
-          ${
-            it.ncm ===
-            '4819.40.00'
-              ? 'selected'
-              : ''
-          }
+          ${it.ncm ===
+      '4819.40.00'
+      ? 'selected'
+      : ''
+    }
         >
           4819.40.00
         </option>
@@ -543,12 +541,11 @@ function unitSelect(
 
       <option
         value="UN"
-        ${
-          it.unidade ===
-          'UN'
-            ? 'selected'
-            : ''
-        }
+        ${it.unidade ===
+      'UN'
+      ? 'selected'
+      : ''
+    }
       >
         UN
       </option>
@@ -556,12 +553,11 @@ function unitSelect(
 
       <option
         value="PCT"
-        ${
-          it.unidade ===
-          'PCT'
-            ? 'selected'
-            : ''
-        }
+        ${it.unidade ===
+      'PCT'
+      ? 'selected'
+      : ''
+    }
       >
         PCT
       </option>
@@ -646,9 +642,9 @@ function renderItems() {
         <td>
 
           ${ncmSelect(
-            it,
-            i
-          )}
+        it,
+        i
+      )}
 
         </td>
 
@@ -676,9 +672,9 @@ function renderItems() {
         <td>
 
           ${unitSelect(
-            it,
-            i
-          )}
+        it,
+        i
+      )}
 
         </td>
 
@@ -714,11 +710,10 @@ function renderItems() {
               min="0"
               max="100"
               step="0.01"
-              value="${
-                normalizarDescontoPercentual(
-                  it.desc
-                )
-              }"
+              value="${normalizarDescontoPercentual(
+        it.desc
+      )
+        }"
               oninput="upd(${i},'desc',this.value)"
             >
 
@@ -738,8 +733,8 @@ function renderItems() {
         <td class="item-money">
 
           ${BRL.format(
-            c.desconto
-          )}
+          c.desconto
+        )}
 
         </td>
 
@@ -776,8 +771,8 @@ function renderItems() {
         <td class="item-total">
 
           ${BRL.format(
-            c.total
-          )}
+          c.total
+        )}
 
         </td>
 
@@ -1092,9 +1087,9 @@ function refresh() {
     pDesconto.textContent =
       temDesconto
         ? '- ' +
-          N2.format(
-            t.desconto
-          )
+        N2.format(
+          t.desconto
+        )
         : '';
 
   }
@@ -1345,20 +1340,18 @@ function refresh() {
 
               <td>
 
-                ${
-                  descontoPercentual > 0
-                    ? `
+                ${descontoPercentual > 0
+            ? `
 
                         <b>
 
-                          ${
-                            String(
-                              descontoPercentual
-                            ).replace(
-                              '.',
-                              ','
-                            )
-                          }%
+                          ${String(
+              descontoPercentual
+            ).replace(
+              '.',
+              ','
+            )
+            }%
 
                         </b>
 
@@ -1366,14 +1359,14 @@ function refresh() {
                         <div>
 
                           ${N2.format(
-                            c.desconto
-                          )}
+              c.desconto
+            )}
 
                         </div>
 
                       `
-                    : '—'
-                }
+            : '—'
+          }
 
               </td>
 
@@ -1385,39 +1378,36 @@ function refresh() {
 
         <td>
 
-          ${
-            esc(
-              (
-                it.codigo
-                  ? it.codigo +
-                    ' - '
-                  : ''
-              ) +
-              it.produto
-            )
-          }
+          ${esc(
+        (
+          it.codigo
+            ? it.codigo +
+            ' - '
+            : ''
+        ) +
+        it.produto
+      )
+        }
 
 
-          ${
-            it.detalhes
-              ? `
+          ${it.detalhes
+          ? `
 
                   <div class="item-notes">
 
-                    ${
-                      esc(
-                        it.detalhes
-                      ).replace(
-                        /\n/g,
-                        '<br>'
-                      )
-                    }
+                    ${esc(
+            it.detalhes
+          ).replace(
+            /\n/g,
+            '<br>'
+          )
+          }
 
                   </div>
 
                 `
-              : ''
-          }
+          : ''
+        }
 
         </td>
 
@@ -1425,8 +1415,8 @@ function refresh() {
         <td>
 
           ${esc(
-            it.ncm
-          )}
+          it.ncm
+        )}
 
         </td>
 
@@ -1434,12 +1424,12 @@ function refresh() {
         <td>
 
           ${N2.format(
-            it.quant
-          )}
+          it.quant
+        )}
 
           ${esc(
-            it.unidade
-          )}
+          it.unidade
+        )}
 
         </td>
 
@@ -1447,8 +1437,8 @@ function refresh() {
         <td>
 
           ${N4.format(
-            it.unit
-          )}
+          it.unit
+        )}
 
         </td>
 
@@ -1459,34 +1449,32 @@ function refresh() {
         <td>
 
           ${N2.format(
-            c.ipi
-          )}
+          c.ipi
+        )}
 
 
-          ${
-            it.ipi
-              ? `
+          ${it.ipi
+          ? `
 
                   <div>
 
                     (
 
-                    ${
-                      String(
-                        it.ipi
-                      ).replace(
-                        '.',
-                        ','
-                      )
-                    }%
+                    ${String(
+            it.ipi
+          ).replace(
+            '.',
+            ','
+          )
+          }%
 
                     )
 
                   </div>
 
                 `
-              : ''
-          }
+          : ''
+        }
 
         </td>
 
@@ -1494,8 +1482,8 @@ function refresh() {
         <td>
 
           ${N4.format(
-            c.unitImp
-          )}
+          c.unitImp
+        )}
 
         </td>
 
@@ -1503,8 +1491,8 @@ function refresh() {
         <td>
 
           ${N2.format(
-            c.total
-          )}
+          c.total
+        )}
 
         </td>
 
@@ -1833,10 +1821,10 @@ function renderArts() {
   pagesLabel.textContent =
     arts.length
       ? (
-          'Paginação automática • ' +
-          arts.length +
-          ' arte(s)'
-        )
+        'Paginação automática • ' +
+        arts.length +
+        ' arte(s)'
+      )
       : 'Paginação automática';
 
 
@@ -3193,20 +3181,20 @@ function atualizarBloqueioCamposRevisao() {
 
 
   document
-  .querySelectorAll(
-    '.validade-option'
-  )
-  .forEach(
-    botao => {
+    .querySelectorAll(
+      '.validade-option'
+    )
+    .forEach(
+      botao => {
 
-      botao.disabled =
-        bloqueada;
+        botao.disabled =
+          bloqueada;
 
-    }
-  );
+      }
+    );
 
 
-sincronizarValidadeInterface();
+  sincronizarValidadeInterface();
 
   document
     .querySelectorAll(
@@ -3359,52 +3347,52 @@ function atualizarInterfaceRevisao() {
   // Criar próxima revisão
   // -------------------------------------------------------
 
-if (
-  botaoNovaRevisao
-) {
-
-  const numeroAtual =
-    Number(
-      propostaNuvemAtual.numeroRevisao
-    );
-
-
-  const limiteAtingido =
-    Number.isFinite(
-      numeroAtual
-    ) &&
-    numeroAtual >= 2;
-
-
-  const podeCriar =
-    propostaSalva &&
-    revisaoSalva &&
-    enviada &&
-    !limiteAtingido;
-
-
-  botaoNovaRevisao.hidden =
-    !podeCriar;
-
-
-  botaoNovaRevisao.disabled =
-    !podeCriar;
-
-
   if (
-    podeCriar
+    botaoNovaRevisao
   ) {
 
-    const proxima =
-      numeroAtual + 1;
+    const numeroAtual =
+      Number(
+        propostaNuvemAtual.numeroRevisao
+      );
 
 
-    botaoNovaRevisao.textContent =
-      `➕ Criar R${proxima}`;
+    const limiteAtingido =
+      Number.isFinite(
+        numeroAtual
+      ) &&
+      numeroAtual >= 2;
+
+
+    const podeCriar =
+      propostaSalva &&
+      revisaoSalva &&
+      enviada &&
+      !limiteAtingido;
+
+
+    botaoNovaRevisao.hidden =
+      !podeCriar;
+
+
+    botaoNovaRevisao.disabled =
+      !podeCriar;
+
+
+    if (
+      podeCriar
+    ) {
+
+      const proxima =
+        numeroAtual + 1;
+
+
+      botaoNovaRevisao.textContent =
+        `➕ Criar R${proxima}`;
+
+    }
 
   }
-
-}
 
 }
 // ---------------------------------------------------------
@@ -3547,7 +3535,16 @@ async function enviarRevisaoAtual() {
 
       enviadoEm:
         resultado.enviado_em ||
+        null,
+
+      validadeDias:
+        resultado.validade_dias ??
+        null,
+
+      validadeAte:
+        resultado.validade_ate ||
         null
+
     };
 
 
@@ -3635,38 +3632,38 @@ async function criarNovaRevisaoAtual() {
   }
 
 
-const atual =
-  Number(
-    propostaNuvemAtual.numeroRevisao
-  );
+  const atual =
+    Number(
+      propostaNuvemAtual.numeroRevisao
+    );
 
 
-if (
-  !Number.isFinite(
-    atual
-  ) ||
-  atual >= 2
-) {
+  if (
+    !Number.isFinite(
+      atual
+    ) ||
+    atual >= 2
+  ) {
 
-  toastMsg(
-    'Limite de revisões atingido'
-  );
-
-
-  alert(
-    'Esta proposta já atingiu o limite de 3 versões: R0, R1 e R2.'
-  );
+    toastMsg(
+      'Limite de revisões atingido'
+    );
 
 
-  atualizarInterfaceRevisao();
+    alert(
+      'Esta proposta já atingiu o limite de 3 versões: R0, R1 e R2.'
+    );
 
 
-  return;
-}
+    atualizarInterfaceRevisao();
 
 
-const proxima =
-  atual + 1;
+    return;
+  }
+
+
+  const proxima =
+    atual + 1;
 
   const confirmou =
     confirm(
@@ -3985,14 +3982,14 @@ function atualizarInterfaceGestaoComercial() {
     situacao.value =
       propostaSalva
         ? (
-            `Proposta #${propostaNuvemAtual.numero} ` +
-            `• ${nomeOrigemComercial(
-              statusComercialAtual.origemComercial
-            )} ` +
-            `• ${nomeStatusComercial(
-              statusComercialAtual.status
-            )}`
-          )
+          `Proposta #${propostaNuvemAtual.numero} ` +
+          `• ${nomeOrigemComercial(
+            statusComercialAtual.origemComercial
+          )} ` +
+          `• ${nomeStatusComercial(
+            statusComercialAtual.status
+          )}`
+        )
         : 'Nova proposta';
 
   }
@@ -4771,95 +4768,95 @@ function aplicarPropostaNoFormulario(
   );
 
 
-// -------------------------------------------------------
-// ## 12.7 Conversão dos itens vindos do banco
-// -------------------------------------------------------
+  // -------------------------------------------------------
+  // ## 12.7 Conversão dos itens vindos do banco
+  // -------------------------------------------------------
 
-const itensBanco =
-  Array.isArray(
-    revisaoAtual.itens_revisao
-  )
-    ? revisaoAtual.itens_revisao
-    : [];
-
-
-items =
-  itensBanco
-
-    .sort(
-      (a, b) =>
-        Number(
-          a.ordem || 0
-        ) -
-        Number(
-          b.ordem || 0
-        )
+  const itensBanco =
+    Array.isArray(
+      revisaoAtual.itens_revisao
     )
+      ? revisaoAtual.itens_revisao
+      : [];
 
-    .map(
-      it => ({
 
-        codigo:
-          it.codigo ||
-          '',
+  items =
+    itensBanco
 
-        produto:
-          it.produto ||
-          '',
-
-        detalhes:
-          it.observacoes ||
-          '',
-
-        ncm:
-          it.ncm ||
-          '',
-
-        quant:
+      .sort(
+        (a, b) =>
           Number(
-            it.quantidade
-          ) || 0,
-
-        unidade:
-          it.unidade ||
-          'UN',
-
-        unit:
+            a.ordem || 0
+          ) -
           Number(
-            it.valor_unitario
-          ) || 0,
+            b.ordem || 0
+          )
+      )
 
-        desc:
-          Number(
-            it.desconto_percentual
-          ) || 0,
+      .map(
+        it => ({
 
-        ipi:
-          Number(
-            it.ipi_percentual
-          ) || 0
+          codigo:
+            it.codigo ||
+            '',
 
-      })
-    );
+          produto:
+            it.produto ||
+            '',
+
+          detalhes:
+            it.observacoes ||
+            '',
+
+          ncm:
+            it.ncm ||
+            '',
+
+          quant:
+            Number(
+              it.quantidade
+            ) || 0,
+
+          unidade:
+            it.unidade ||
+            'UN',
+
+          unit:
+            Number(
+              it.valor_unitario
+            ) || 0,
+
+          desc:
+            Number(
+              it.desconto_percentual
+            ) || 0,
+
+          ipi:
+            Number(
+              it.ipi_percentual
+            ) || 0
+
+        })
+      );
 
 
-if (!items.length) {
+  if (!items.length) {
 
-  items = [
-    {
-      codigo: '',
-      produto: '',
-      detalhes: '',
-      ncm: '',
-      quant: 0,
-      unidade: 'UN',
-      unit: 0,
-      desc: 0,
-      ipi: 9.75
-    }
-  ];
+    items = [
+      {
+        codigo: '',
+        produto: '',
+        detalhes: '',
+        ncm: '',
+        quant: 0,
+        unidade: 'UN',
+        unit: 0,
+        desc: 0,
+        ipi: 9.75
+      }
+    ];
 
-}
+  }
 
   // -------------------------------------------------------
   // ## 12.8 Limpeza das artes temporárias
@@ -5241,7 +5238,7 @@ function preencherDadosEmpresa(
     document
       .getElementById('cnpj')
       .value =
-        empresa.cnpj;
+      empresa.cnpj;
 
   }
 
@@ -5253,7 +5250,7 @@ function preencherDadosEmpresa(
     document
       .getElementById('cliente')
       .value =
-        empresa.razaoSocial;
+      empresa.razaoSocial;
 
   }
 
@@ -5265,7 +5262,7 @@ function preencherDadosEmpresa(
     document
       .getElementById('orcamento')
       .value =
-        empresa.nomeFantasia;
+      empresa.nomeFantasia;
 
   }
 
@@ -5277,7 +5274,7 @@ function preencherDadosEmpresa(
     document
       .getElementById('telefone')
       .value =
-        empresa.telefone;
+      empresa.telefone;
 
   }
 
@@ -5289,7 +5286,7 @@ function preencherDadosEmpresa(
     document
       .getElementById('email')
       .value =
-        empresa.email;
+      empresa.email;
 
   }
 
@@ -5305,7 +5302,7 @@ function preencherDadosEmpresa(
     document
       .getElementById('endereco')
       .value =
-        endereco;
+      endereco;
 
   }
 
@@ -5317,7 +5314,7 @@ function preencherDadosEmpresa(
     document
       .getElementById('bairro')
       .value =
-        empresa.bairro;
+      empresa.bairro;
 
   }
 
@@ -5333,7 +5330,7 @@ function preencherDadosEmpresa(
     document
       .getElementById('cidade')
       .value =
-        cidade;
+      cidade;
 
   }
 
@@ -5443,9 +5440,9 @@ async function buscarCnpjEPreencher() {
       empresa.situacao
 
         ? (
-            `✓ Empresa localizada ` +
-            `• ${empresa.situacao}`
-          )
+          `✓ Empresa localizada ` +
+          `• ${empresa.situacao}`
+        )
 
         : '✓ Empresa localizada',
 
@@ -5514,7 +5511,7 @@ if (
 
   campoCnpjConsulta.addEventListener(
     'keydown',
-    function(event) {
+    function (event) {
 
       if (
         event.key === 'Enter'
@@ -5628,7 +5625,7 @@ if (
 
   campoCnpjMascara.addEventListener(
     'input',
-    function() {
+    function () {
 
       const posicaoFinal =
         this.selectionStart;
