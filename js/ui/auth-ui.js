@@ -32,6 +32,28 @@
 // ## 1. MENSAGENS DA TELA DE LOGIN
 // =========================================================
 
+let authVersao = 0;
+let authEncerrando = false;
+let authRecuperacao = false;
+
+const MENSAGEM_ACESSO_PENDENTE =
+  'Seu acesso está aguardando aprovação, foi desativado ou ainda não possui perfil. Procure o gestor ou administrador.';
+
+function invalidarInterfaceSessao(mensagem) {
+  authVersao++;
+  authEncerrando = true;
+  mostrarTelaLogin();
+  limparRascunhoLocalAoSair();
+  usuarioLocalAtual = null;
+  try {
+    sessionStorage.setItem('agenflex_aviso_sessao', mensagem);
+  } catch (erro) {
+    console.warn('Não foi possível guardar o aviso de sessão.', erro);
+  }
+  // Descarta também formulário, artes, caches e requisições da sessão anterior.
+  window.location.reload();
+}
+
 function mensagemLogin(
   texto = '',
   tipo = ''
@@ -147,6 +169,21 @@ function mostrarTelaLogin() {
 function mostrarCentral(
   perfil
 ) {
+
+  if (authEncerrando || authRecuperacao) return;
+  if (usuarioLocalAtual && usuarioLocalAtual !== perfil.user_id) {
+    invalidarInterfaceSessao('A conta foi alterada. Entre novamente se necessário.');
+    return;
+  }
+  if (!usuarioLocalAtual) {
+    // Descarta somente as chaves legadas, sem importar dados de dono desconhecido.
+    limparDadosLocaisUsuario();
+    usuarioLocalAtual = perfil.user_id;
+    loadDraft();
+    renderSellers();
+    renderItems();
+    refresh();
+  }
 
   const telaLogin =
     document.getElementById(
@@ -278,105 +315,48 @@ function mostrarCentral(
 // =========================================================
 
 async function validarUsuarioLogado() {
-
+  if (authEncerrando || authRecuperacao) return;
+  const versao = ++authVersao;
   try {
-
-    // -----------------------------------------------------
-    // ## 4.1 Verificar usuário no Supabase Auth
-    // -----------------------------------------------------
-
-    const user =
-      await usuarioAtual();
-
-
+    const user = await usuarioAtual();
+    if (versao !== authVersao || authRecuperacao) return;
     if (!user) {
-
-      mostrarTelaLogin();
-
+      if (usuarioLocalAtual) {
+        invalidarInterfaceSessao('Sua sessão terminou. Entre novamente.');
+      } else {
+        mostrarTelaLogin();
+      }
       return;
-
     }
-
-
-    // -----------------------------------------------------
-    // ## 4.2 Buscar perfil interno
-    // -----------------------------------------------------
-
-    const perfil =
-      await perfilAtual();
-
-
-    if (!perfil) {
-
-      await logoutCentral();
-
-
-      mostrarTelaLogin();
-
-
-      mensagemLogin(
-        'Seu usuário não possui perfil cadastrado.',
-        'error'
-      );
-
-
+    const perfil = await perfilAtual();
+    if (versao !== authVersao || authRecuperacao) return;
+    if (!perfil || !perfil.ativo) {
+      if (usuarioLocalAtual) {
+        invalidarInterfaceSessao(MENSAGEM_ACESSO_PENDENTE);
+      } else {
+        await logoutCentral();
+        mostrarTelaLogin();
+        mensagemLogin(MENSAGEM_ACESSO_PENDENTE, 'error');
+      }
       return;
-
     }
-
-
-    // -----------------------------------------------------
-    // ## 4.3 Verificar se o usuário está ativo
-    // -----------------------------------------------------
-
-    if (
-      !perfil.ativo
-    ) {
-
-      await logoutCentral();
-
-
-      mostrarTelaLogin();
-
-
-      mensagemLogin(
-        'Usuário desativado. Procure o administrador.',
-        'error'
-      );
-
-
-      return;
-
-    }
-
-
-    // -----------------------------------------------------
-    // ## 4.4 Liberar acesso à Central
-    // -----------------------------------------------------
-
-    mostrarCentral(
-      perfil
-    );
-
-
+    mostrarCentral(perfil);
   } catch (erro) {
-
-    console.error(
-      'Erro ao validar usuário:',
-      erro
-    );
-
-
-    mostrarTelaLogin();
-
-
-    mensagemLogin(
-      'Não foi possível validar o usuário.',
-      'error'
-    );
-
+    if (versao !== authVersao || authRecuperacao) return;
+    console.error('Erro ao validar usuário:', erro);
+    if (usuarioLocalAtual && (
+      erro?.name === 'AuthSessionMissingError' ||
+      erro?.status === 401 || erro?.status === 403
+    )) {
+      invalidarInterfaceSessao('Sua sessão terminou. Entre novamente.');
+      return;
+    }
+    // Uma falha de rede não deve apagar o rascunho nem simular logout.
+    if (!usuarioLocalAtual) {
+      mostrarTelaLogin();
+      mensagemLogin('Não foi possível validar o acesso. Verifique a conexão e tente novamente.', 'error');
+    }
   }
-
 }
 
 
@@ -392,6 +372,8 @@ async function realizarLogin(
   // que recarregaria a página.
 
   event.preventDefault();
+  if (authEncerrando || authRecuperacao) return;
+  const versao = ++authVersao;
 
 
   // -------------------------------------------------------
@@ -458,29 +440,11 @@ async function realizarLogin(
       await perfilAtual();
 
 
-    if (!perfil) {
+    if (versao !== authVersao || authRecuperacao) return;
 
+    if (!perfil || !perfil.ativo) {
       await logoutCentral();
-
-
-      throw new Error(
-        'Usuário sem perfil cadastrado.'
-      );
-
-    }
-
-
-    if (
-      !perfil.ativo
-    ) {
-
-      await logoutCentral();
-
-
-      throw new Error(
-        'Usuário desativado.'
-      );
-
+      throw new Error(MENSAGEM_ACESSO_PENDENTE);
     }
 
 
@@ -507,8 +471,10 @@ async function realizarLogin(
     // ## 5.4 Tratamento das mensagens de erro
     // -----------------------------------------------------
 
-    let mensagem =
-      'Não foi possível realizar o login.';
+    if (authEncerrando || authRecuperacao) return;
+    let mensagem = erro.message === MENSAGEM_ACESSO_PENDENTE
+      ? MENSAGEM_ACESSO_PENDENTE
+      : 'Não foi possível realizar o login.';
 
 
     if (
@@ -522,32 +488,6 @@ async function realizarLogin(
 
       mensagem =
         'E-mail ou senha inválidos.';
-
-    }
-
-
-    if (
-      erro.message &&
-      erro.message.includes(
-        'sem perfil'
-      )
-    ) {
-
-      mensagem =
-        'Usuário sem perfil cadastrado.';
-
-    }
-
-
-    if (
-      erro.message &&
-      erro.message.includes(
-        'desativado'
-      )
-    ) {
-
-      mensagem =
-        'Usuário desativado. Procure o administrador.';
 
     }
 
@@ -599,30 +539,7 @@ async function realizarLogin(
 // ---------------------------------------------------------
 
 function limparRascunhoLocalAoSair() {
-
-  try {
-
-    if (
-      typeof LS_KEY !==
-        'undefined' &&
-      LS_KEY
-    ) {
-
-      localStorage.removeItem(
-        LS_KEY
-      );
-
-    }
-
-  } catch (erro) {
-
-    console.warn(
-      'Não foi possível limpar o rascunho local:',
-      erro
-    );
-
-  }
-
+  limparDadosLocaisUsuario();
 }
 
 
@@ -631,41 +548,24 @@ function limparRascunhoLocalAoSair() {
 // =========================================================
 
 async function sairDaCentral() {
-
+  const usuarioAnterior = usuarioLocalAtual;
+  authVersao++;
+  authEncerrando = true;
+  mostrarTelaLogin();
+  limparRascunhoLocalAoSair();
+  usuarioLocalAtual = null;
   try {
-
-    // -----------------------------------------------------
-    // ## 7.1 Apagar o rascunho local
-    // -----------------------------------------------------
-
-    limparRascunhoLocalAoSair();
-
-
-    // -----------------------------------------------------
-    // ## 7.2 Encerrar sessão
-    // -----------------------------------------------------
-
     await logoutCentral();
-
-
-  } catch (erro) {
-
-    console.error(
-      'Erro ao sair:',
-      erro
-    );
-
-
-  } finally {
-
-    // -----------------------------------------------------
-    // ## 7.3 Recarregar a aplicação
-    // -----------------------------------------------------
-
     window.location.reload();
-
+  } catch (erro) {
+    console.error('Erro ao sair:', erro);
+    // Não recarregar e autenticar silenciosamente de novo quando o logout falhar.
+    authEncerrando = false;
+    usuarioLocalAtual = usuarioAnterior;
+    await validarUsuarioLogado();
+    mensagemLogin('Não foi possível sair. Verifique a conexão e tente novamente.', 'error');
+    toastMsg('Não foi possível sair. Tente novamente.');
   }
-
 }
 
 
@@ -699,6 +599,41 @@ async function iniciarInterfaceAuth() {
   // ## 8.2 Verificação inicial da sessão
   // -------------------------------------------------------
 
+  try {
+    const aviso = sessionStorage.getItem('agenflex_aviso_sessao');
+    sessionStorage.removeItem('agenflex_aviso_sessao');
+    if (aviso) mensagemLogin(aviso, 'error');
+  } catch (erro) {
+    console.warn('Não foi possível ler o aviso de sessão.', erro);
+  }
+
+  try {
+    getSupabaseClient().auth.onAuthStateChange((evento, sessao) => {
+      if (evento === 'PASSWORD_RECOVERY') {
+        authRecuperacao = true;
+        authVersao++;
+        mostrarTelaLogin();
+        return;
+      }
+      if (evento === 'SIGNED_OUT') {
+        authVersao++;
+        if (usuarioLocalAtual && !authEncerrando) {
+          invalidarInterfaceSessao('Sua sessão terminou. Entre novamente.');
+        }
+        return;
+      }
+      if (usuarioLocalAtual && sessao?.user?.id &&
+          usuarioLocalAtual !== sessao.user.id && !authEncerrando) {
+        invalidarInterfaceSessao('A conta foi alterada em outra aba.');
+      }
+    });
+  } catch (erro) {
+    console.error('Erro ao monitorar a sessão:', erro);
+  }
+
+  window.addEventListener('focus', () => {
+    if (usuarioLocalAtual) validarUsuarioLogado();
+  });
   await validarUsuarioLogado();
 
 }
@@ -708,7 +643,11 @@ async function iniciarInterfaceAuth() {
 // ## 9. INÍCIO DO MÓDULO
 // =========================================================
 
-// Inicia automaticamente a autenticação
-// quando este arquivo é carregado.
+// Inicia automaticamente a autenticação após carregar os módulos.
 
-iniciarInterfaceAuth();
+// Aguarda core e módulos antes de restaurar dados do usuário.
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', iniciarInterfaceAuth);
+} else {
+  iniciarInterfaceAuth();
+}

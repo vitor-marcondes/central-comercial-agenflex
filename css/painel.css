@@ -1221,3 +1221,24 @@ body.painel-modal-aberto {
   }
 
 }
+
+/* =========================================================
+   META DIÁRIA NECESSÁRIA
+   ========================================================= */
+
+.painel-meta-card.diaria {
+  background: #fff8e8;
+  border-color: #efd38c;
+}
+
+.painel-meta-card.diaria strong {
+  color: #8a5700;
+}
+
+.painel-meta-card.diaria small {
+  display: block;
+  margin-top: 7px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #7a6200;
+}

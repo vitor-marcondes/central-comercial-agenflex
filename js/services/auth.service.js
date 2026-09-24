@@ -127,7 +127,7 @@ async function perfilAtual() {
         'user_id',
         user.id
       )
-      .single();
+      .maybeSingle();
 
 
   if (error) {

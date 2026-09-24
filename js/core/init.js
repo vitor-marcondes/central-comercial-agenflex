@@ -141,7 +141,7 @@ document
 
 renderSellers();
 
-loadDraft();
+// O rascunho só é restaurado após validar o perfil autenticado.
 
 renderItems();
 

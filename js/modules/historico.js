@@ -259,60 +259,22 @@ function badgeRevisaoAtualHistorico() {
 
 function capturarLocalStorageHistorico() {
   const snapshot = {};
-
-  for (
-    let i = 0;
-    i < localStorage.length;
-    i++
-  ) {
-    const chave =
-      localStorage.key(i);
-
-    if (chave) {
-      snapshot[chave] =
-        localStorage.getItem(chave);
-    }
-  }
-
+  [KEY, SELLERS_KEY].forEach(base => {
+    const chave = chaveLocalUsuario(base);
+    if (chave) snapshot[chave] = localStorage.getItem(chave);
+  });
   return snapshot;
 }
 
 function restaurarLocalStorageHistorico(snapshot) {
-  const chavesAtuais = [];
-
-  for (
-    let i = 0;
-    i < localStorage.length;
-    i++
-  ) {
-    const chave =
-      localStorage.key(i);
-
-    if (chave) {
-      chavesAtuais.push(chave);
-    }
-  }
-
-  chavesAtuais.forEach(chave => {
-    if (
-      !Object.prototype.hasOwnProperty.call(
-        snapshot,
-        chave
-      )
-    ) {
-      localStorage.removeItem(chave);
-    }
+  // Não capturar/restaurar tokens do Supabase nem dados de outros usuários.
+  [KEY, SELLERS_KEY].forEach(base => {
+    const chave = chaveLocalUsuario(base);
+    if (!chave || !Object.prototype.hasOwnProperty.call(snapshot, chave)) return;
+    const valor = snapshot[chave];
+    if (valor === null) localStorage.removeItem(chave);
+    else localStorage.setItem(chave, valor);
   });
-
-  Object.entries(snapshot)
-    .forEach(
-      ([chave, valor]) => {
-        localStorage.setItem(
-          chave,
-          valor
-        );
-      }
-    );
 }
 
 // =========================================================

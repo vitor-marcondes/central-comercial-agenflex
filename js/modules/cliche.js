@@ -213,6 +213,11 @@ async function copyCliche() {
 
 function useCliche() {
 
+  if (!revisaoEhEditavel() || window.__agenflexConsultaHistorica?.ativa) {
+    toastMsg('Esta revisão é somente leitura. Crie ou abra um rascunho para alterar o clichê.');
+    return;
+  }
+
   // Calcula e grava o valor no campo de clichê da proposta.
   cliche.value =
     BRL.format(

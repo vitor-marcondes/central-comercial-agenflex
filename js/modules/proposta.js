@@ -1996,11 +1996,14 @@ function renderArts() {
 
 function recentSellers() {
 
+  const chave = chaveLocalUsuario(SELLERS_KEY);
+  if (!chave) return [];
+
   try {
 
     return JSON.parse(
       localStorage.getItem(
-        'agenflex_vendedores_recentes'
+        chave
       ) || '[]'
     );
 
@@ -2050,6 +2053,9 @@ function renderSellers() {
 
 function rememberSeller() {
 
+  const chave = chaveLocalUsuario(SELLERS_KEY);
+  if (!chave) return;
+
   const nome =
     vendedor.value.trim();
 
@@ -2076,7 +2082,7 @@ function rememberSeller() {
 
 
   localStorage.setItem(
-    'agenflex_vendedores_recentes',
+    chave,
     JSON.stringify(
       lista.slice(
         0,
@@ -2343,8 +2349,11 @@ function collectFields() {
 
 function persistirRascunhoLocal() {
 
+  const chave = chaveLocalUsuario(KEY);
+  if (!chave) return;
+
   localStorage.setItem(
-    KEY,
+    chave,
     JSON.stringify({
 
       fields:
@@ -2388,11 +2397,14 @@ function saveDraft() {
 
 function loadDraft() {
 
+  const chave = chaveLocalUsuario(KEY);
+  if (!chave) return;
+
   try {
 
     const raw =
       localStorage.getItem(
-        KEY
+        chave
       );
 
 
@@ -2592,9 +2604,8 @@ function clearForm() {
   }
 
 
-  localStorage.removeItem(
-    KEY
-  );
+  const chave = chaveLocalUsuario(KEY);
+  if (chave) localStorage.removeItem(chave);
 
 
   location.reload();

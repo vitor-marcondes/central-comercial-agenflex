@@ -31,6 +31,25 @@ const teamLogos = {
 
 // Chave utilizada pelo armazenamento local do orçamento.
 const KEY = 'agenflex_v61_orc';
+const SELLERS_KEY = 'agenflex_vendedores_recentes';
+let usuarioLocalAtual = null;
+
+function chaveLocalUsuario(base) {
+  return usuarioLocalAtual ? `${base}:${usuarioLocalAtual}` : null;
+}
+
+function limparDadosLocaisUsuario() {
+  [KEY, SELLERS_KEY].forEach(base => {
+    try {
+      const chave = chaveLocalUsuario(base);
+      if (chave) localStorage.removeItem(chave);
+      // Dados antigos não possuem dono conhecido; nunca migrar para outro usuário.
+      localStorage.removeItem(base);
+    } catch (erro) {
+      console.warn('Não foi possível limpar os dados locais da Central.', erro);
+    }
+  });
+}
 
 
 // =========================================================

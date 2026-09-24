@@ -35,6 +35,9 @@ let painelPerfis =
 let painelVendedores =
   [];
 
+let painelResponsaveisComerciais =
+  [];
+
 let painelMetas =
   [];
 
@@ -177,7 +180,20 @@ function formatarDataPainel(
 // ## 3. PERFIL
 // =========================================================
 
-function painelEhGestorOuAdm() {
+function painelTemVisaoGlobal() {
+
+  return [
+    'gestor',
+    'diretor',
+    'adm'
+  ].includes(
+    painelPerfilAtual
+      ?.tipo_acesso
+  );
+}
+
+
+function painelPodeGerenciarComercial() {
 
   return [
     'gestor',
@@ -187,7 +203,6 @@ function painelEhGestorOuAdm() {
       ?.tipo_acesso
   );
 }
-
 
 function painelEhVendedor() {
 
@@ -832,16 +847,17 @@ function normalizarDadosPainel(
 
 
         if (!revisao) {
-          const validade =
-            calcularValidadePainel(
-              proposta,
-              revisao
-            );
 
           return null;
 
         }
 
+
+        const validade =
+          calcularValidadePainel(
+            proposta,
+            revisao
+          );
         return {
 
           proposta,
@@ -984,15 +1000,27 @@ function obterPerfilVendedorPainel(
 }
 
 
+function obterPerfilResponsavelPainel(
+  userId
+) {
+
+  return painelResponsaveisComerciais.find(
+    responsavel =>
+      responsavel.user_id ===
+      userId
+  ) || null;
+
+}
+
+
 function nomeVendedorRegistroPainel(
   registro
 ) {
 
   const perfil =
-    obterPerfilVendedorPainel(
+    obterPerfilResponsavelPainel(
       registro.vendedorId
     );
-
 
   if (perfil) {
 
@@ -1105,6 +1133,71 @@ function periodoMetaPainel() {
   };
 }
 
+
+function diasRestantesMesPainel(
+  ano,
+  mes
+) {
+
+  const hojeIso =
+    dataSaoPauloPainel();
+
+
+  if (!hojeIso) {
+
+    return null;
+
+  }
+
+
+  const [
+    anoHoje,
+    mesHoje,
+    diaHoje
+  ] =
+    hojeIso
+      .split('-')
+      .map(Number);
+
+
+  // Meta diária somente para o mês atual.
+
+  if (
+    Number(ano) !==
+    anoHoje ||
+    Number(mes) !==
+    mesHoje
+  ) {
+
+    return null;
+
+  }
+
+
+  const ultimoDia =
+    new Date(
+      Date.UTC(
+        anoHoje,
+        mesHoje,
+        0
+      )
+    )
+      .getUTCDate();
+
+
+  // Não contamos o dia atual.
+  //
+  // Exemplo:
+  // dia 28 de um mês com 31 dias
+  // → restam 3 dias.
+
+  return Math.max(
+    ultimoDia -
+    diaHoje,
+    0
+  );
+
+}
 
 // =========================================================
 // ## 12. MONTAR FILTRO DE TIME
@@ -1240,6 +1333,66 @@ function atualizarFiltroTimePainel() {
       'painelFiltroTime'
     );
 
+  const metaValorCard =
+    document.getElementById(
+      'painelMetaValorCard'
+    );
+
+
+  const faltaCard =
+    document.getElementById(
+      'painelMetaFaltaCard'
+    );
+
+
+  const atingimentoCard =
+    document.getElementById(
+      'painelMetaAtingimentoCard'
+    );
+
+
+  const progress =
+    document.getElementById(
+      'painelMetaProgress'
+    );
+
+  const esconderMetaIndividual =
+    Boolean(
+      gestorSelecionado
+    );
+
+
+  if (metaValorCard) {
+
+    metaValorCard.hidden =
+      esconderMetaIndividual;
+
+  }
+
+
+  if (faltaCard) {
+
+    faltaCard.hidden =
+      esconderMetaIndividual;
+
+  }
+
+
+  if (atingimentoCard) {
+
+    atingimentoCard.hidden =
+      esconderMetaIndividual;
+
+  }
+
+
+  if (progress) {
+
+    progress.hidden =
+      esconderMetaIndividual;
+
+  }
+
 
   if (
     !wrapper ||
@@ -1252,7 +1405,7 @@ function atualizarFiltroTimePainel() {
 
 
   if (
-    painelEhGestorOuAdm()
+    painelTemVisaoGlobal()
   ) {
 
     wrapper.hidden =
@@ -1433,7 +1586,10 @@ function montarResumoMetaPainel() {
     <div class="painel-meta-cards">
 
 
-      <div class="painel-meta-card">
+      <div
+  id="painelMetaValorCard"
+  class="painel-meta-card"
+>
 
         <span id="painelMetaLabel">
           META
@@ -1459,7 +1615,10 @@ function montarResumoMetaPainel() {
       </div>
 
 
-      <div class="painel-meta-card falta">
+      <div
+  id="painelMetaFaltaCard"
+  class="painel-meta-card falta"
+>
 
         <span>
           FALTA
@@ -1472,7 +1631,30 @@ function montarResumoMetaPainel() {
       </div>
 
 
-      <div class="painel-meta-card atingimento">
+      <div
+  id="painelMetaDiariaCard"
+  class="painel-meta-card diaria"
+  hidden
+>
+
+  <span>
+    META DIÁRIA NECESSÁRIA
+  </span>
+
+  <strong id="painelMetaDiaria">
+    R$ 0,00
+  </strong>
+
+  <small id="painelMetaDiariaInfo">
+    —
+  </small>
+
+</div>
+
+      <div
+  id="painelMetaAtingimentoCard"
+  class="painel-meta-card atingimento"
+>
 
         <span>
           ATINGIMENTO
@@ -1505,7 +1687,10 @@ function montarResumoMetaPainel() {
     </div>
 
 
-    <div class="painel-meta-progress">
+    <div
+  id="painelMetaProgress"
+  class="painel-meta-progress"
+>
 
       <div
         id="painelMetaProgressBar"
@@ -2027,11 +2212,61 @@ function registroNoPeriodoMetaPainel(
 // ## 18. RESULTADO CONQUISTADO
 // =========================================================
 
+function conquistadoResponsavelPainel(
+  userId,
+  ano,
+  mes,
+  timeEquipe = ''
+) {
+
+  const time =
+    normalizarTimePainel(
+      timeEquipe
+    );
+
+
+  return painelDados
+    .filter(
+      registro =>
+        registro.vendedorId ===
+        userId &&
+
+        registro.proposta
+          .status_comercial ===
+        'concluido' &&
+
+        (
+          !time ||
+          timeRegistroPainel(
+            registro
+          ) ===
+          time
+        ) &&
+
+        registroNoPeriodoMetaPainel(
+          registro,
+          ano,
+          mes
+        )
+    )
+    .reduce(
+      (
+        total,
+        registro
+      ) =>
+        total +
+        registro.valor,
+      0
+    );
+
+}
+
 function conquistadoVendedorPainel(
   userId,
   ano,
   mes
 ) {
+
 
   return painelDados
     .filter(
@@ -2217,7 +2452,7 @@ function atualizarFiltroVendedoresPainel() {
 
 
   // -------------------------------------------------------
-  // ## 19.2 Gestor / ADM
+  // ## 19.2 Visão global — Gestor / Diretor / ADM
   // -------------------------------------------------------
 
   wrapper.style.display =
@@ -2232,18 +2467,46 @@ function atualizarFiltroVendedoresPainel() {
       ?.value || '';
 
 
-  const vendedoresDisponiveis =
-    filtroTime
-      ? painelVendedores.filter(
-        vendedor =>
+  const responsaveisDisponiveis =
+    painelResponsaveisComerciais.filter(
+      responsavel => {
+
+        if (
+          responsavel.tipo_acesso ===
+          'gestor'
+        ) {
+
+          return true;
+
+        }
+
+
+        if (
+          responsavel.tipo_acesso !==
+          'vendedor'
+        ) {
+
+          return false;
+
+        }
+
+
+        if (!filtroTime) {
+
+          return true;
+
+        }
+
+
+        return (
           normalizarTimePainel(
-            vendedor.time_equipe
+            responsavel.time_equipe
           ) ===
           filtroTime
-      )
-      : [
-        ...painelVendedores
-      ];
+        );
+
+      }
+    );
 
 
   const todos =
@@ -2257,7 +2520,7 @@ function atualizarFiltroVendedoresPainel() {
 
 
   todos.textContent =
-    'Todos';
+    'Todos os responsáveis';
 
 
   select.appendChild(
@@ -2265,8 +2528,8 @@ function atualizarFiltroVendedoresPainel() {
   );
 
 
-  vendedoresDisponiveis.forEach(
-    vendedor => {
+  responsaveisDisponiveis.forEach(
+    responsavel => {
 
       const option =
         document.createElement(
@@ -2275,11 +2538,16 @@ function atualizarFiltroVendedoresPainel() {
 
 
       option.value =
-        vendedor.user_id;
+        responsavel.user_id;
 
 
       option.textContent =
-        vendedor.nome;
+        responsavel.tipo_acesso ===
+          'gestor'
+          ? `${responsavel.nome} — Gestor`
+          : `${responsavel.nome} — ${nomeTimePainel(
+            responsavel.time_equipe
+          )}`;
 
 
       select.appendChild(
@@ -2471,7 +2739,7 @@ function dadosFiltradosPainel() {
       // ---------------------------------------------------
 
       if (
-        painelEhGestorOuAdm() &&
+        painelTemVisaoGlobal() &&
         filtros.time &&
         timeRegistroPainel(
           registro
@@ -2489,7 +2757,7 @@ function dadosFiltradosPainel() {
       // ---------------------------------------------------
 
       if (
-        painelEhGestorOuAdm() &&
+        painelTemVisaoGlobal() &&
         filtros.vendedor ===
         '__sem_responsavel__'
       ) {
@@ -2503,7 +2771,7 @@ function dadosFiltradosPainel() {
         }
 
       } else if (
-        painelEhGestorOuAdm() &&
+        painelTemVisaoGlobal() &&
         filtros.vendedor &&
         registro.vendedorId !==
         filtros.vendedor
@@ -3055,6 +3323,17 @@ function atualizarResumoMetaPainel() {
       'painelMetaDistribuidaCard'
     );
 
+  const diariaCard =
+    document.getElementById(
+      'painelMetaDiariaCard'
+    );
+
+
+  const diariaInfo =
+    document.getElementById(
+      'painelMetaDiariaInfo'
+    );
+
 
   if (!titulo) {
 
@@ -3071,15 +3350,31 @@ function atualizarResumoMetaPainel() {
     obterFiltrosPainel();
 
 
-  const vendedorSelecionado =
+  const responsavelSelecionado =
     (
       filtros.vendedor &&
       filtros.vendedor !==
       '__sem_responsavel__'
     )
-      ? obterPerfilVendedorPainel(
+      ? obterPerfilResponsavelPainel(
         filtros.vendedor
       )
+      : null;
+
+
+  const vendedorSelecionado =
+    responsavelSelecionado
+      ?.tipo_acesso ===
+      'vendedor'
+      ? responsavelSelecionado
+      : null;
+
+
+  const gestorSelecionado =
+    responsavelSelecionado
+      ?.tipo_acesso ===
+      'gestor'
+      ? responsavelSelecionado
       : null;
 
 
@@ -3203,6 +3498,53 @@ function atualizarResumoMetaPainel() {
         `${nomeTimePainel(
           vendedorSelecionado.time_equipe
         )}`;
+
+    }
+
+  }
+
+  else if (
+    gestorSelecionado
+  ) {
+
+    metaTotal =
+      0;
+
+
+    conquistado =
+      conquistadoResponsavelPainel(
+        gestorSelecionado.user_id,
+        periodo.ano,
+        periodo.mes,
+        filtros.time
+      );
+
+
+    titulo.textContent =
+      `📊 Resultado de ${gestorSelecionado.nome}`;
+
+
+    if (labelMeta) {
+
+      labelMeta.textContent =
+        'SEM META INDIVIDUAL';
+
+    }
+
+
+    if (subtitulo) {
+
+      subtitulo.textContent =
+        filtros.time
+          ? `${nomeMesPainel(
+            periodo.mes
+          )} de ${periodo.ano} • ` +
+          `Time ${nomeTimePainel(
+            filtros.time
+          )}`
+          : `${nomeMesPainel(
+            periodo.mes
+          )} de ${periodo.ano} • Gestor`;
 
     }
 
@@ -3342,6 +3684,69 @@ function atualizarResumoMetaPainel() {
       0
     );
 
+  const diasRestantes =
+    diasRestantesMesPainel(
+      periodo.ano,
+      periodo.mes
+    );
+
+
+  const mostrarMetaDiaria =
+    painelEhVendedor() &&
+    diasRestantes !== null &&
+    metaTotal > 0;
+
+
+  let metaDiaria =
+    0;
+
+
+  let textoMetaDiaria =
+    '';
+
+
+  if (
+    mostrarMetaDiaria
+  ) {
+
+    if (
+      falta <= 0
+    ) {
+
+      metaDiaria =
+        0;
+
+
+      textoMetaDiaria =
+        'Meta atingida';
+
+    } else if (
+      diasRestantes > 0
+    ) {
+
+      metaDiaria =
+        falta /
+        diasRestantes;
+
+
+      textoMetaDiaria =
+        diasRestantes === 1
+          ? '1 dia restante'
+          : `${diasRestantes} dias restantes`;
+
+    } else {
+
+      metaDiaria =
+        falta;
+
+
+      textoMetaDiaria =
+        'Último dia do mês';
+
+    }
+
+  }
+
 
   const percentual =
     metaTotal > 0
@@ -3398,6 +3803,32 @@ function atualizarResumoMetaPainel() {
     )
   );
 
+  definir(
+    'painelMetaDiaria',
+    formatarMoedaPainel(
+      metaDiaria
+    )
+  );
+
+
+  if (
+    diariaInfo
+  ) {
+
+    diariaInfo.textContent =
+      textoMetaDiaria;
+
+  }
+
+
+  if (
+    diariaCard
+  ) {
+
+    diariaCard.hidden =
+      !mostrarMetaDiaria;
+
+  }
 
   definir(
     'painelMetaPercentual',
@@ -3484,7 +3915,7 @@ function renderizarResumoTimesPainel() {
 
 
   const mostrar =
-    painelEhGestorOuAdm() &&
+    painelTemVisaoGlobal() &&
     !filtros.time &&
     !filtros.vendedor;
 
@@ -3721,7 +4152,7 @@ function renderizarComparativoPainel() {
 
 
   if (
-    !painelEhGestorOuAdm() ||
+    !painelTemVisaoGlobal() ||
     filtros.vendedor
   ) {
 
@@ -4175,15 +4606,14 @@ function atualizarDestinoTransferenciaPainel() {
   }
 
 
-  const vendedor =
-    painelVendedores.find(
+  const responsavel =
+    painelResponsaveisComerciais.find(
       item =>
         item.user_id ===
         select.value
     );
 
-
-  if (!vendedor) {
+  if (!responsavel) {
 
     info.textContent =
       'Selecione o novo responsável.';
@@ -4194,10 +4624,12 @@ function atualizarDestinoTransferenciaPainel() {
 
 
   info.textContent =
-    `${vendedor.nome} • Time ${nomeTimePainel(
-      vendedor.time_equipe
-    )}`;
-
+    responsavel.tipo_acesso ===
+      'gestor'
+      ? `${responsavel.nome} • Gestor`
+      : `${responsavel.nome} • Time ${nomeTimePainel(
+        responsavel.time_equipe
+      )}`;
 }
 
 
@@ -4206,7 +4638,7 @@ function abrirTransferenciaPainel(
 ) {
 
   if (
-    !painelEhGestorOuAdm()
+    !painelPodeGerenciarComercial()
   ) {
 
     alert(
@@ -4240,24 +4672,66 @@ function abrirTransferenciaPainel(
   }
 
 
-  const vendedorAtual =
-    obterPerfilVendedorPainel(
+  const responsavelAtualPerfil =
+    obterPerfilResponsavelPainel(
       registro.vendedorId
     );
 
 
-  const candidatos =
-    painelVendedores.filter(
-      vendedor =>
-        vendedor.user_id !==
-        registro.vendedorId
+  const timeProposta =
+    timeRegistroPainel(
+      registro
     );
 
+
+  const candidatos =
+    painelResponsaveisComerciais.filter(
+      responsavel => {
+
+        if (
+          responsavel.user_id ===
+          registro.vendedorId
+        ) {
+
+          return false;
+
+        }
+
+
+        if (
+          responsavel.tipo_acesso ===
+          'gestor'
+        ) {
+
+          return true;
+
+        }
+
+
+        if (
+          responsavel.tipo_acesso ===
+          'vendedor'
+        ) {
+
+          return (
+            normalizarTimePainel(
+              responsavel.time_equipe
+            ) ===
+            timeProposta
+          );
+
+        }
+
+
+        return false;
+
+      }
+    );
 
   if (!candidatos.length) {
 
     alert(
-      'Não existe outro vendedor ativo disponível para receber esta proposta.'
+      'Não existe outro responsável comercial disponível para receber esta proposta.'
     );
 
     return;
@@ -4342,7 +4816,7 @@ function abrirTransferenciaPainel(
   if (responsavelAtual) {
 
     responsavelAtual.textContent =
-      vendedorAtual?.nome ||
+      responsavelAtualPerfil?.nome ||
       registro.revisao.vendedor_nome ||
       'Sem responsável';
 
@@ -4353,7 +4827,7 @@ function abrirTransferenciaPainel(
 
     const timeDoResponsavel =
       normalizarTimePainel(
-        vendedorAtual?.time_equipe
+        responsavelAtualPerfil?.time_equipe
       );
 
 
@@ -4380,14 +4854,14 @@ function abrirTransferenciaPainel(
   select.innerHTML = `
 
     <option value="">
-      Selecione um vendedor
+      Selecione um responsável
     </option>
 
   `;
 
 
   candidatos.forEach(
-    vendedor => {
+    responsavel => {
 
       const option =
         document.createElement(
@@ -4396,13 +4870,20 @@ function abrirTransferenciaPainel(
 
 
       option.value =
-        vendedor.user_id;
+        responsavel.user_id;
+
+
+      const tipo =
+        responsavel.tipo_acesso ===
+          'gestor'
+          ? 'Gestor'
+          : nomeTimePainel(
+            responsavel.time_equipe
+          );
 
 
       option.textContent =
-        `${vendedor.nome} — ${nomeTimePainel(
-          vendedor.time_equipe
-        )}`;
+        `${responsavel.nome} — ${tipo}`;
 
 
       select.appendChild(
@@ -4411,7 +4892,6 @@ function abrirTransferenciaPainel(
 
     }
   );
-
 
   motivo.value =
     '';
@@ -4490,7 +4970,7 @@ async function confirmarTransferenciaPainel() {
 
 
   if (
-    !painelEhGestorOuAdm()
+    !painelPodeGerenciarComercial()
   ) {
 
     alert(
@@ -4535,7 +5015,7 @@ async function confirmarTransferenciaPainel() {
   if (!vendedorNovoId) {
 
     alert(
-      'Selecione o novo vendedor responsável.'
+      'Selecione o novo responsável comercial.'
     );
 
     select?.focus();
@@ -4589,8 +5069,8 @@ async function confirmarTransferenciaPainel() {
   }
 
 
-  const novoVendedor =
-    obterPerfilVendedorPainel(
+  const novoResponsavel =
+    obterPerfilResponsavelPainel(
       vendedorNovoId
     );
 
@@ -4598,7 +5078,7 @@ async function confirmarTransferenciaPainel() {
   const confirmar =
     window.confirm(
       `Transferir a proposta #${painelTransferenciaAtual.proposta.numero} ` +
-      `para ${novoVendedor?.nome || 'o vendedor selecionado'}?\n\n` +
+      `para ${novoResponsavel?.nome || 'o vendedor selecionado'}?\n\n` +
       'A alteração será registrada no histórico de transferências.'
     );
 
@@ -4692,7 +5172,7 @@ async function confirmarTransferenciaPainel() {
 
 
     toastMsg(
-      `Proposta #${propostaNumero} transferida para ${novoVendedor?.nome || 'o novo responsável'}`
+      `Proposta #${propostaNumero} transferida para ${novoResponsavel?.nome || 'o novo responsável'}`
     );
 
 
@@ -4869,8 +5349,8 @@ function renderizarPainel() {
         registro.revisao;
 
 
-      const vendedorPerfil =
-        obterPerfilVendedorPainel(
+      const responsavelPerfil =
+        obterPerfilResponsavelPainel(
           registro.vendedorId
         );
 
@@ -4926,7 +5406,7 @@ function renderizarPainel() {
         )
         }
 
-          ${!vendedorPerfil
+          ${!responsavelPerfil
           ? `
                 <div class="painel-secondary">
                   ${registro.vendedorId
@@ -4988,6 +5468,8 @@ function renderizarPainel() {
         )
         }
 
+        </td>
+
         <td>
 
           ${badgeValidadePainel(
@@ -5032,7 +5514,7 @@ function renderizarPainel() {
             </button>
 
 
-            ${painelEhGestorOuAdm()
+            ${painelPodeGerenciarComercial()
           ? `
                   <button
                     type="button"
@@ -5110,7 +5592,7 @@ async function carregarMetasResumoPainel() {
 
 
     if (
-      painelEhGestorOuAdm()
+      painelTemVisaoGlobal()
     ) {
 
       tarefas.push(
@@ -5236,7 +5718,7 @@ async function carregarPainel() {
       <tr>
 
         <td
-          colspan="9"
+          colspan="10"
           class="painel-loading"
         >
           Carregando painel...
@@ -5311,7 +5793,7 @@ async function carregarPainel() {
 
 
     if (
-      painelEhGestorOuAdm()
+      painelTemVisaoGlobal()
     ) {
 
       tarefas.push(
@@ -5352,6 +5834,34 @@ async function carregarPainel() {
 
     painelPerfis =
       perfis || [];
+
+
+    painelResponsaveisComerciais =
+      painelPerfis
+        .filter(
+          perfil =>
+            perfil.ativo &&
+            [
+              'vendedor',
+              'gestor'
+            ].includes(
+              perfil.tipo_acesso
+            )
+        )
+        .sort(
+          (
+            a,
+            b
+          ) =>
+            String(
+              a.nome || ''
+            ).localeCompare(
+              String(
+                b.nome || ''
+              ),
+              'pt-BR'
+            )
+        );
 
 
     painelVendedores =
