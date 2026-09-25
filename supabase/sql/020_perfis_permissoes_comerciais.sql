@@ -24,7 +24,11 @@
 -- - DIRETOR não entra em usuario_gestor_ou_adm().
 -- =========================================================
 
+-- Aplicar somente após 001–019, por uma sessão administrativa.
+-- Não atribui responsáveis nem corrige Times legados automaticamente.
+-- As propostas sem responsável continuam visíveis a Gestor/Diretor/ADM.
 begin;
+set local lock_timeout = '5s';
 
 
 -- =========================================================
@@ -360,7 +364,12 @@ begin
   -- ## 5.3 Validar responsável
   -- -------------------------------------------------------
 
-  if new.vendedor_responsavel_id is not null then
+  -- Validar apenas uma atribuição nova. Bloquear/promover um responsável
+  -- não deve impedir manutenção administrativa de uma proposta legada.
+  if new.vendedor_responsavel_id is not null
+     and (tg_op = 'INSERT'
+          or new.vendedor_responsavel_id
+             is distinct from old.vendedor_responsavel_id) then
 
     select
       p.tipo_acesso,
@@ -1024,17 +1033,8 @@ begin
   end if;
 
 
-  if v_time_proposta is null
-     or v_time_proposta not in (
-       'pharma',
-       'food',
-       'revenda'
-     ) then
-
-    raise exception
-      'A proposta não possui um Time comercial válido para transferência.';
-
-  end if;
+  -- Time nulo legado não impede o Gestor de assumir a oportunidade.
+  -- Para destino Vendedor, a validação obrigatória ocorre abaixo.
 
 
   -- -------------------------------------------------------
@@ -1107,7 +1107,9 @@ begin
   if v_responsavel_novo.tipo_acesso =
      'vendedor' then
 
-    if v_responsavel_novo.time_equipe
+    if v_time_proposta is null
+       or v_time_proposta not in ('pharma', 'food', 'revenda')
+       or v_responsavel_novo.time_equipe
        is null
        or v_responsavel_novo.time_equipe
           <> v_time_proposta then
@@ -1347,6 +1349,570 @@ on function public.transferir_proposta(
 )
 to authenticated;
 
+
+-- =========================================================
+-- ## 12.15 CRIAÇÃO R0 COMPATÍVEL COM O SQL 019
+-- =========================================================
+-- Mesmo contrato e cálculo de descontos do 019. Gestor também é responsável
+-- na criação, inclusive no JSON retornado; não altera propostas existentes.
+
+create or replace function
+public.criar_proposta_r0(
+  p_revisao jsonb,
+  p_itens jsonb
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $function$
+declare
+  v_user uuid :=
+    auth.uid();
+  v_tipo_acesso text;
+  v_usuario_ativo boolean;
+  v_origem text :=
+    lower(
+      btrim(
+        coalesce(
+          p_revisao->>'origem_comercial',
+          ''
+        )
+      )
+    );
+  v_proposta_id uuid;
+  v_numero bigint;
+  v_revisao_id uuid;
+  v_vendedor_responsavel_id uuid;
+begin
+  if v_user is null then
+    raise exception
+      'Usuário não autenticado.';
+  end if;
+  select
+    p.tipo_acesso,
+    p.ativo
+  into
+    v_tipo_acesso,
+    v_usuario_ativo
+  from public.perfis p
+  where p.user_id =
+    v_user;
+  if not found then
+    raise exception
+      'Perfil do usuário não encontrado.';
+  end if;
+  if not coalesce(
+    v_usuario_ativo,
+    false
+  ) then
+    raise exception
+      'Usuário inativo.';
+  end if;
+  if v_tipo_acesso not in (
+    'vendedor',
+    'gestor',
+    'adm'
+  ) then
+    raise exception
+      'Perfil sem permissão para criar propostas.';
+  end if;
+  if v_tipo_acesso in ('vendedor', 'gestor') then
+    v_vendedor_responsavel_id :=
+      v_user;
+  else
+    v_vendedor_responsavel_id :=
+      null;
+  end if;
+  if v_origem not in (
+    'leads_mkt',
+    'prospeccao',
+    'gestao_carteira'
+  ) then
+    raise exception
+      'Informe uma origem comercial válida.';
+  end if;
+  insert into public.propostas (
+    criado_por,
+    vendedor_responsavel_id,
+    origem_comercial
+  )
+  values (
+    v_user,
+    v_vendedor_responsavel_id,
+    v_origem
+  )
+  returning
+    id,
+    numero
+  into
+    v_proposta_id,
+    v_numero;
+  insert into public.revisoes_proposta (
+    proposta_id,
+    numero_revisao,
+    nome_proposta,
+    data_proposta,
+    validade,
+    time_equipe,
+    cliente,
+    comprador,
+    cnpj,
+    inscricao_estadual,
+    telefone,
+    email,
+    endereco,
+    bairro,
+    cidade_uf_cep,
+    cliche,
+    forma_pagamento,
+    vendedor_nome,
+    projeto,
+    previsao_faturamento,
+    destinacao,
+    frete,
+    regras_comerciais,
+    mostrar_totais_pdf,
+    status,
+    criado_por
+  )
+  values (
+    v_proposta_id,
+    0,
+    coalesce(
+      p_revisao->>'nome_proposta',
+      ''
+    ),
+    coalesce(
+      nullif(
+        p_revisao->>'data_proposta',
+        ''
+      )::date,
+      current_date
+    ),
+    coalesce(
+      nullif(
+        p_revisao->>'validade',
+        ''
+      ),
+      '7 DIAS'
+    ),
+    nullif(
+      p_revisao->>'time_equipe',
+      ''
+    ),
+    coalesce(
+      p_revisao->>'cliente',
+      ''
+    ),
+    coalesce(
+      p_revisao->>'comprador',
+      ''
+    ),
+    coalesce(
+      p_revisao->>'cnpj',
+      ''
+    ),
+    coalesce(
+      p_revisao->>'inscricao_estadual',
+      ''
+    ),
+    coalesce(
+      p_revisao->>'telefone',
+      ''
+    ),
+    coalesce(
+      p_revisao->>'email',
+      ''
+    ),
+    coalesce(
+      p_revisao->>'endereco',
+      ''
+    ),
+    coalesce(
+      p_revisao->>'bairro',
+      ''
+    ),
+    coalesce(
+      p_revisao->>'cidade_uf_cep',
+      ''
+    ),
+    coalesce(
+      nullif(
+        p_revisao->>'cliche',
+        ''
+      ),
+      'A CALCULAR'
+    ),
+    coalesce(
+      nullif(
+        p_revisao->>'forma_pagamento',
+        ''
+      ),
+      '1/30/60 (APÓS ANÁLISE)'
+    ),
+    coalesce(
+      p_revisao->>'vendedor_nome',
+      ''
+    ),
+    coalesce(
+      p_revisao->>'projeto',
+      ''
+    ),
+    nullif(
+      p_revisao->>'previsao_faturamento',
+      ''
+    )::date,
+    coalesce(
+      p_revisao->>'destinacao',
+      ''
+    ),
+    coalesce(
+      p_revisao->>'frete',
+      ''
+    ),
+    coalesce(
+      p_revisao->>'regras_comerciais',
+      ''
+    ),
+    coalesce(
+      nullif(
+        p_revisao->>'mostrar_totais_pdf',
+        ''
+      )::boolean,
+      true
+    ),
+    'rascunho',
+    v_user
+  )
+  returning id
+  into v_revisao_id;
+  insert into public.itens_revisao (
+    revisao_id,
+    ordem,
+    codigo,
+    produto,
+    observacoes,
+    ncm,
+    quantidade,
+    unidade,
+    valor_unitario,
+    desconto_percentual,
+    ipi_percentual
+  )
+  select
+    v_revisao_id,
+    (e.ord - 1)::integer,
+    coalesce(
+      e.item->>'codigo',
+      ''
+    ),
+    coalesce(
+      e.item->>'produto',
+      ''
+    ),
+    coalesce(
+      e.item->>'observacoes',
+      ''
+    ),
+    coalesce(
+      e.item->>'ncm',
+      ''
+    ),
+    coalesce(
+      nullif(
+        e.item->>'quantidade',
+        ''
+      )::numeric,
+      0
+    ),
+    case
+      when upper(
+        coalesce(
+          e.item->>'unidade',
+          'UN'
+        )
+      ) in (
+        'UN',
+        'PCT'
+      )
+      then upper(
+        coalesce(
+          e.item->>'unidade',
+          'UN'
+        )
+      )
+      else
+        'UN'
+    end,
+    coalesce(
+      nullif(
+        e.item->>'valor_unitario',
+        ''
+      )::numeric,
+      0
+    ),
+    coalesce(
+      nullif(
+        e.item->>'desconto_percentual',
+        ''
+      )::numeric,
+      0
+    ),
+    coalesce(
+      nullif(
+        e.item->>'ipi_percentual',
+        ''
+      )::numeric,
+      9.75
+    )
+  from pg_catalog.jsonb_array_elements(
+    coalesce(
+      p_itens,
+      '[]'::jsonb
+    )
+  )
+  with ordinality
+  as e(
+    item,
+    ord
+  );
+  return jsonb_build_object(
+    'proposta_id',
+    v_proposta_id,
+    'numero',
+    v_numero,
+    'revisao_id',
+    v_revisao_id,
+    'numero_revisao',
+    0,
+    'status',
+    'rascunho',
+    'origem_comercial',
+    v_origem,
+    'status_comercial',
+    'proposta',
+    'vendedor_responsavel_id',
+    v_vendedor_responsavel_id
+  );
+end;
+$function$;
+
+-- =========================================================
+-- ## 12.16 EXECUTE: LISTA EXPLÍCITA AUDITADA 001–020
+-- =========================================================
+-- PUBLIC é o pseudo-role de todos os usuários, não o schema public.
+-- Revogar PUBLIC não remove grants explícitos já dados a anon.
+-- Não modifica defaults, tabelas, roles ou funções de outros módulos.
+-- SECURITY INVOKER e policies ainda precisam dos auxiliares abaixo.
+-- Triggers instalados não precisam de EXECUTE do cliente para disparar.
+-- O executor precisa ser owner/superuser das funções. service_role mantém
+-- EXECUTE; isso não dispensa auth.uid()/regras internas das RPCs.
+
+-- 019: criar proposta e R0.
+revoke execute on function public.criar_proposta_r0(jsonb, jsonb) from PUBLIC, anon;
+grant execute on function public.criar_proposta_r0(jsonb, jsonb) to authenticated, service_role;
+
+-- 019: salvar revisão/itens com desconto.
+revoke execute on function public.salvar_rascunho_proposta(uuid, uuid, jsonb, jsonb) from PUBLIC, anon;
+grant execute on function public.salvar_rascunho_proposta(uuid, uuid, jsonb, jsonb) to authenticated, service_role;
+
+-- 006: enviar revisão; substituída pelo 021.
+revoke execute on function public.enviar_revisao(uuid, uuid) from PUBLIC, anon;
+grant execute on function public.enviar_revisao(uuid, uuid) to authenticated, service_role;
+
+-- 019: copiar revisão e descontos.
+revoke execute on function public.criar_nova_revisao(uuid) from PUBLIC, anon;
+grant execute on function public.criar_nova_revisao(uuid) to authenticated, service_role;
+
+-- 004: contrato legado mantido no service.
+revoke execute on function public.atualizar_status_comercial(uuid, text, text, text) from PUBLIC, anon;
+grant execute on function public.atualizar_status_comercial(uuid, text, text, text) to authenticated, service_role;
+
+-- 005: origem e status.
+revoke execute on function public.atualizar_gestao_comercial(uuid, text, text, text, text) from PUBLIC, anon;
+grant execute on function public.atualizar_gestao_comercial(uuid, text, text, text, text) to authenticated, service_role;
+
+-- 010: aprovação/bloqueio de vendedor.
+revoke execute on function public.definir_acesso_vendedor(uuid, boolean) from PUBLIC, anon;
+grant execute on function public.definir_acesso_vendedor(uuid, boolean) to authenticated, service_role;
+
+-- 020: somente ADM altera perfil.
+revoke execute on function public.definir_tipo_acesso(uuid, text) from PUBLIC, anon;
+grant execute on function public.definir_tipo_acesso(uuid, text) to authenticated, service_role;
+
+-- 015: definição de Time.
+revoke execute on function public.definir_time_vendedor(uuid, text) from PUBLIC, anon;
+grant execute on function public.definir_time_vendedor(uuid, text) to authenticated, service_role;
+
+-- 009: metas individuais.
+revoke execute on function public.salvar_meta_vendedor(uuid, integer, integer, numeric) from PUBLIC, anon;
+grant execute on function public.salvar_meta_vendedor(uuid, integer, integer, numeric) to authenticated, service_role;
+
+-- 015: metas oficiais.
+revoke execute on function public.salvar_meta_equipe(text, integer, integer, numeric) from PUBLIC, anon;
+grant execute on function public.salvar_meta_equipe(text, integer, integer, numeric) to authenticated, service_role;
+
+-- 020: transferência oficial auditada.
+revoke execute on function public.transferir_proposta(uuid, uuid, text) from PUBLIC, anon;
+grant execute on function public.transferir_proposta(uuid, uuid, text) to authenticated, service_role;
+
+-- RLS e RPCs: usuário ativo.
+revoke execute on function public.usuario_ativo() from PUBLIC, anon;
+grant execute on function public.usuario_ativo() to authenticated, service_role;
+
+-- RLS/RPCs: administração.
+revoke execute on function public.usuario_adm() from PUBLIC, anon;
+grant execute on function public.usuario_adm() to authenticated, service_role;
+
+-- RLS/RPCs: gestão.
+revoke execute on function public.usuario_gestor_ou_adm() from PUBLIC, anon;
+grant execute on function public.usuario_gestor_ou_adm() to authenticated, service_role;
+
+-- 009: policies/RPC de metas.
+revoke execute on function public.usuario_e_vendedor(uuid) from PUBLIC, anon;
+grant execute on function public.usuario_e_vendedor(uuid) to authenticated, service_role;
+
+-- RLS/RPCs: operação por responsável.
+revoke execute on function public.pode_acessar_proposta(uuid) from PUBLIC, anon;
+grant execute on function public.pode_acessar_proposta(uuid) to authenticated, service_role;
+
+-- RLS de itens.
+revoke execute on function public.pode_acessar_revisao(uuid) from PUBLIC, anon;
+grant execute on function public.pode_acessar_revisao(uuid) to authenticated, service_role;
+
+-- RLS de propostas/revisões.
+revoke execute on function public.pode_visualizar_proposta(uuid) from PUBLIC, anon;
+grant execute on function public.pode_visualizar_proposta(uuid) to authenticated, service_role;
+
+-- RLS de itens.
+revoke execute on function public.pode_visualizar_revisao(uuid) from PUBLIC, anon;
+grant execute on function public.pode_visualizar_revisao(uuid) to authenticated, service_role;
+
+-- 020: policies de leitura.
+revoke execute on function public.usuario_visao_global() from PUBLIC, anon;
+grant execute on function public.usuario_visao_global() to authenticated, service_role;
+
+-- 020: policies de operação.
+revoke execute on function public.usuario_operacao_comercial() from PUBLIC, anon;
+grant execute on function public.usuario_operacao_comercial() to authenticated, service_role;
+
+-- Auxiliar antigo sem chamada pelo frontend/policies atuais.
+revoke execute on function public.usuario_gestor() from PUBLIC, anon, authenticated;
+grant execute on function public.usuario_gestor() to service_role;
+
+-- Auxiliar informativo; policies usam usuario_visao_global.
+revoke execute on function public.usuario_diretor() from PUBLIC, anon, authenticated;
+grant execute on function public.usuario_diretor() to service_role;
+
+-- 011: RPC antiga substituída/revogada no 017.
+revoke execute on function public.definir_vendedor_responsavel(uuid, uuid) from PUBLIC, anon, authenticated;
+grant execute on function public.definir_vendedor_responsavel(uuid, uuid) to service_role;
+
+-- Trigger de timestamps.
+revoke execute on function public.set_updated_at() from PUBLIC, anon, authenticated;
+grant execute on function public.set_updated_at() to service_role;
+
+-- Trigger AFTER INSERT de revisão.
+revoke execute on function public.sync_revisao_atual() from PUBLIC, anon, authenticated;
+grant execute on function public.sync_revisao_atual() to service_role;
+
+-- Trigger de imutabilidade.
+revoke execute on function public.proteger_revisao_enviada() from PUBLIC, anon, authenticated;
+grant execute on function public.proteger_revisao_enviada() to service_role;
+
+-- Trigger de imutabilidade dos itens.
+revoke execute on function public.proteger_itens_revisao_enviada() from PUBLIC, anon, authenticated;
+grant execute on function public.proteger_itens_revisao_enviada() to service_role;
+
+-- Trigger em auth.users; não é RPC de cadastro.
+revoke execute on function public.criar_perfil_novo_usuario() from PUBLIC, anon, authenticated;
+grant execute on function public.criar_perfil_novo_usuario() to service_role;
+
+-- Trigger de responsável.
+revoke execute on function public.preparar_vendedor_responsavel() from PUBLIC, anon, authenticated;
+grant execute on function public.preparar_vendedor_responsavel() to service_role;
+
+-- Trigger de autoria.
+revoke execute on function public.proteger_autoria_revisao() from PUBLIC, anon, authenticated;
+grant execute on function public.proteger_autoria_revisao() to service_role;
+
+-- Trigger de Time histórico.
+revoke execute on function public.aplicar_time_equipe_revisao() from PUBLIC, anon, authenticated;
+grant execute on function public.aplicar_time_equipe_revisao() to service_role;
+
+-- Trigger de transferência oficial.
+revoke execute on function public.bloquear_transferencia_direta() from PUBLIC, anon, authenticated;
+grant execute on function public.bloquear_transferencia_direta() to service_role;
+
+-- Se anon/authenticated herdarem privilégios inesperados, abortar a
+-- transação em vez de tentar alterar roles ou grants não inventariados.
+do $acl_020$
+declare
+  v_assinatura text;
+  v_funcao regprocedure;
+begin
+  foreach v_assinatura in array array[
+    'public.criar_proposta_r0(jsonb, jsonb)',
+    'public.salvar_rascunho_proposta(uuid, uuid, jsonb, jsonb)',
+    'public.enviar_revisao(uuid, uuid)',
+    'public.criar_nova_revisao(uuid)',
+    'public.atualizar_status_comercial(uuid, text, text, text)',
+    'public.atualizar_gestao_comercial(uuid, text, text, text, text)',
+    'public.definir_acesso_vendedor(uuid, boolean)',
+    'public.definir_tipo_acesso(uuid, text)',
+    'public.definir_time_vendedor(uuid, text)',
+    'public.salvar_meta_vendedor(uuid, integer, integer, numeric)',
+    'public.salvar_meta_equipe(text, integer, integer, numeric)',
+    'public.transferir_proposta(uuid, uuid, text)',
+    'public.usuario_ativo()',
+    'public.usuario_adm()',
+    'public.usuario_gestor_ou_adm()',
+    'public.usuario_e_vendedor(uuid)',
+    'public.pode_acessar_proposta(uuid)',
+    'public.pode_acessar_revisao(uuid)',
+    'public.pode_visualizar_proposta(uuid)',
+    'public.pode_visualizar_revisao(uuid)',
+    'public.usuario_visao_global()',
+    'public.usuario_operacao_comercial()',
+    'public.usuario_gestor()',
+    'public.usuario_diretor()',
+    'public.definir_vendedor_responsavel(uuid, uuid)',
+    'public.set_updated_at()',
+    'public.sync_revisao_atual()',
+    'public.proteger_revisao_enviada()',
+    'public.proteger_itens_revisao_enviada()',
+    'public.criar_perfil_novo_usuario()',
+    'public.preparar_vendedor_responsavel()',
+    'public.proteger_autoria_revisao()',
+    'public.aplicar_time_equipe_revisao()',
+    'public.bloquear_transferencia_direta()'
+  ] loop
+    v_funcao := v_assinatura::regprocedure;
+    if has_function_privilege('anon', v_funcao, 'EXECUTE') then
+      raise exception '020: anon ainda possui EXECUTE em %. Audite grants herdados.', v_assinatura;
+    end if;
+  end loop;
+  foreach v_assinatura in array array[
+    'public.usuario_gestor()',
+    'public.usuario_diretor()',
+    'public.definir_vendedor_responsavel(uuid, uuid)',
+    'public.set_updated_at()',
+    'public.sync_revisao_atual()',
+    'public.proteger_revisao_enviada()',
+    'public.proteger_itens_revisao_enviada()',
+    'public.criar_perfil_novo_usuario()',
+    'public.preparar_vendedor_responsavel()',
+    'public.proteger_autoria_revisao()',
+    'public.aplicar_time_equipe_revisao()',
+    'public.bloquear_transferencia_direta()'
+  ] loop
+    if has_function_privilege('authenticated', v_assinatura::regprocedure, 'EXECUTE') then
+      raise exception '020: authenticated ainda possui EXECUTE interno em %.', v_assinatura;
+    end if;
+  end loop;
+end;
+$acl_020$;
 
 -- =========================================================
 -- ## 13. VERIFICAÇÕES
