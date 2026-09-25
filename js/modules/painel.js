@@ -26,6 +26,9 @@
 // ## 1. ESTADO
 // =========================================================
 
+let painelResultados = [];
+let painelDadosDisponiveis = false;
+
 let painelDados =
   [];
 
@@ -614,10 +617,8 @@ function calcularValidadePainel(
   }
 
 
-  const dias =
-    validadeDiasPainel(
-      revisao.validade
-    );
+  const dias = revisao.validade_dias != null
+    ? Number(revisao.validade_dias) : validadeDiasPainel(revisao.validade);
 
 
   if (
@@ -642,11 +643,8 @@ function calcularValidadePainel(
   }
 
 
-  const validadeAte =
-    adicionarDiasDataPainel(
-      dataEnvio,
-      dias
-    );
+  // Compatibilidade legada isolada: nunca recalcular uma data persistida.
+  const validadeAte = revisao.validade_ate || adicionarDiasDataPainel(dataEnvio, dias);
 
 
   if (!validadeAte) {
@@ -768,6 +766,8 @@ function revisaoAtualPainel(
 function calcularValorRevisaoPainel(
   revisao
 ) {
+  if (revisao?.valor_total_revisao != null) return Number(revisao.valor_total_revisao);
+
 
   const itens =
     Array.isArray(
@@ -874,10 +874,9 @@ function normalizarDadosPainel(
               revisao.time_equipe
             ),
 
-          valor:
-            calcularValorRevisaoPainel(
-              revisao
-            ),
+          valor: proposta.status_comercial === 'concluido'
+            ? Number(proposta.valor_conclusao)
+            : calcularValorRevisaoPainel(revisao),
 
           validadeDias:
             validade.dias,
@@ -1044,6 +1043,10 @@ function nomeVendedorRegistroPainel(
 function timeRegistroPainel(
   registro
 ) {
+  if (registro.proposta?.status_comercial === 'concluido') {
+    return normalizarTimePainel(registro.proposta.time_conclusao);
+  }
+
 
   // Primeiro utilizamos o Time que ficou registrado
   // na revisão atual da proposta.
@@ -2134,24 +2137,9 @@ function somaMetasOficiaisPainel() {
 // ## 17. DATA DO CONCLUÍDO
 // =========================================================
 
-function dataConclusaoPainel(
-  registro
-) {
-
-  return (
-    registro.proposta
-      .status_atualizado_em ||
-
-    registro.proposta
-      .updated_at ||
-
-    registro.revisao
-      .data_proposta ||
-
-    null
-  );
+function dataConclusaoPainel(registro) {
+  return registro.proposta.concluido_em || null;
 }
-
 
 function registroNoPeriodoMetaPainel(
   registro,
@@ -2172,14 +2160,7 @@ function registroNoPeriodoMetaPainel(
   }
 
 
-  const texto =
-    String(
-      data
-    )
-      .slice(
-        0,
-        10
-      );
+  const texto = dataSaoPauloPainel(data);
 
 
   const [
@@ -2225,7 +2206,7 @@ function conquistadoResponsavelPainel(
     );
 
 
-  return painelDados
+  return painelResultados
     .filter(
       registro =>
         registro.vendedorId ===
@@ -2268,7 +2249,7 @@ function conquistadoVendedorPainel(
 ) {
 
 
-  return painelDados
+  return painelResultados
     .filter(
       registro =>
         registro.vendedorId ===
@@ -2315,7 +2296,7 @@ function conquistadoTimePainel(
   }
 
 
-  return painelDados
+  return painelResultados
     .filter(
       registro =>
         registro.proposta
@@ -2350,7 +2331,7 @@ function conquistadoGeralPainel(
   mes
 ) {
 
-  return painelDados
+  return painelResultados
     .filter(
       registro =>
         registro.proposta
@@ -2716,15 +2697,8 @@ function dadosFiltradosPainel() {
           painelPerfilAtual.user_id;
 
 
-        const legadoSemResponsavel =
-          !registro.vendedorId &&
-          proposta.criado_por ===
-          painelPerfilAtual.user_id;
-
-
-        if (
-          !ehResponsavel &&
-          !legadoSemResponsavel
+if (
+          !ehResponsavel
         ) {
 
           return false;
@@ -3299,6 +3273,9 @@ function atualizarIndicadoresPainel(
 // =========================================================
 
 function atualizarResumoMetaPainel() {
+  if (!painelDadosDisponiveis) return;
+  renderizarResultadosHistoricosPainel();
+
 
   const titulo =
     document.getElementById(
@@ -4172,14 +4149,9 @@ function renderizarComparativoPainel() {
     periodoMetaPainel();
 
 
-  const vendedores =
-    filtros.time
-      ? vendedoresDoTimePainel(
-        filtros.time
-      )
-      : [
-        ...painelVendedores
-      ];
+  const vendedores = painelVendedores.filter(perfil => !filtros.time ||
+    perfil.time_equipe === filtros.time || painelResultados.some(r => r.vendedorId === perfil.user_id &&
+      r.timeDocumento === filtros.time && registroNoPeriodoMetaPainel(r, periodo.ano, periodo.mes)));
 
 
   if (titulo) {
@@ -4222,10 +4194,8 @@ function renderizarComparativoPainel() {
 
 
           const conquistado =
-            conquistadoVendedorPainel(
-              vendedor.user_id,
-              periodo.ano,
-              periodo.mes
+            conquistadoResponsavelPainel(
+              vendedor.user_id, periodo.ano, periodo.mes, filtros.time
             );
 
 
@@ -5079,7 +5049,8 @@ async function confirmarTransferenciaPainel() {
     window.confirm(
       `Transferir a proposta #${painelTransferenciaAtual.proposta.numero} ` +
       `para ${novoResponsavel?.nome || 'o vendedor selecionado'}?\n\n` +
-      'A alteração será registrada no histórico de transferências.'
+      'A alteração será registrada no histórico de transferências. ' +
+      'Em vendas concluídas, o crédito histórico permanece com o responsável da conclusão.'
     );
 
 
@@ -5269,6 +5240,7 @@ function abrirRevisoesPainel(
 // =========================================================
 
 function renderizarPainel() {
+  if (!painelDadosDisponiveis) return;
 
   const corpo =
     document.getElementById(
@@ -5709,6 +5681,11 @@ async function carregarPainel() {
 
   painelCarregando =
     true;
+  painelDadosDisponiveis = false;
+  ['painelMetaResumo', 'painelResumoTimes', 'painelComparativoEquipe', 'painelResultadosHistoricos'].forEach(id => {
+    const area = document.getElementById(id);
+    if (area) area.hidden = true;
+  });
 
 
   if (corpo) {
@@ -5773,9 +5750,7 @@ async function carregarPainel() {
 
     const tarefas = [
 
-      listarDadosPainelGestao({
-        limite: 500
-      }),
+      listarDadosPainelGestao(),
 
       listarPerfisEquipe(),
 
@@ -5821,11 +5796,14 @@ async function carregarPainel() {
     }
 
 
+    tarefas.push(listarResultadosHistoricos());
+
     const [
       propostas,
       perfis,
       metas,
-      metasOficiais
+      metasOficiais,
+      resultadosHistoricos
     ] =
       await Promise.all(
         tarefas
@@ -5834,6 +5812,15 @@ async function carregarPainel() {
 
     painelPerfis =
       perfis || [];
+    painelResultados = (resultadosHistoricos || []).map(resultado => ({
+      proposta: { ...resultado, id: resultado.proposta_id, status_comercial: 'concluido' },
+      vendedorId: resultado.responsavel_conclusao_id,
+      timeDocumento: resultado.time_conclusao,
+      valor: Number(resultado.valor_conclusao),
+      revisao: { id: resultado.revisao_conclusao_id }
+    }));
+    const creditados = new Set(painelResultados.map(r => r.vendedorId));
+
 
 
     painelResponsaveisComerciais =
@@ -5867,10 +5854,7 @@ async function carregarPainel() {
     painelVendedores =
       painelPerfis
         .filter(
-          perfil =>
-            perfil.ativo &&
-            perfil.tipo_acesso ===
-            'vendedor'
+          perfil => (perfil.ativo && perfil.tipo_acesso === 'vendedor') || creditados.has(perfil.user_id)
         )
         .sort(
           (
@@ -5905,6 +5889,11 @@ async function carregarPainel() {
     atualizarFiltroVendedoresPainel();
 
 
+    painelDadosDisponiveis = true;
+    ['painelMetaResumo', 'painelResultadosHistoricos'].forEach(id => {
+      const area = document.getElementById(id);
+      if (area) area.hidden = false;
+    });
     renderizarPainel();
 
 
@@ -5916,8 +5905,8 @@ async function carregarPainel() {
     );
 
 
-    painelDados =
-      [];
+    painelDados = [];
+    painelResultados = [];
 
 
     if (corpo) {
@@ -5936,9 +5925,12 @@ async function carregarPainel() {
     }
 
 
-    atualizarIndicadoresPainel(
-      []
-    );
+    ['Proposta', 'Andamento', 'Vencida', 'Concluido', 'NaoConquistado'].forEach(status => {
+      ['Qtd', 'Valor'].forEach(tipo => {
+        const campo = document.getElementById(`painel${tipo}${status}`);
+        if (campo) campo.textContent = '—';
+      });
+    });
 
 
     if (vazio) {
@@ -6242,4 +6234,26 @@ if (
 
   iniciarPainel();
 
+}
+// Projeção da 024, separada da carteira: não oferece Abrir/Editar/Transferir.
+function renderizarResultadosHistoricosPainel() {
+  const pagina = document.getElementById('painelPage');
+  if (!pagina) return;
+  let area = document.getElementById('painelResultadosHistoricos');
+  if (!area) {
+    area = document.createElement('section');
+    area.id = 'painelResultadosHistoricos';
+    area.className = 'panel';
+    pagina.appendChild(area);
+  }
+  const periodo = periodoMetaPainel();
+  const filtros = obterFiltrosPainel();
+  const resultados = painelResultados.filter(r => registroNoPeriodoMetaPainel(r, periodo.ano, periodo.mes) &&
+    (!filtros.time || r.timeDocumento === filtros.time) && (!filtros.vendedor || r.vendedorId === filtros.vendedor));
+  area.innerHTML = `<div class="panel-head"><h3>Resultados concluídos — crédito histórico</h3></div>
+    <div class="panel-body"><p>Período da meta selecionado. Transferências de carteira não alteram estes resultados.</p>
+    ${resultados.length ? `<table><thead><tr><th>Proposta</th><th>Conclusão</th><th>Responsável pelo resultado</th><th>Time</th><th>Valor</th></tr></thead><tbody>${resultados.map(r => `<tr>
+      <td>#${escaparPainel(r.proposta.numero)}</td><td>${escaparPainel(formatarDataPainel(dataSaoPauloPainel(r.proposta.concluido_em)))}</td>
+      <td>${escaparPainel(r.proposta.responsavel_nome || r.vendedorId)}</td><td>${escaparPainel(nomeTimePainel(r.timeDocumento))}</td>
+      <td>${escaparPainel(formatarMoedaPainel(r.valor))}</td></tr>`).join('')}</tbody></table>` : '<p>Nenhum resultado neste período.</p>'}</div>`;
 }

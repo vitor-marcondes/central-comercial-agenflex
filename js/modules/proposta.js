@@ -113,23 +113,44 @@ let statusComercialAtual = {
 // Revisão enviada:
 // → bloqueada.
 
-function revisaoEhEditavel() {
-
-  return (
-    !propostaNuvemAtual.propostaId ||
-    propostaNuvemAtual.status === 'rascunho'
-  );
+function podeOperarPropostaAtual() {
+  const perfil = perfilCentralAtual;
+  if (!perfil?.ativo || !['vendedor', 'gestor', 'adm'].includes(perfil.tipo_acesso)) return false;
+  if (window.__agenflexConsultaHistorica?.ativa) return false;
+  return !propostaNuvemAtual.propostaId || perfil.tipo_acesso === 'adm' ||
+    propostaNuvemAtual.responsavelId === perfil.user_id;
 }
 
+function revisaoEhEditavel() {
+  return podeOperarPropostaAtual() && statusComercialAtual.status !== 'concluido' &&
+    (!propostaNuvemAtual.propostaId || propostaNuvemAtual.status === 'rascunho');
+}
 
-// =========================================================
-// ## 2. ITENS DA PROPOSTA
-// =========================================================
-
-
-// ---------------------------------------------------------
-// ## 2.1 Cálculo individual do item
-// ---------------------------------------------------------
+let responsaveisNovaPropostaUsuario = null;
+async function atualizarSeletorResponsavelProposta() {
+  const bloco = document.getElementById('responsavelNovaPropostaBloco');
+  const campo = document.getElementById('responsavelNovaProposta');
+  if (!bloco || !campo) return;
+  const visivel = perfilCentralAtual?.tipo_acesso === 'adm' && !propostaNuvemAtual.propostaId;
+  bloco.hidden = !visivel;
+  campo.required = visivel;
+  campo.disabled = !visivel;
+  if (!visivel || responsaveisNovaPropostaUsuario === usuarioLocalAtual) return;
+  const usuario = usuarioLocalAtual;
+  campo.disabled = true;
+  try {
+    const perfis = await listarResponsaveisAtivos();
+    if (usuario !== usuarioLocalAtual) return;
+    campo.innerHTML = '<option value="">Selecione o responsável</option>' + perfis.map(perfil =>
+      `<option value="${esc(perfil.user_id)}">${esc(perfil.nome || 'Sem nome')} — ${perfil.tipo_acesso === 'gestor' ? 'Gestor' : 'Vendedor'}</option>`
+    ).join('');
+    responsaveisNovaPropostaUsuario = usuario;
+    document.getElementById('responsavelNovaPropostaInfo').textContent = perfis.length
+      ? 'Selecione um Vendedor ou Gestor ativo.' : 'Nenhum responsável ativo disponível.';
+  } finally {
+    campo.disabled = !perfilCentralAtual?.ativo || Boolean(propostaNuvemAtual.propostaId);
+  }
+}
 
 function normalizarDescontoPercentual(
   valor
@@ -2624,6 +2645,9 @@ function clearForm() {
 function montarPayloadRevisao() {
 
   return {
+    vendedor_responsavel_id: perfilCentralAtual?.tipo_acesso === 'adm'
+      ? document.getElementById('responsavelNovaProposta')?.value || null
+      : perfilCentralAtual?.user_id || null,
 
     origem_comercial:
       document
@@ -2809,6 +2833,14 @@ function montarItensBanco() {
 async function salvarPropostaNuvem(
   opcoes = {}
 ) {
+  if (!revisaoEhEditavel()) { toastMsg('Esta proposta está em somente leitura.'); return false; }
+  if (!propostaNuvemAtual.propostaId && perfilCentralAtual?.tipo_acesso === 'adm' &&
+      !document.getElementById('responsavelNovaProposta')?.value) {
+    toastMsg('Selecione o responsável comercial.');
+    document.getElementById('responsavelNovaProposta')?.focus();
+    return false;
+  }
+
 
   const silencioso =
     Boolean(
@@ -2982,6 +3014,7 @@ async function salvarPropostaNuvem(
 
       ...propostaNuvemAtual,
 
+      responsavelId: resultado.vendedor_responsavel_id || propostaNuvemAtual.responsavelId,
       propostaId:
         resultado.proposta_id,
 
@@ -3205,6 +3238,8 @@ function atualizarBloqueioCamposRevisao() {
     );
 
 
+  if (perfilCentralAtual?.tipo_acesso === 'vendedor') document.getElementById('timeEquipe').disabled = true;
+
   sincronizarValidadeInterface();
 
   document
@@ -3405,12 +3440,30 @@ function atualizarInterfaceRevisao() {
 
   }
 
+  if (botaoSalvar) botaoSalvar.disabled = !revisaoEhEditavel();
+  if (botaoEnviar) botaoEnviar.disabled = botaoEnviar.disabled || !revisaoEhEditavel();
+  if (botaoNovaRevisao && (!podeOperarPropostaAtual() || statusComercialAtual.status === 'concluido')) {
+    botaoNovaRevisao.hidden = true;
+    botaoNovaRevisao.disabled = true;
+  }
+  const bloco = document.getElementById('responsavelNovaPropostaBloco');
+  if (bloco) bloco.hidden = perfilCentralAtual?.tipo_acesso !== 'adm' || propostaSalva;
+  const validadeInfo = document.getElementById('validadePersistidaInfo');
+  if (validadeInfo) {
+    validadeInfo.hidden = !propostaNuvemAtual.validadeAte || propostaNuvemAtual.status !== 'enviada';
+    validadeInfo.textContent = propostaNuvemAtual.validadeAte
+      ? `Validade registrada: ${brDate(propostaNuvemAtual.validadeAte)} (${propostaNuvemAtual.validadeDias} dia(s)).` : '';
+  }
+  atualizarBloqueioCamposRevisao();
+
 }
 // ---------------------------------------------------------
 // ## 10.3 Enviar revisão atual
 // ---------------------------------------------------------
 
 async function enviarRevisaoAtual() {
+  if (!revisaoEhEditavel()) { toastMsg('Esta proposta está em somente leitura.'); return; }
+
 
   const botao =
     document.getElementById(
@@ -3609,6 +3662,10 @@ async function enviarRevisaoAtual() {
 // ---------------------------------------------------------
 
 async function criarNovaRevisaoAtual() {
+  if (!podeOperarPropostaAtual() || statusComercialAtual.status === 'concluido') {
+    toastMsg('Esta proposta não permite nova revisão.'); return;
+  }
+
 
   const botao =
     document.getElementById(
@@ -4048,6 +4105,24 @@ function atualizarInterfaceGestaoComercial() {
       naoConquistado;
 
   }
+  const bloqueada = !podeOperarPropostaAtual() || statusComercialAtual.status === 'concluido';
+  [origemEl, motivoEl, detalheEl].forEach(el => {
+    if (el) el.disabled = bloqueada;
+  });
+  statusEl.disabled = bloqueada || !propostaSalva;
+  if (botao) botao.disabled = bloqueada || !propostaSalva || !origemSelecionada;
+  const concluir = statusEl.querySelector('option[value="concluido"]');
+  if (concluir) concluir.disabled = propostaNuvemAtual.status !== 'enviada' ||
+    !['pharma', 'food', 'revenda'].includes(document.getElementById('timeEquipe')?.value);
+  const resultado = document.getElementById('resultadoConclusaoInfo');
+  if (resultado) {
+    resultado.hidden = statusComercialAtual.status !== 'concluido';
+    const c = propostaNuvemAtual.conclusao;
+    resultado.textContent = c?.concluido_em
+      ? `Venda concluída em ${new Date(c.concluido_em).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })} • ${BRL.format(Number(c.valor_conclusao))} • Time ${c.time_conclusao}. O crédito histórico não muda com a transferência da carteira.`
+      : 'Venda concluída. O crédito histórico não muda com a transferência da carteira.';
+  }
+
 }
 
 
@@ -4125,6 +4200,14 @@ function aoAlterarStatusComercial() {
 // ---------------------------------------------------------
 
 async function salvarStatusComercial() {
+  if (!podeOperarPropostaAtual() || statusComercialAtual.status === 'concluido') {
+    toastMsg('A gestão desta proposta está em somente leitura.'); return;
+  }
+  if (document.getElementById('statusComercial')?.value === 'concluido' &&
+      (propostaNuvemAtual.status !== 'enviada' || !['pharma', 'food', 'revenda'].includes(timeEquipe.value))) {
+    toastMsg('Conclusão exige a revisão atual enviada e com Time oficial.'); return;
+  }
+
 
   const origemEl =
     document.getElementById(
@@ -4367,6 +4450,10 @@ async function salvarStatusComercial() {
     atualizarInterfaceGestaoComercial();
 
 
+    atualizarInterfaceRevisao();
+    if (status === 'concluido') {
+      aplicarPropostaNoFormulario(await obterPropostaCompleta(propostaNuvemAtual.propostaId));
+    }
     persistirRascunhoLocal();
 
 
@@ -4894,6 +4981,14 @@ function aplicarPropostaNoFormulario(
 
   propostaNuvemAtual = {
 
+    responsavelId: proposta.vendedor_responsavel_id,
+    validadeDias: revisaoAtual.validade_dias,
+    validadeAte: revisaoAtual.validade_ate,
+    conclusao: {
+      concluido_em: proposta.concluido_em, responsavel_conclusao_id: proposta.responsavel_conclusao_id,
+      time_conclusao: proposta.time_conclusao, revisao_conclusao_id: proposta.revisao_conclusao_id,
+      valor_conclusao: proposta.valor_conclusao
+    },
     propostaId:
       proposta.id,
 

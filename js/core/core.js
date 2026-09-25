@@ -33,6 +33,7 @@ const teamLogos = {
 const KEY = 'agenflex_v61_orc';
 const SELLERS_KEY = 'agenflex_vendedores_recentes';
 let usuarioLocalAtual = null;
+let perfilCentralAtual = null;
 
 function chaveLocalUsuario(base) {
   return usuarioLocalAtual ? `${base}:${usuarioLocalAtual}` : null;

@@ -295,68 +295,14 @@ async function atualizarStatusComercial(
 // ## 7. LISTAGEM DE PROPOSTAS
 // =========================================================
 
-async function listarPropostas(
-  { limite = 200 } = {}
-) {
-
-  const client =
-    getSupabaseClient();
-
-
-  const { data, error } =
-    await client
-      .from('propostas')
-      .select(`
-        id,
-        numero,
-        revisao_atual,
-        criado_por,
-
-        origem_comercial,
-
-        status_comercial,
-        motivo_nao_conquistado,
-        detalhe_nao_conquistado,
-        status_atualizado_em,
-        status_atualizado_por,
-
-        created_at,
-        updated_at,
-
-        revisoes_proposta (
-          id,
-          numero_revisao,
-          nome_proposta,
-          cliente,
-          cnpj,
-          vendedor_nome,
-          status,
-          data_proposta,
-          enviado_em,
-          updated_at
-        )
-      `)
-      .order(
-        'updated_at',
-        {
-          ascending: false
-        }
-      )
-      .limit(
-        limite
-      );
-
-
-  if (error) {
-
-    throw error;
-
-  }
-
-
-  return data ?? [];
+async function listarPropostas({ pagina = 1, busca = '', origem = '', statusComercial = '', statusRevisao = '' } = {}) {
+  const { data, error } = await getSupabaseClient().rpc('consultar_historico_propostas', {
+    p_pagina: pagina, p_busca: busca, p_origem: origem,
+    p_status: statusComercial, p_status_revisao: statusRevisao
+  });
+  if (error) throw error;
+  return data;
 }
-
 
 // =========================================================
 // ## 8. CARREGAMENTO COMPLETO DA PROPOSTA
@@ -378,6 +324,9 @@ async function obterPropostaCompleta(
         numero,
         revisao_atual,
         criado_por,
+        vendedor_responsavel_id,
+        concluido_em, responsavel_conclusao_id, time_conclusao,
+        revisao_conclusao_id, valor_conclusao,
         origem_proposta_id,
 
         origem_comercial,
@@ -391,7 +340,7 @@ async function obterPropostaCompleta(
         created_at,
         updated_at,
 
-        revisoes_proposta (
+        revisoes_proposta!revisoes_proposta_proposta_id_fkey (
           *,
           itens_revisao (*)
         )
@@ -417,70 +366,6 @@ async function obterPropostaCompleta(
 // ## 9. DADOS DO PAINEL COMERCIAL
 // =========================================================
 
-async function listarDadosPainel(
-  { limite = 500 } = {}
-) {
-
-  const client =
-    getSupabaseClient();
-
-
-  const { data, error } =
-    await client
-      .from('propostas')
-      .select(`
-        id,
-        numero,
-        revisao_atual,
-        criado_por,
-
-        origem_comercial,
-
-        status_comercial,
-        motivo_nao_conquistado,
-        detalhe_nao_conquistado,
-
-        created_at,
-        updated_at,
-
-        revisoes_proposta (
-          id,
-          numero_revisao,
-
-          nome_proposta,
-          cliente,
-          cnpj,
-          vendedor_nome,
-
-          data_proposta,
-
-          status,
-          enviado_em,
-
-          itens_revisao (
-            quantidade,
-            valor_unitario,
-            ipi_percentual
-          )
-        )
-      `)
-      .order(
-        'updated_at',
-        {
-          ascending: false
-        }
-      )
-      .limit(
-        limite
-      );
-
-
-  if (error) {
-
-    throw error;
-
-  }
-
-
-  return data ?? [];
+async function listarDadosPainel() {
+  return listarDadosPainelGestao();
 }

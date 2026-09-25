@@ -357,8 +357,7 @@ function sincronizarTimeOrcamentoComPerfil(
     )
   ) {
 
-    campo.disabled =
-      false;
+    campo.disabled = !revisaoEhEditavel();
 
 
     campo.title =

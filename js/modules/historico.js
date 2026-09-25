@@ -15,6 +15,42 @@
 // =========================================================
 
 let historicoPropostas = [];
+let historicoPagina = 1;
+let historicoTotal = 0;
+let historicoVersaoDados = null;
+let historicoConsultaVersao = 0;
+let historicoBuscaTimer;
+
+function agendarFiltroHistorico() {
+  clearTimeout(historicoBuscaTimer);
+  historicoPagina = 1;
+  historicoVersaoDados = null;
+  historicoConsultaVersao++; // invalida resposta anterior ainda durante o debounce
+  historicoBuscaTimer = setTimeout(carregarHistorico, 250);
+}
+
+function mudarPaginaHistorico(delta) {
+  if (historicoCarregando) return;
+  historicoPagina = Math.max(1, Math.min(Math.max(1, Math.ceil(historicoTotal / 50)), historicoPagina + delta));
+  carregarHistorico();
+}
+
+function atualizarPaginacaoHistorico() {
+  const contador = document.getElementById('historicoContador');
+  if (!contador) return;
+  let pagina = document.getElementById('historicoPaginacao');
+  if (!pagina) {
+    pagina = document.createElement('div');
+    pagina.id = 'historicoPaginacao';
+    pagina.innerHTML = '<button type="button" class="btn light" id="historicoAnterior" onclick="mudarPaginaHistorico(-1)">Anterior</button> <span id="historicoPaginaAtual"></span> <button type="button" class="btn light" id="historicoProxima" onclick="mudarPaginaHistorico(1)">Próxima</button>';
+    contador.parentElement.insertAdjacentElement('afterend', pagina);
+  }
+  const paginas = Math.max(1, Math.ceil(historicoTotal / 50));
+  document.getElementById('historicoPaginaAtual').textContent = `Página ${historicoPagina} de ${paginas} • ${historicoTotal} proposta(s)`;
+  document.getElementById('historicoAnterior').disabled = historicoCarregando || historicoPagina <= 1;
+  document.getElementById('historicoProxima').disabled = historicoCarregando || historicoPagina >= paginas;
+}
+
 let historicoCarregando = false;
 let historicoRevisoesCarregando = false;
 let historicoPropostaRevisoesAtual = null;
@@ -111,61 +147,9 @@ function obterFiltrosHistorico() {
 }
 
 function propostasFiltradasHistorico() {
-  const filtros = obterFiltrosHistorico();
-
-  return historicoPropostas.filter(proposta => {
-    const revisao = revisaoAtualDaLista(proposta);
-
-    if (!revisao) {
-      return false;
-    }
-
-    if (
-      filtros.origem &&
-      proposta.origem_comercial !== filtros.origem
-    ) {
-      return false;
-    }
-
-    if (
-      filtros.statusComercial &&
-      proposta.status_comercial !== filtros.statusComercial
-    ) {
-      return false;
-    }
-
-    if (
-      filtros.statusRevisao &&
-      String(revisao.status || '').toLowerCase() !==
-        filtros.statusRevisao
-    ) {
-      return false;
-    }
-
-    if (filtros.busca) {
-      const textoBusca = [
-        proposta.numero,
-        revisao.nome_proposta,
-        revisao.cliente,
-        revisao.cnpj,
-        revisao.vendedor_nome
-      ].join(' ');
-
-      if (
-        !normalizarBuscaHistorico(textoBusca)
-          .includes(filtros.busca)
-      ) {
-        return false;
-      }
-    }
-
-    return true;
-  });
+  // Busca e filtros já foram aplicados no banco antes da página de 50.
+  return historicoPropostas;
 }
-
-// =========================================================
-// ## 4. BADGES
-// =========================================================
 
 function badgeRevisaoHistorico(status) {
   const normalizado =
@@ -1208,14 +1192,14 @@ function renderizarHistorico() {
         return;
       }
 
-      const quantidadeRevisoes =
+      const quantidadeRevisoes = proposta.quantidade_revisoes ?? (
         Array.isArray(
           proposta.revisoes_proposta
         )
           ? proposta
               .revisoes_proposta
               .length
-          : 0;
+          : 0);
 
       const tr =
         document.createElement(
@@ -1265,8 +1249,7 @@ function renderizarHistorico() {
 
         <td>
           ${escaparHistorico(
-            revisao.vendedor_nome ||
-            '—'
+            proposta.responsavel_nome || proposta.vendedor_responsavel_id || '—'
           )}
         </td>
 
@@ -1302,6 +1285,8 @@ function renderizarHistorico() {
           ${badgeStatusComercialHistorico(
             proposta.status_comercial
           )}
+          ${proposta.status_comercial === 'concluido' ? `<div class="history-muted">${escaparHistorico(BRL.format(Number(proposta.valor_conclusao)))} • ${escaparHistorico(proposta.time_conclusao)}<br>Crédito: ${escaparHistorico(proposta.responsavel_conclusao_nome || proposta.responsavel_conclusao_id)}<br>${escaparHistorico(new Date(proposta.concluido_em).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' }))}</div>` : ''}
+
         </td>
 
         <td>
@@ -1345,98 +1330,42 @@ function renderizarHistorico() {
 // =========================================================
 
 async function carregarHistorico() {
-  if (
-    historicoCarregando
-  ) {
-    return;
-  }
-
-  const corpo =
-    document.getElementById(
-      'historicoBody'
-    );
-
-  const vazio =
-    document.getElementById(
-      'historicoVazio'
-    );
-
-  const contador =
-    document.getElementById(
-      'historicoContador'
-    );
-
-  historicoCarregando =
-    true;
-
-  if (corpo) {
-    corpo.innerHTML = `
-      <tr>
-        <td
-          colspan="8"
-          class="history-loading"
-        >
-          Carregando propostas...
-        </td>
-      </tr>
-    `;
-  }
-
-  if (vazio) {
-    vazio.style.display =
-      'none';
-  }
-
-  if (contador) {
-    contador.textContent =
-      'Carregando...';
-  }
-
+  const versao = ++historicoConsultaVersao;
+  const usuario = usuarioLocalAtual;
+  const corpo = document.getElementById('historicoBody');
+  const vazio = document.getElementById('historicoVazio');
+  historicoCarregando = true;
+  atualizarPaginacaoHistorico();
+  if (corpo) corpo.innerHTML = '<tr><td colspan="8">Carregando propostas...</td></tr>';
+  if (vazio) vazio.style.display = 'none';
   try {
-    historicoPropostas =
-      await listarPropostas({
-        limite: 200
-      });
-
+    const resultado = await listarPropostas({ pagina: historicoPagina, ...obterFiltrosHistorico() });
+    if (versao !== historicoConsultaVersao || usuario !== usuarioLocalAtual) return;
+    if (!resultado || !Array.isArray(resultado.registros) || !Number.isFinite(Number(resultado.total)) || !resultado.versao) {
+      throw new Error('Resposta inválida ao carregar o histórico.');
+    }
+    if (historicoPagina > 1 && historicoVersaoDados && resultado.versao !== historicoVersaoDados) {
+      historicoPagina = 1;
+      historicoVersaoDados = null;
+      toastMsg('O histórico foi atualizado. Voltamos à primeira página.');
+      return carregarHistorico();
+    }
+    historicoVersaoDados = resultado.versao;
+    historicoTotal = Number(resultado.total);
+    const ultima = Math.max(1, Math.ceil(historicoTotal / 50));
+    if (historicoPagina > ultima) { historicoPagina = ultima; return carregarHistorico(); }
+    historicoPropostas = resultado.registros || [];
     renderizarHistorico();
-
   } catch (erro) {
-    console.error(
-      'Erro ao carregar histórico:',
-      erro
-    );
-
-    if (corpo) {
-      corpo.innerHTML =
-        '';
-    }
-
-    if (contador) {
-      contador.textContent =
-        'Erro ao carregar';
-    }
-
-    if (vazio) {
-      vazio.style.display =
-        'block';
-
-      vazio.innerHTML =
-        '<b>Não foi possível carregar o histórico.</b><br>' +
-        escaparHistorico(
-          erro?.message ||
-          'Erro desconhecido.'
-        );
-    }
-
+    if (versao !== historicoConsultaVersao || usuario !== usuarioLocalAtual) return;
+    historicoPropostas = [];
+    historicoTotal = 0;
+    if (corpo) corpo.innerHTML = '';
+    if (vazio) { vazio.style.display = 'block'; vazio.textContent = `Não foi possível carregar o histórico: ${erro.message}`; }
   } finally {
-    historicoCarregando =
-      false;
+    if (versao === historicoConsultaVersao) { historicoCarregando = false; atualizarPaginacaoHistorico(); }
   }
 }
-
-// =========================================================
-// ## 10. ABERTURA DA PÁGINA E PROPOSTA ATUAL
-// =========================================================
 
 async function abrirHistorico(
   btn
@@ -1583,7 +1512,7 @@ function limparFiltrosHistorico() {
       '';
   }
 
-  renderizarHistorico();
+  agendarFiltroHistorico();
 
   busca?.focus();
 }
@@ -1625,7 +1554,7 @@ function iniciarHistorico() {
 
   busca?.addEventListener(
     'input',
-    renderizarHistorico
+    agendarFiltroHistorico
   );
 
   [
@@ -1636,7 +1565,7 @@ function iniciarHistorico() {
     campo => {
       campo?.addEventListener(
         'change',
-        renderizarHistorico
+        agendarFiltroHistorico
       );
     }
   );

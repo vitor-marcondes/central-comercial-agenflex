@@ -45,6 +45,7 @@ function invalidarInterfaceSessao(mensagem) {
   mostrarTelaLogin();
   limparRascunhoLocalAoSair();
   usuarioLocalAtual = null;
+  perfilCentralAtual = null;
   try {
     sessionStorage.setItem('agenflex_aviso_sessao', mensagem);
   } catch (erro) {
@@ -175,6 +176,7 @@ function mostrarCentral(
     invalidarInterfaceSessao('A conta foi alterada. Entre novamente se necessário.');
     return;
   }
+  perfilCentralAtual = perfil;
   if (!usuarioLocalAtual) {
     // Descarta somente as chaves legadas, sem importar dados de dono desconhecido.
     limparDadosLocaisUsuario();
@@ -291,6 +293,10 @@ function mostrarCentral(
       '';
 
   }
+
+  atualizarInterfaceRevisao();
+  atualizarInterfaceGestaoComercial();
+  atualizarSeletorResponsavelProposta().catch(erro => toastMsg(erro.message));
 
 }
 
@@ -554,6 +560,7 @@ async function sairDaCentral() {
   mostrarTelaLogin();
   limparRascunhoLocalAoSair();
   usuarioLocalAtual = null;
+  perfilCentralAtual = null;
   try {
     await logoutCentral();
     window.location.reload();

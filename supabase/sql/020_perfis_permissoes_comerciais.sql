@@ -364,6 +364,23 @@ begin
   -- ## 5.3 Validar responsável
   -- -------------------------------------------------------
 
+  -- V1: toda proposta nova exige identidade comercial válida, inclusive
+  -- INSERT direto. Vendedor/Gestor só criam para si; ADM escolhe explicitamente.
+  if tg_op = 'INSERT' then
+    select tipo_acesso into v_tipo_usuario_atual from public.perfis
+      where user_id = auth.uid() and ativo = true;
+    if v_tipo_usuario_atual is null or v_tipo_usuario_atual not in ('vendedor', 'gestor', 'adm') then
+      raise exception 'Perfil sem permissão para criar proposta.';
+    end if;
+    if new.vendedor_responsavel_id is null then
+      raise exception 'Informe um responsável comercial ativo: Vendedor ou Gestor.';
+    end if;
+    if v_tipo_usuario_atual in ('vendedor', 'gestor')
+       and new.vendedor_responsavel_id is distinct from auth.uid() then
+      raise exception 'Vendedor e Gestor devem criar propostas para si próprios.';
+    end if;
+  end if;
+
   -- Validar apenas uma atribuição nova. Bloquear/promover um responsável
   -- não deve impedir manutenção administrativa de uma proposta legada.
   if new.vendedor_responsavel_id is not null
@@ -636,22 +653,20 @@ with check (
 
   and
 
+  vendedor_responsavel_id is not null
+  and
   criado_por =
     auth.uid()
 
   and
 
   (
-    vendedor_responsavel_id is null
-
-    or
-
     vendedor_responsavel_id =
       auth.uid()
 
     or
 
-    public.usuario_gestor_ou_adm()
+    public.usuario_adm()
   )
 );
 
@@ -1422,7 +1437,15 @@ begin
       v_user;
   else
     v_vendedor_responsavel_id :=
-      null;
+      nullif(btrim(p_revisao->>'vendedor_responsavel_id'), '')::uuid;
+    if v_vendedor_responsavel_id is null then
+      raise exception 'ADM deve selecionar um responsável comercial ativo.';
+    end if;
+  end if;
+  if v_tipo_acesso in ('vendedor', 'gestor')
+     and nullif(btrim(p_revisao->>'vendedor_responsavel_id'), '') is not null
+     and (p_revisao->>'vendedor_responsavel_id')::uuid is distinct from v_user then
+    raise exception 'Vendedor e Gestor não podem escolher outro responsável na criação.';
   end if;
   if v_origem not in (
     'leads_mkt',

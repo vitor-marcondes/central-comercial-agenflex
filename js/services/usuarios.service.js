@@ -206,51 +206,14 @@ async function obterMeuPerfil() {
 // =========================================================
 
 async function listarPerfisEquipe() {
-
-  const client =
-    getSupabaseClient();
-
-
-  const {
-    data,
-    error
-  } =
-    await client
-      .from(
-        'perfis'
-      )
-      .select(`
-        user_id,
-        nome,
-        email,
-        tipo_acesso,
-        ativo,
-        time_equipe,
-        created_at,
-        updated_at
-      `)
-      .order(
-        'nome',
-        {
-          ascending: true
-        }
-      );
-
-
-  if (error) {
-
-    throw error;
-
-  }
-
-
-  return data || [];
+  const perfis = await listarPaginasComerciais(cursor => {
+    let consulta = getSupabaseClient().from('perfis')
+      .select('user_id,nome,email,tipo_acesso,ativo,time_equipe,created_at,updated_at')
+      .order('user_id').limit(100);
+    return cursor ? consulta.gt('user_id', cursor) : consulta;
+  }, 'user_id');
+  return perfis.sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
 }
-
-
-// =========================================================
-// ## 4. APROVAR / BLOQUEAR VENDEDOR
-// =========================================================
 
 async function definirAcessoVendedor(
   userId,
@@ -431,113 +394,15 @@ async function definirTimeVendedor(
 // ## 7. LISTAR METAS INDIVIDUAIS
 // =========================================================
 
-async function listarMetasVendedor({
-  ano = null,
-  mes = null
-} = {}) {
-
-  const client =
-    getSupabaseClient();
-
-
-  let query =
-    client
-      .from(
-        'metas_vendedor'
-      )
-      .select(`
-        id,
-        user_id,
-        ano,
-        mes,
-        meta_valor,
-        criado_por,
-        atualizado_por,
-        created_at,
-        updated_at
-      `)
-      .order(
-        'ano',
-        {
-          ascending: false
-        }
-      )
-      .order(
-        'mes',
-        {
-          ascending: false
-        }
-      );
-
-
-  if (
-    Number.isInteger(
-      Number(
-        ano
-      )
-    ) &&
-    Number(
-      ano
-    ) > 0
-  ) {
-
-    query =
-      query.eq(
-        'ano',
-        Number(
-          ano
-        )
-      );
-
-  }
-
-
-  if (
-    Number.isInteger(
-      Number(
-        mes
-      )
-    ) &&
-    Number(
-      mes
-    ) >= 1 &&
-    Number(
-      mes
-    ) <= 12
-  ) {
-
-    query =
-      query.eq(
-        'mes',
-        Number(
-          mes
-        )
-      );
-
-  }
-
-
-  const {
-    data,
-    error
-  } =
-    await query;
-
-
-  if (error) {
-
-    throw error;
-
-  }
-
-
-  return data || [];
+async function listarMetasVendedor({ ano = null, mes = null } = {}) {
+  const metas = await listarPaginasComerciais(cursor => {
+    let consulta = getSupabaseClient().from('metas_vendedor').select('id,user_id,ano,mes,meta_valor,criado_por,atualizado_por,created_at,updated_at').order('id').limit(100);
+    if (Number.isInteger(Number(ano)) && Number(ano) > 0) consulta = consulta.eq('ano', Number(ano));
+    if (Number.isInteger(Number(mes)) && Number(mes) >= 1 && Number(mes) <= 12) consulta = consulta.eq('mes', Number(mes));
+    return cursor ? consulta.gt('id', cursor) : consulta;
+  });
+  return metas.sort((a, b) => b.ano - a.ano || b.mes - a.mes);
 }
-
-
-// =========================================================
-// ## 8. SALVAR META INDIVIDUAL
-// =========================================================
 
 async function salvarMetaVendedor({
   userId,
@@ -613,141 +478,17 @@ async function salvarMetaVendedor({
 // ## 9. LISTAR METAS OFICIAIS DOS TIMES
 // =========================================================
 
-async function listarMetasOficiaisEquipe({
-  ano = null,
-  mes = null,
-  timeEquipe = null
-} = {}) {
-
-  const client =
-    getSupabaseClient();
-
-
-  let query =
-    client
-      .from(
-        'metas_equipe'
-      )
-      .select(`
-        id,
-        time_equipe,
-        ano,
-        mes,
-        meta_valor,
-        criado_por,
-        atualizado_por,
-        created_at,
-        updated_at
-      `)
-      .order(
-        'ano',
-        {
-          ascending: false
-        }
-      )
-      .order(
-        'mes',
-        {
-          ascending: false
-        }
-      );
-
-
-  if (
-    Number.isInteger(
-      Number(
-        ano
-      )
-    ) &&
-    Number(
-      ano
-    ) > 0
-  ) {
-
-    query =
-      query.eq(
-        'ano',
-        Number(
-          ano
-        )
-      );
-
-  }
-
-
-  if (
-    Number.isInteger(
-      Number(
-        mes
-      )
-    ) &&
-    Number(
-      mes
-    ) >= 1 &&
-    Number(
-      mes
-    ) <= 12
-  ) {
-
-    query =
-      query.eq(
-        'mes',
-        Number(
-          mes
-        )
-      );
-
-  }
-
-
-  const timeNormalizado =
-    String(
-      timeEquipe || ''
-    )
-      .trim()
-      .toLowerCase();
-
-
-  if (
-    [
-      'pharma',
-      'food',
-      'revenda'
-    ].includes(
-      timeNormalizado
-    )
-  ) {
-
-    query =
-      query.eq(
-        'time_equipe',
-        timeNormalizado
-      );
-
-  }
-
-
-  const {
-    data,
-    error
-  } =
-    await query;
-
-
-  if (error) {
-
-    throw error;
-
-  }
-
-
-  return data || [];
+async function listarMetasOficiaisEquipe({ ano = null, mes = null, timeEquipe = null } = {}) {
+  const metas = await listarPaginasComerciais(cursor => {
+    let consulta = getSupabaseClient().from('metas_equipe').select('id,time_equipe,ano,mes,meta_valor,criado_por,atualizado_por,created_at,updated_at').order('id').limit(100);
+    if (Number.isInteger(Number(ano)) && Number(ano) > 0) consulta = consulta.eq('ano', Number(ano));
+    if (Number.isInteger(Number(mes)) && Number(mes) >= 1 && Number(mes) <= 12) consulta = consulta.eq('mes', Number(mes));
+    const time = String(timeEquipe || '').trim().toLowerCase();
+    if (['pharma', 'food', 'revenda'].includes(time)) consulta = consulta.eq('time_equipe', time);
+    return cursor ? consulta.gt('id', cursor) : consulta;
+  });
+  return metas.sort((a, b) => b.ano - a.ano || b.mes - a.mes);
 }
-
-
-// =========================================================
-// ## 10. SALVAR META OFICIAL DO TIME
-// =========================================================
 
 async function salvarMetaOficialEquipe({
   timeEquipe,
@@ -945,4 +686,37 @@ async function transferirProposta({
 
 
   return data;
+}
+// Seletor ADM: filtrar no servidor antes de paginar, sem confundir nome do PDF com identidade.
+async function listarResponsaveisAtivos() {
+  const perfis = [];
+  let cursor = null;
+  while (true) {
+    let consulta = getSupabaseClient().from('perfis').select('user_id,nome,tipo_acesso')
+      .eq('ativo', true).in('tipo_acesso', ['vendedor', 'gestor'])
+      .order('user_id').limit(100);
+    if (cursor) consulta = consulta.gt('user_id', cursor);
+    const { data, error } = await consulta;
+    if (error) throw error;
+    if (!data?.length) break;
+    perfis.push(...data);
+    cursor = data[data.length - 1].user_id;
+  }
+  return perfis.sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
+}
+
+async function listarPaginasComerciais(criarConsulta, chave = 'id') {
+  const registros = [];
+  const usuario = usuarioLocalAtual;
+  let cursor = null;
+  while (true) {
+    const { data, error } = await criarConsulta(cursor);
+    if (error) throw error;
+    if (usuario !== usuarioLocalAtual || !usuario) throw new Error('A sessão foi alterada.');
+    if (!data?.length) return registros;
+    registros.push(...data);
+    const proximo = data[data.length - 1][chave];
+    if (!proximo || proximo === cursor) throw new Error('A paginação não avançou.');
+    cursor = proximo;
+  }
 }

@@ -228,6 +228,16 @@
               Identificação
             </div>
 
+            <div id="responsavelNovaPropostaBloco" class="field" hidden>
+              <label for="responsavelNovaProposta">Responsável comercial *</label>
+              <select id="responsavelNovaProposta" required disabled>
+                <option value="">Selecione o responsável</option>
+              </select>
+              <span id="responsavelNovaPropostaInfo">Selecione um Vendedor ou Gestor ativo.</span>
+            </div>
+            <div id="resultadoConclusaoInfo" class="info" hidden></div>
+            <div id="validadePersistidaInfo" class="info" hidden></div>
+
             <div class="grid3">
 
               <div class="field">
@@ -1418,7 +1428,7 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
                   <th>Nº</th>
                   <th>Proposta / Cliente</th>
                   <th>CNPJ</th>
-                  <th>Vendedor</th>
+                  <th>Responsável</th>
                   <th>Data</th>
                   <th>Revisão</th>
                   <th>Status comercial</th>
@@ -1457,7 +1467,7 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
 
           <div>
             <h2>📊 Painel Comercial</h2>
-            <span>Visão das propostas e negociações</span>
+            <span>Carteira atual. O crédito das vendas permanece nos resultados históricos.</span>
           </div>
 
           <span id="painelContador">
@@ -1612,7 +1622,7 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
             </div>
 
             <div class="painel-card concluido">
-              <span>CONCLUÍDO</span>
+              <span>CONCLUÍDAS NA CARTEIRA</span>
 
               <strong id="painelQtdConcluido">
                 0
@@ -1656,7 +1666,7 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
                     Proposta / Cliente
                   </th>
 
-                  <th>Vendedor</th>
+                  <th>Responsável</th>
 
                   <th>Data</th>
 
