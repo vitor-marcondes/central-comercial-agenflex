@@ -146,8 +146,8 @@ function obterResponsavelComercialFormulario() {
       propostaNuvemAtual.propostaId
         ? propostaNuvemAtual.responsavelId || null
         : document.getElementById(
-            'responsavelNovaProposta'
-          )?.value || null;
+          'responsavelNovaProposta'
+        )?.value || null;
 
   } else {
 
@@ -167,7 +167,7 @@ function obterResponsavelComercialFormulario() {
     ) ||
     (
       perfilCentralAtual?.user_id ===
-      responsavelId
+        responsavelId
         ? perfilCentralAtual
         : null
     );
@@ -236,7 +236,7 @@ async function atualizarSeletorResponsavelProposta() {
   if (
     !ehAdm ||
     responsaveisNovaPropostaUsuario ===
-      usuarioLocalAtual
+    usuarioLocalAtual
   ) {
 
     return;
@@ -279,10 +279,9 @@ async function atualizarSeletorResponsavelProposta() {
           perfil =>
             `<option value="${esc(perfil.user_id)}">${esc(
               perfil.nome || 'Sem nome'
-            )} — ${
-              perfil.tipo_acesso === 'gestor'
-                ? 'Gestor'
-                : 'Vendedor'
+            )} — ${perfil.tipo_acesso === 'gestor'
+              ? 'Gestor'
+              : 'Vendedor'
             }</option>`
         )
         .join('');
@@ -2187,113 +2186,36 @@ function renderArts() {
 
 
 // =========================================================
-// ## 6. VENDEDORES RECENTES
+// ## 6. VENDEDOR DA PROPOSTA
+// =========================================================
+//
+// O vendedor agora é definido pelo responsável comercial
+// oficial da proposta.
+//
+// A antiga lista de vendedores recentes não é mais utilizada.
+// Mantemos estas funções como no-op porque outras partes
+// antigas da aplicação ainda fazem chamadas a elas.
 // =========================================================
 
 
-// ---------------------------------------------------------
-// ## 6.1 Leitura do localStorage
-// ---------------------------------------------------------
-
 function recentSellers() {
 
-  const chave = chaveLocalUsuario(SELLERS_KEY);
-  if (!chave) return [];
+  return [];
 
-  try {
-
-    return JSON.parse(
-      localStorage.getItem(
-        chave
-      ) || '[]'
-    );
-
-  } catch (e) {
-
-    return [];
-
-  }
 }
 
-
-// ---------------------------------------------------------
-// ## 6.2 Renderização da lista
-// ---------------------------------------------------------
 
 function renderSellers() {
 
-  vendedoresRecentes.innerHTML =
-    '';
+  return;
 
-
-  recentSellers().forEach(
-    nome => {
-
-      const option =
-        document.createElement(
-          'option'
-        );
-
-
-      option.value =
-        nome;
-
-
-      vendedoresRecentes.appendChild(
-        option
-      );
-
-    }
-  );
 }
 
 
-// ---------------------------------------------------------
-// ## 6.3 Armazenamento do vendedor utilizado
-// ---------------------------------------------------------
-
 function rememberSeller() {
 
-  const chave = chaveLocalUsuario(SELLERS_KEY);
-  if (!chave) return;
+  return;
 
-  const nome =
-    vendedor.value.trim();
-
-
-  if (!nome) {
-
-    return;
-
-  }
-
-
-  let lista =
-    recentSellers()
-      .filter(
-        item =>
-          item.toLowerCase() !==
-          nome.toLowerCase()
-      );
-
-
-  lista.unshift(
-    nome
-  );
-
-
-  localStorage.setItem(
-    chave,
-    JSON.stringify(
-      lista.slice(
-        0,
-        8
-      )
-    )
-  );
-
-
-  renderSellers();
 }
 
 
@@ -3032,7 +2954,7 @@ async function salvarPropostaNuvem(
 ) {
   if (!revisaoEhEditavel()) { toastMsg('Esta proposta está em somente leitura.'); return false; }
   if (!propostaNuvemAtual.propostaId && perfilCentralAtual?.tipo_acesso === 'adm' &&
-      !document.getElementById('responsavelNovaProposta')?.value) {
+    !document.getElementById('responsavelNovaProposta')?.value) {
     toastMsg('Selecione o responsável comercial.');
     document.getElementById('responsavelNovaProposta')?.focus();
     return false;
@@ -3130,23 +3052,23 @@ async function salvarPropostaNuvem(
   // ## 9.2 Montagem dos dados
   // -------------------------------------------------------
 
-if (
-  perfilCentralAtual?.tipo_acesso === 'adm' &&
-  responsaveisNovaPropostaUsuario !==
+  if (
+    perfilCentralAtual?.tipo_acesso === 'adm' &&
+    responsaveisNovaPropostaUsuario !==
     usuarioLocalAtual
-) {
+  ) {
 
-  await atualizarSeletorResponsavelProposta();
+    await atualizarSeletorResponsavelProposta();
 
-}
-
-
-const revisao =
-  montarPayloadRevisao();
+  }
 
 
-const itensBanco =
-  montarItensBanco();
+  const revisao =
+    montarPayloadRevisao();
+
+
+  const itensBanco =
+    montarItensBanco();
 
   const eraNovaProposta =
     !propostaNuvemAtual.propostaId;
@@ -4272,31 +4194,18 @@ function atualizarInterfaceGestaoComercial() {
 
   if (info) {
 
-    if (
-      !propostaSalva
-    ) {
+    info.hidden =
+      propostaSalva;
 
-      info.textContent =
-        'Selecione a origem e salve a proposta no banco ' +
-        'para liberar a gestão comercial. Propostas novas ' +
-        'começam automaticamente com o status Proposta.';
-
-    } else {
-
-      info.textContent =
-        `Origem atual: ` +
-        `${nomeOrigemComercial(
-          statusComercialAtual.origemComercial
-        )} • ` +
-        `Status atual: ` +
-        `${nomeStatusComercial(
-          statusComercialAtual.status
-        )}.`;
-
-    }
+    info.textContent =
+      propostaSalva
+        ? ''
+        : (
+          'Selecione a origem e salve a proposta no banco ' +
+          'para liberar a gestão comercial.'
+        );
 
   }
-
 
   if (motivoEl) {
 
@@ -4411,7 +4320,7 @@ async function salvarStatusComercial() {
     toastMsg('A gestão desta proposta está em somente leitura.'); return;
   }
   if (document.getElementById('statusComercial')?.value === 'concluido' &&
-      (propostaNuvemAtual.status !== 'enviada' || !['pharma', 'food', 'revenda'].includes(timeEquipe.value))) {
+    (propostaNuvemAtual.status !== 'enviada' || !['pharma', 'food', 'revenda'].includes(timeEquipe.value))) {
     toastMsg('Conclusão exige a revisão atual enviada e com Time oficial.'); return;
   }
 

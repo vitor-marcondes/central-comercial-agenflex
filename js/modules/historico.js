@@ -361,15 +361,15 @@ function aplicarEstadoConsultaHistorica(
 
         <strong>
           R${escaparHistorico(
-            revisao?.numero_revisao ?? '—'
-          )} • SOMENTE LEITURA
+      revisao?.numero_revisao ?? '—'
+    )} • SOMENTE LEITURA
         </strong>
 
         <span>
           Você está consultando uma revisão histórica da proposta
           #${escaparHistorico(
-            proposta?.numero ?? '—'
-          )}.
+      proposta?.numero ?? '—'
+    )}.
           Alterações não são permitidas.
         </span>
 
@@ -474,7 +474,7 @@ function instalarSuporteRevisoesHistoricas() {
     window.aplicarPropostaNoFormulario;
 
   window.aplicarPropostaNoFormulario =
-    function(
+    function (
       proposta,
       opcoes = {}
     ) {
@@ -780,9 +780,9 @@ async function abrirRevisoesHistorico(
 
         <span>
           ${escaparHistorico(
-            erro?.message ||
-            'Erro desconhecido.'
-          )}
+      erro?.message ||
+      'Erro desconhecido.'
+    )}
         </span>
 
       </div>
@@ -821,8 +821,8 @@ function renderizarRevisoesHistorico(
       proposta.revisoes_proposta
     )
       ? [
-          ...proposta.revisoes_proposta
-        ]
+        ...proposta.revisoes_proposta
+      ]
       : [];
 
   revisoes.sort(
@@ -901,19 +901,18 @@ function renderizarRevisoesHistorico(
 
             <strong>
               R${escaparHistorico(
-                revisao.numero_revisao
-              )}
+        revisao.numero_revisao
+      )}
             </strong>
 
             ${badgeRevisaoHistorico(
-              revisao.status
-            )}
+        revisao.status
+      )}
 
-            ${
-              ehAtual
-                ? badgeRevisaoAtualHistorico()
-                : ''
-            }
+            ${ehAtual
+          ? badgeRevisaoAtualHistorico()
+          : ''
+        }
 
           </div>
 
@@ -921,32 +920,32 @@ function renderizarRevisoesHistorico(
 
             <span>
               ${formatarDataHistorico(
-                dataReferencia
-              )}
+          dataReferencia
+        )}
             </span>
 
             <span>
               ${escaparHistorico(
-                nomeTimeHistorico(
-                  revisao.time_equipe
-                )
-              )}
+          nomeTimeHistorico(
+            revisao.time_equipe
+          )
+        )}
             </span>
 
             <span>
               ${escaparHistorico(
-                revisao.vendedor_nome ||
-                'Vendedor não informado'
-              )}
+          revisao.vendedor_nome ||
+          'Vendedor não informado'
+        )}
             </span>
 
           </div>
 
           <div class="history-revision-card-client">
             ${escaparHistorico(
-              revisao.cliente ||
-              'Cliente não informado'
-            )}
+          revisao.cliente ||
+          'Cliente não informado'
+        )}
           </div>
 
         </div>
@@ -955,26 +954,24 @@ function renderizarRevisoesHistorico(
 
           <button
             type="button"
-            class="btn ${
-              ehAtual
-                ? 'navy'
-                : 'light'
-            }"
+            class="btn ${ehAtual
+          ? 'navy'
+          : 'light'
+        }"
             onclick="abrirRevisaoEspecificaHistorico(
               '${escaparHistorico(
-                proposta.id
-              )}',
+          proposta.id
+        )}',
               '${escaparHistorico(
-                revisao.id
-              )}',
+          revisao.id
+        )}',
               false
             )"
           >
-            ${
-              ehAtual
-                ? 'Abrir'
-                : 'Consultar'
-            }
+            ${ehAtual
+          ? 'Abrir'
+          : 'Consultar'
+        }
           </button>
 
           <button
@@ -982,11 +979,11 @@ function renderizarRevisoesHistorico(
             class="btn red"
             onclick="abrirRevisaoEspecificaHistorico(
               '${escaparHistorico(
-                proposta.id
-              )}',
+          proposta.id
+        )}',
               '${escaparHistorico(
-                revisao.id
-              )}',
+          revisao.id
+        )}',
               true
             )"
           >
@@ -1166,12 +1163,12 @@ function renderizarHistorico() {
   if (contador) {
     contador.textContent =
       lista.length ===
-      historicoPropostas.length
+        historicoPropostas.length
 
         ? `${lista.length} proposta(s)`
 
         : `${lista.length} de ` +
-          `${historicoPropostas.length} proposta(s)`;
+        `${historicoPropostas.length} proposta(s)`;
   }
 
   if (vazio) {
@@ -1192,15 +1189,6 @@ function renderizarHistorico() {
         return;
       }
 
-      const quantidadeRevisoes = proposta.quantidade_revisoes ?? (
-        Array.isArray(
-          proposta.revisoes_proposta
-        )
-          ? proposta
-              .revisoes_proposta
-              .length
-          : 0);
-
       const tr =
         document.createElement(
           'tr'
@@ -1211,8 +1199,8 @@ function renderizarHistorico() {
         <td>
           <b>
             #${escaparHistorico(
-              proposta.numero
-            )}
+        proposta.numero
+      )}
           </b>
         </td>
 
@@ -1220,103 +1208,140 @@ function renderizarHistorico() {
 
           <b>
             ${escaparHistorico(
-              revisao.nome_proposta ||
-              'Sem nome'
-            )}
+        revisao.nome_proposta ||
+        'Sem nome'
+      )}
           </b>
 
           <div class="history-muted">
             ${escaparHistorico(
-              revisao.cliente ||
-              'Cliente não informado'
-            )}
+        revisao.cliente ||
+        'Cliente não informado'
+      )}
           </div>
 
           <div class="history-origin-wrap">
             ${badgeOrigemHistorico(
-              proposta.origem_comercial
-            )}
+        proposta.origem_comercial
+      )}
           </div>
 
         </td>
 
         <td>
           ${escaparHistorico(
-            revisao.cnpj ||
-            '—'
-          )}
+        revisao.cnpj ||
+        '—'
+      )}
         </td>
 
         <td>
           ${escaparHistorico(
-            proposta.responsavel_nome || proposta.vendedor_responsavel_id || '—'
+        proposta.responsavel_nome || proposta.vendedor_responsavel_id || '—'
+      )}
+        </td>
+
+<td>
+  ${formatarDataHistorico(
+        revisao.data_proposta
+      )}
+</td>
+
+
+<td>
+
+  <div class="history-revision">
+
+    <b>
+      R${escaparHistorico(
+        revisao.numero_revisao
+      )}
+    </b>
+
+    ${badgeRevisaoHistorico(
+        revisao.status
+      )}
+
+  </div>
+
+</td>
+
+
+<td>
+
+  ${badgeStatusComercialHistorico(
+        proposta.status_comercial
+      )}
+
+  ${proposta.status_comercial === 'concluido'
+          ? `
+        <div class="history-muted">
+          ${escaparHistorico(
+            BRL.format(
+              Number(
+                proposta.valor_conclusao
+              )
+            )
           )}
-        </td>
-
-        <td>
-          ${formatarDataHistorico(
-            revisao.data_proposta
+          •
+          ${escaparHistorico(
+            proposta.time_conclusao
           )}
-        </td>
+          <br>
 
-        <td>
-
-          <div class="history-revision">
-
-            <b>
-              R${escaparHistorico(
-                revisao.numero_revisao
-              )}
-            </b>
-
-            ${badgeRevisaoHistorico(
-              revisao.status
-            )}
-
-            <span class="history-revision-count">
-              ${quantidadeRevisoes} revisão(ões)
-            </span>
-
-          </div>
-
-        </td>
-
-        <td>
-          ${badgeStatusComercialHistorico(
-            proposta.status_comercial
+          Crédito:
+          ${escaparHistorico(
+            proposta.responsavel_conclusao_nome ||
+            proposta.responsavel_conclusao_id
           )}
-          ${proposta.status_comercial === 'concluido' ? `<div class="history-muted">${escaparHistorico(BRL.format(Number(proposta.valor_conclusao)))} • ${escaparHistorico(proposta.time_conclusao)}<br>Crédito: ${escaparHistorico(proposta.responsavel_conclusao_nome || proposta.responsavel_conclusao_id)}<br>${escaparHistorico(new Date(proposta.concluido_em).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' }))}</div>` : ''}
+          <br>
 
-        </td>
+          ${escaparHistorico(
+            new Date(
+              proposta.concluido_em
+            ).toLocaleDateString(
+              'pt-BR',
+              {
+                timeZone:
+                  'America/Sao_Paulo'
+              }
+            )
+          )}
+        </div>
+      `
+          : ''
+        }
 
-        <td>
+</td>
 
-          <div class="history-actions">
 
-            <button
-              type="button"
-              class="btn light history-revisions"
-              onclick="abrirRevisoesHistorico('${escaparHistorico(
-                proposta.id
-              )}')"
-            >
-              Revisões
-            </button>
+<td>
 
-            <button
-              type="button"
-              class="btn navy history-open"
-              onclick="abrirPropostaHistorico('${escaparHistorico(
-                proposta.id
-              )}')"
-            >
-              Abrir
-            </button>
+  <div class="history-actions">
 
-          </div>
+    <button
+      type="button"
+      class="btn light history-revisions"
+      onclick="abrirRevisoesHistorico('${escaparHistorico(
+          proposta.id
+        )}')"
+    >
+      Revisões
+    </button>
 
-        </td>
-      `;
+    <button
+      type="button"
+      class="btn navy history-open"
+      onclick="abrirPropostaHistorico('${escaparHistorico(
+          proposta.id
+        )}')"
+    >
+      Abrir
+    </button>
+
+  </div>
+
+</td>      `;
 
       corpo.appendChild(
         tr
@@ -1437,9 +1462,8 @@ async function abrirPropostaHistorico(
 
     toastMsg(
       `Proposta #${proposta.numero} ` +
-      `• R${
-        revisao?.numero_revisao ??
-        proposta.revisao_atual
+      `• R${revisao?.numero_revisao ??
+      proposta.revisao_atual
       } aberta`
     );
 

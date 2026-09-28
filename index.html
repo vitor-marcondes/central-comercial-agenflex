@@ -526,12 +526,9 @@
 
                 <label>Vendedor</label>
 
-                <input id="vendedor" list="vendedoresRecentes" autocomplete="off" placeholder="Nome do vendedor">
-
-                <datalist id="vendedoresRecentes"></datalist>
+                <input id="vendedor" type="text" readonly tabindex="-1" placeholder="Responsável comercial">
 
               </div>
-
               <div class="field">
                 <label>Projeto</label>
                 <input id="projeto" placeholder="Projeto / referência">
@@ -544,9 +541,25 @@
 
               <div class="field">
                 <label>Destinação</label>
-                <input id="destinacao" placeholder="Ex.: USO E CONSUMO">
-              </div>
 
+                <select id="destinacao">
+                  <option value="" selected disabled>
+                    Selecione a Destinação
+                  </option>
+                  <option value="Uso e Consumo">
+                    Uso e Consumo
+                  </option>
+
+                  <option value="Venda / Revenda">
+                    Venda / Revenda
+                  </option>
+
+                  <option value="Insumos">
+                    Insumos
+                  </option>
+
+                </select>
+              </div>
               <div class="field full">
                 <label>Frete</label>
                 <input id="frete"
@@ -1432,7 +1445,7 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
                   <th>Data</th>
                   <th>Revisão</th>
                   <th>Status comercial</th>
-                  <th></th>
+                  <th>Ações</th>
                 </tr>
 
               </thead>
@@ -1673,7 +1686,7 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
                   <th>Origem</th>
 
                   <th>Status</th>
-                  
+
                   <th>Valor</th>
 
                   <th>Revisão</th>
@@ -1681,7 +1694,7 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
                   <th>Validade</th>
 
                   <th></th>
-                  
+
                 </tr>
               </thead>
 

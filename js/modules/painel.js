@@ -1336,66 +1336,6 @@ function atualizarFiltroTimePainel() {
       'painelFiltroTime'
     );
 
-  const metaValorCard =
-    document.getElementById(
-      'painelMetaValorCard'
-    );
-
-
-  const faltaCard =
-    document.getElementById(
-      'painelMetaFaltaCard'
-    );
-
-
-  const atingimentoCard =
-    document.getElementById(
-      'painelMetaAtingimentoCard'
-    );
-
-
-  const progress =
-    document.getElementById(
-      'painelMetaProgress'
-    );
-
-  const esconderMetaIndividual =
-    Boolean(
-      gestorSelecionado
-    );
-
-
-  if (metaValorCard) {
-
-    metaValorCard.hidden =
-      esconderMetaIndividual;
-
-  }
-
-
-  if (faltaCard) {
-
-    faltaCard.hidden =
-      esconderMetaIndividual;
-
-  }
-
-
-  if (atingimentoCard) {
-
-    atingimentoCard.hidden =
-      esconderMetaIndividual;
-
-  }
-
-
-  if (progress) {
-
-    progress.hidden =
-      esconderMetaIndividual;
-
-  }
-
 
   if (
     !wrapper ||
@@ -1425,7 +1365,6 @@ function atualizarFiltroTimePainel() {
   select.value =
     '';
 }
-
 
 function aoAlterarTimePainel() {
 
