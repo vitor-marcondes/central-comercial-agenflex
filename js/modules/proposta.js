@@ -127,29 +127,209 @@ function revisaoEhEditavel() {
 }
 
 let responsaveisNovaPropostaUsuario = null;
-async function atualizarSeletorResponsavelProposta() {
-  const bloco = document.getElementById('responsavelNovaPropostaBloco');
-  const campo = document.getElementById('responsavelNovaProposta');
-  if (!bloco || !campo) return;
-  const visivel = perfilCentralAtual?.tipo_acesso === 'adm' && !propostaNuvemAtual.propostaId;
-  bloco.hidden = !visivel;
-  campo.required = visivel;
-  campo.disabled = !visivel;
-  if (!visivel || responsaveisNovaPropostaUsuario === usuarioLocalAtual) return;
-  const usuario = usuarioLocalAtual;
-  campo.disabled = true;
-  try {
-    const perfis = await listarResponsaveisAtivos();
-    if (usuario !== usuarioLocalAtual) return;
-    campo.innerHTML = '<option value="">Selecione o responsável</option>' + perfis.map(perfil =>
-      `<option value="${esc(perfil.user_id)}">${esc(perfil.nome || 'Sem nome')} — ${perfil.tipo_acesso === 'gestor' ? 'Gestor' : 'Vendedor'}</option>`
-    ).join('');
-    responsaveisNovaPropostaUsuario = usuario;
-    document.getElementById('responsavelNovaPropostaInfo').textContent = perfis.length
-      ? 'Selecione um Vendedor ou Gestor ativo.' : 'Nenhum responsável ativo disponível.';
-  } finally {
-    campo.disabled = !perfilCentralAtual?.ativo || Boolean(propostaNuvemAtual.propostaId);
+let responsaveisNovaPropostaLista = [];
+
+
+function obterResponsavelComercialFormulario() {
+
+  const ehAdm =
+    perfilCentralAtual?.tipo_acesso === 'adm';
+
+
+  let responsavelId =
+    null;
+
+
+  if (ehAdm) {
+
+    responsavelId =
+      propostaNuvemAtual.propostaId
+        ? propostaNuvemAtual.responsavelId || null
+        : document.getElementById(
+            'responsavelNovaProposta'
+          )?.value || null;
+
+  } else {
+
+    responsavelId =
+      propostaNuvemAtual.responsavelId ||
+      perfilCentralAtual?.user_id ||
+      null;
+
   }
+
+
+  const perfilResponsavel =
+    responsaveisNovaPropostaLista.find(
+      perfil =>
+        perfil.user_id ===
+        responsavelId
+    ) ||
+    (
+      perfilCentralAtual?.user_id ===
+      responsavelId
+        ? perfilCentralAtual
+        : null
+    );
+
+
+  return {
+
+    id:
+      responsavelId,
+
+    nome:
+      String(
+        perfilResponsavel?.nome || ''
+      ).trim()
+
+  };
+
+}
+
+
+async function atualizarSeletorResponsavelProposta() {
+
+  const bloco =
+    document.getElementById(
+      'responsavelNovaPropostaBloco'
+    );
+
+  const campo =
+    document.getElementById(
+      'responsavelNovaProposta'
+    );
+
+
+  if (
+    !bloco ||
+    !campo
+  ) {
+
+    return;
+
+  }
+
+
+  const ehAdm =
+    perfilCentralAtual?.tipo_acesso === 'adm';
+
+
+  const visivel =
+    ehAdm &&
+    !propostaNuvemAtual.propostaId;
+
+
+  bloco.hidden =
+    !visivel;
+
+  campo.required =
+    visivel;
+
+  campo.disabled =
+    !visivel;
+
+
+  // O ADM precisa conhecer a lista também quando abre
+  // uma proposta já existente. Assim conseguimos resolver
+  // o nome pelo vendedor_responsavel_id oficial.
+  if (
+    !ehAdm ||
+    responsaveisNovaPropostaUsuario ===
+      usuarioLocalAtual
+  ) {
+
+    return;
+
+  }
+
+
+  const usuario =
+    usuarioLocalAtual;
+
+
+  campo.disabled =
+    true;
+
+
+  try {
+
+    const perfis =
+      await listarResponsaveisAtivos();
+
+
+    if (
+      usuario !==
+      usuarioLocalAtual
+    ) {
+
+      return;
+
+    }
+
+
+    responsaveisNovaPropostaLista =
+      perfis || [];
+
+
+    campo.innerHTML =
+      '<option value="">Selecione o responsável</option>' +
+      responsaveisNovaPropostaLista
+        .map(
+          perfil =>
+            `<option value="${esc(perfil.user_id)}">${esc(
+              perfil.nome || 'Sem nome'
+            )} — ${
+              perfil.tipo_acesso === 'gestor'
+                ? 'Gestor'
+                : 'Vendedor'
+            }</option>`
+        )
+        .join('');
+
+
+    // Se estamos abrindo uma proposta existente,
+    // mantemos no select oculto o responsável oficial.
+    if (
+      propostaNuvemAtual.propostaId &&
+      propostaNuvemAtual.responsavelId
+    ) {
+
+      campo.value =
+        propostaNuvemAtual.responsavelId;
+
+    }
+
+
+    responsaveisNovaPropostaUsuario =
+      usuario;
+
+
+    const info =
+      document.getElementById(
+        'responsavelNovaPropostaInfo'
+      );
+
+
+    if (info) {
+
+      info.textContent =
+        responsaveisNovaPropostaLista.length
+          ? 'Selecione um Vendedor ou Gestor ativo.'
+          : 'Nenhum responsável ativo disponível.';
+
+    }
+
+  } finally {
+
+    campo.disabled =
+      !perfilCentralAtual?.ativo ||
+      Boolean(
+        propostaNuvemAtual.propostaId
+      );
+
+  }
+
 }
 
 function normalizarDescontoPercentual(
@@ -2644,10 +2824,27 @@ function clearForm() {
 
 function montarPayloadRevisao() {
 
+  const responsavel =
+    obterResponsavelComercialFormulario();
+
+
+  // O campo antigo "vendedor" continua sendo utilizado
+  // pela prévia/PDF. Portanto ele também deve refletir
+  // o responsável comercial oficial.
+  if (
+    responsavel.nome
+  ) {
+
+    vendedor.value =
+      responsavel.nome;
+
+  }
+
+
   return {
-    vendedor_responsavel_id: perfilCentralAtual?.tipo_acesso === 'adm'
-      ? document.getElementById('responsavelNovaProposta')?.value || null
-      : perfilCentralAtual?.user_id || null,
+
+    vendedor_responsavel_id:
+      responsavel.id,
 
     origem_comercial:
       document
@@ -2708,6 +2905,7 @@ function montarPayloadRevisao() {
       pagamento.value.trim(),
 
     vendedor_nome:
+      responsavel.nome ||
       vendedor.value.trim(),
 
     projeto:
@@ -2730,7 +2928,6 @@ function montarPayloadRevisao() {
       mostrarTotalPdf.checked
   };
 }
-
 
 // ---------------------------------------------------------
 // ## 8.2 Conversão dos itens para o banco
@@ -2933,13 +3130,23 @@ async function salvarPropostaNuvem(
   // ## 9.2 Montagem dos dados
   // -------------------------------------------------------
 
-  const revisao =
-    montarPayloadRevisao();
+if (
+  perfilCentralAtual?.tipo_acesso === 'adm' &&
+  responsaveisNovaPropostaUsuario !==
+    usuarioLocalAtual
+) {
+
+  await atualizarSeletorResponsavelProposta();
+
+}
 
 
-  const itensBanco =
-    montarItensBanco();
+const revisao =
+  montarPayloadRevisao();
 
+
+const itensBanco =
+  montarItensBanco();
 
   const eraNovaProposta =
     !propostaNuvemAtual.propostaId;
