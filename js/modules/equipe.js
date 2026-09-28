@@ -232,8 +232,15 @@ function sincronizarTimeOrcamentoComPerfil(
     );
 
 
+  const field =
+    document.getElementById(
+      'timeEquipeBloco'
+    );
+
+
   if (
     !campo ||
+    !field ||
     !perfil
   ) {
 
@@ -242,17 +249,10 @@ function sincronizarTimeOrcamentoComPerfil(
   }
 
 
-  const field =
-    campo.closest(
-      '.field'
-    );
-
-
   const label =
-    field
-      ?.querySelector(
-        'label'
-      );
+    field.querySelector(
+      'label'
+    );
 
 
   const tipo =
@@ -264,9 +264,9 @@ function sincronizarTimeOrcamentoComPerfil(
       .toLowerCase();
 
 
-  // -------------------------------------------------------
-  // ## 4.2.1 Vendedor
-  // -------------------------------------------------------
+  // =======================================================
+  // VENDEDOR
+  // =======================================================
 
   if (
     tipo ===
@@ -286,6 +286,8 @@ function sincronizarTimeOrcamentoComPerfil(
       propostaSalvaAbertaEquipe();
 
 
+    // Nova proposta:
+    // Time vem automaticamente do perfil.
     if (
       !propostaSalva
     ) {
@@ -304,28 +306,16 @@ function sincronizarTimeOrcamentoComPerfil(
     }
 
 
+    // O valor continua existindo internamente,
+    // mas o vendedor não vê nem altera o campo.
     campo.disabled =
       true;
 
+    campo.required =
+      false;
 
-    campo.title =
-      timePerfil
-        ? (
-            'Time definido automaticamente ' +
-            'pelo perfil do vendedor.'
-          )
-        : (
-            'Seu perfil ainda não possui ' +
-            'um Time comercial definido.'
-          );
-
-
-    if (label) {
-
-      label.textContent =
-        'Time (definido pelo perfil)';
-
-    }
+    field.hidden =
+      true;
 
 
     if (
@@ -344,21 +334,23 @@ function sincronizarTimeOrcamentoComPerfil(
   }
 
 
-  // -------------------------------------------------------
-  // ## 4.2.2 Gestor / ADM
-  // -------------------------------------------------------
+  // =======================================================
+  // GESTOR
+  // =======================================================
 
   if (
-    [
-      'gestor',
-      'adm'
-    ].includes(
-      tipo
-    )
+    tipo ===
+    'gestor'
   ) {
 
-    campo.disabled = !revisaoEhEditavel();
+    field.hidden =
+      false;
 
+    campo.disabled =
+      false;
+
+    campo.required =
+      true;
 
     campo.title =
       'Selecione o Time da proposta.';
@@ -367,7 +359,7 @@ function sincronizarTimeOrcamentoComPerfil(
     if (label) {
 
       label.textContent =
-        'Time (interno)';
+        'Time da proposta';
 
     }
 
@@ -387,49 +379,25 @@ function sincronizarTimeOrcamentoComPerfil(
   }
 
 
-  // -------------------------------------------------------
-  // ## 4.2.3 Diretor
-  // -------------------------------------------------------
+  // =======================================================
+  // ADM / DIRETOR / OUTROS
+  // =======================================================
+  //
+  // Não participam da criação comercial.
+  // O bloqueio completo da criação será tratado
+  // separadamente.
+  // =======================================================
 
-  if (
-    tipo ===
-    'diretor'
-  ) {
-
-    campo.disabled =
-      true;
-
-
-    campo.title =
-      'Diretor possui visão executiva e não opera propostas.';
-
-
-    if (label) {
-
-      label.textContent =
-        'Time (somente leitura)';
-
-    }
-
-
-    return;
-
-  }
-
-
-  // -------------------------------------------------------
-  // ## 4.2.4 Perfil não reconhecido
-  // -------------------------------------------------------
+  field.hidden =
+    true;
 
   campo.disabled =
     true;
 
-
-  campo.title =
-    'Perfil sem permissão para definir Time.';
+  campo.required =
+    false;
 
 }
-
 
 // =========================================================
 // ## 5. CRIAR INTERFACE DE GESTÃO DA EQUIPE

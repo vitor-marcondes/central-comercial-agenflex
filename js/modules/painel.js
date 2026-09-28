@@ -760,6 +760,57 @@ function revisaoAtualPainel(
 
 
 // =========================================================
+// ## 5.1 REVISÃO ENVIADA MAIS RECENTE
+// =========================================================
+//
+// A validade comercial pertence à última revisão
+// efetivamente enviada.
+//
+// Exemplo:
+//
+// R0 ENVIADA
+// R1 RASCUNHO
+//
+// A revisão mostrada no Painel continua sendo R1,
+// mas a validade continua sendo a da R0.
+// =========================================================
+
+function revisaoEnviadaMaisRecentePainel(
+  proposta
+) {
+
+  const revisoes =
+    Array.isArray(
+      proposta?.revisoes_proposta
+    )
+      ? proposta.revisoes_proposta
+      : [];
+
+
+  return [...revisoes]
+    .filter(
+      revisao =>
+        String(
+          revisao?.status || ''
+        ).toLowerCase() ===
+        'enviada' &&
+        revisao?.enviado_em
+    )
+    .sort(
+      (
+        a,
+        b
+      ) =>
+        Number(
+          b.numero_revisao
+        ) -
+        Number(
+          a.numero_revisao
+        )
+    )[0] || null;
+}
+
+// =========================================================
 // ## 6. VALOR DA PROPOSTA
 // =========================================================
 
@@ -840,6 +891,8 @@ function normalizarDadosPainel(
     .map(
       proposta => {
 
+        // Revisão atual:
+        // usada para exibição, valor, time etc.
         const revisao =
           revisaoAtualPainel(
             proposta
@@ -853,11 +906,21 @@ function normalizarDadosPainel(
         }
 
 
+        // Revisão que controla a validade:
+        // sempre a última efetivamente enviada.
+        const revisaoValidade =
+          revisaoEnviadaMaisRecentePainel(
+            proposta
+          );
+
+
         const validade =
           calcularValidadePainel(
             proposta,
-            revisao
+            revisaoValidade
           );
+
+
         return {
 
           proposta,
@@ -874,9 +937,15 @@ function normalizarDadosPainel(
               revisao.time_equipe
             ),
 
-          valor: proposta.status_comercial === 'concluido'
-            ? Number(proposta.valor_conclusao)
-            : calcularValorRevisaoPainel(revisao),
+          valor:
+            proposta.status_comercial ===
+              'concluido'
+              ? Number(
+                proposta.valor_conclusao
+              )
+              : calcularValorRevisaoPainel(
+                revisao
+              ),
 
           validadeDias:
             validade.dias,
@@ -889,6 +958,7 @@ function normalizarDadosPainel(
 
           diasVencida:
             validade.diasVencida
+
         };
 
       }
@@ -897,7 +967,6 @@ function normalizarDadosPainel(
       Boolean
     );
 }
-
 
 // =========================================================
 // ## 8. NOMES

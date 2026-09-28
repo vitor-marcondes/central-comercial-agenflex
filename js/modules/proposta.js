@@ -2734,7 +2734,6 @@ function clearForm() {
   location.reload();
 }
 
-
 // =========================================================
 // ## 8. PREPARAÇÃO DOS DADOS PARA O SUPABASE
 // =========================================================
@@ -4800,7 +4799,6 @@ function aplicarPropostaNoFormulario(
     revisaoAtual.time_equipe ||
     ''
   );
-
 
   // -------------------------------------------------------
   // ## 12.4 Dados do cliente

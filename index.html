@@ -304,10 +304,14 @@
                 </select>
 
               </div>
-              <div class="field">
-                <label>Time (interno)</label>
+              <div id="timeEquipeBloco" class="field">
+
+                <label for="timeEquipe">
+                  Time da proposta
+                </label>
 
                 <select id="timeEquipe">
+
                   <option value="" selected>
                     Selecione o time
                   </option>
@@ -323,11 +327,12 @@
                   <option value="food">
                     Time Food
                   </option>
+
                 </select>
+
               </div>
 
             </div>
-
 
             <!-- ==================================================
          ## 5.2 DADOS DO CLIENTE
@@ -338,7 +343,6 @@
             </div>
 
             <div class="grid2">
-
               <div class="field full">
                 <label>Razão social / Cliente</label>
                 <input id="cliente" placeholder="Razão social / nome do cliente">
