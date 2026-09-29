@@ -1725,8 +1725,7 @@ function calcMedidas() {
         )
 
       : (
-          '<b>Conta das unidades:</b> ' +
-          'informe uma medida para calcular.'
+          '<b>Conta das unidades:</b> '
         );
 
 

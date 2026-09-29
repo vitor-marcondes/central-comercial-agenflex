@@ -1938,7 +1938,7 @@ function montarComparativoPainel() {
       <div>
 
         <h3 id="painelComparativoTitulo">
-          📈 Comparativo dos Vendedores
+          Comparativo dos Vendedores
         </h3>
 
         <p id="painelComparativoSubtitulo">
@@ -3408,7 +3408,7 @@ function atualizarResumoMetaPainel() {
 
 
     titulo.textContent =
-      '🎯 Minha Meta';
+      'Minha Meta';
 
 
     if (labelMeta) {
@@ -3634,7 +3634,7 @@ function atualizarResumoMetaPainel() {
 
 
     titulo.textContent =
-      '🎯 Resultado Geral';
+      'Resultado Geral';
 
 
     if (labelMeta) {
@@ -4169,7 +4169,7 @@ function renderizarComparativoPainel() {
         ? `📈 Vendedores — ${nomeTimePainel(
           filtros.time
         )}`
-        : '📈 Comparativo dos Vendedores';
+        : 'Comparativo dos Vendedores';
 
   }
 

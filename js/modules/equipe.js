@@ -454,7 +454,7 @@ function montarInterfaceGestaoEquipe() {
       <div>
 
         <h2>
-          👥 Gestão da Equipe
+          Gestão da Equipe
         </h2>
 
         <span>

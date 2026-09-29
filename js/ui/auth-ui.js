@@ -246,17 +246,17 @@ function mostrarCentral(
 
 
   // -------------------------------------------------------
-  // ## 3.2.3 Preenchimento inicial do vendedor
+  // ## 3.2.3 Operação comercial por perfil
   // -------------------------------------------------------
   //
   // Vendedor:
-  // → pode trabalhar nas próprias propostas.
+  // → cria e trabalha nas próprias propostas.
   //
   // Gestor:
-  // → pode trabalhar nas próprias propostas.
+  // → cria e trabalha nas próprias propostas.
   //
   // ADM:
-  // → possui acesso total e pode operar quando necessário.
+  // → administra o sistema e não opera propostas.
   //
   // Diretor:
   // → possui visão executiva e não opera propostas.
@@ -268,6 +268,28 @@ function mostrarCentral(
     )
       .trim()
       .toLowerCase();
+
+  const podeOperarOrcamento =
+    [
+      'vendedor',
+      'gestor'
+    ].includes(
+      tipo
+    );
+
+
+  const botaoOrcamento =
+    document.querySelector(
+      '.nav-btn[data-page="orcamentoPage"]'
+    );
+
+
+  if (botaoOrcamento) {
+
+    botaoOrcamento.hidden =
+      !podeOperarOrcamento;
+
+  }
 
 
   const campoVendedor =
@@ -281,8 +303,7 @@ function mostrarCentral(
     !campoVendedor.value &&
     [
       'vendedor',
-      'gestor',
-      'adm'
+      'gestor'
     ].includes(
       tipo
     )
@@ -630,7 +651,7 @@ async function iniciarInterfaceAuth() {
         return;
       }
       if (usuarioLocalAtual && sessao?.user?.id &&
-          usuarioLocalAtual !== sessao.user.id && !authEncerrando) {
+        usuarioLocalAtual !== sessao.user.id && !authEncerrando) {
         invalidarInterfaceSessao('A conta foi alterada em outra aba.');
       }
     });

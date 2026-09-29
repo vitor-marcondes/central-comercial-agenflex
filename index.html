@@ -154,7 +154,6 @@
       <div class="cards">
 
         <div class="tool-card" onclick="go('orcamentoPage')">
-          <div class="ico">📄</div>
           <h3>Orçamento</h3>
           <p>
             Crie o PDF completo, escolha a identidade do time
@@ -164,7 +163,6 @@
         </div>
 
         <div class="tool-card" onclick="go('clichePage')">
-          <div class="ico">🧮</div>
           <h3>Calculadora de Clichê</h3>
           <p>
             Calcule o valor comercial do clichê com margem
@@ -174,7 +172,6 @@
         </div>
 
         <div class="tool-card" onclick="go('medidasPage')">
-          <div class="ico">📏</div>
           <h3>Medidas</h3>
           <p>
             Consulte cilindros, valide medidas padrão
@@ -184,7 +181,6 @@
         </div>
 
         <div class="tool-card" onclick="abrirHistorico(null)">
-          <div class="ico">📚</div>
 
           <h3>
             Histórico
@@ -214,7 +210,7 @@
         <section class="panel editor-side">
 
           <div class="panel-head">
-            <h2>📄 Novo orçamento</h2>
+            <h2>Novo orçamento</h2>
             <span id="saveStatus">Rascunho local</span>
           </div>
 
@@ -362,7 +358,7 @@
                   <input id="cnpj" placeholder="00.000.000/0001-00" maxlength="18">
 
                   <button id="btnBuscarCnpj" class="btn navy" type="button" onclick="buscarCnpjEPreencher()">
-                    🔎 Buscar
+                    Buscar
                   </button>
 
                 </div>
@@ -761,15 +757,6 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
               </button>
 
             </div>
-
-
-            <div id="statusComercialInfo" class="info">
-              Selecione a origem e salve a proposta no banco para liberar
-              a gestão comercial. Propostas novas começam automaticamente
-              com o status <b>Proposta</b>.
-            </div>
-
-
             <!-- ==================================================
          ## 5.6 ARTES ANEXADAS
          ================================================== -->
@@ -781,7 +768,7 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
             <div class="upload-box" id="artDropZone">
 
               <b>
-                🖼️ Anexar artes à proposta
+                Anexar artes à proposta
               </b>
 
               <p>
@@ -839,33 +826,26 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
             <div class="toolbar">
 
               <button id="btnSalvarPropostaNuvem" class="btn green" onclick="salvarPropostaNuvem()">
-                ☁️ Salvar proposta
+                Salvar proposta
               </button>
 
               <button id="btnEnviarRevisao" class="btn orange" type="button" onclick="enviarRevisaoAtual()" disabled>
-                📤 Enviar revisão
+                Enviar revisão
               </button>
 
               <button id="btnCriarNovaRevisao" class="btn navy" type="button" onclick="criarNovaRevisaoAtual()" hidden
                 disabled>
-                ➕ Criar nova revisão
+                Criar nova revisão
               </button>
 
               <button class="btn red" onclick="printPDF()">
-                📄 Gerar PDF completo
+                Gerar PDF completo
               </button>
 
               <button class="btn light" onclick="clearForm()">
                 Limpar
               </button>
 
-            </div>
-
-            <div class="info">
-              O checkbox controla Subtotal, IPI e Total no PDF.
-              Os valores individuais de cada item continuam visíveis.
-              Na impressão, a primeira arte tenta aproveitar automaticamente
-              o espaço restante da última página do orçamento sem ser cortada.
             </div>
 
           </div>
@@ -881,7 +861,7 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
           <div class="panel-head">
 
             <h2>
-              👁️ Prévia do PDF completo
+              Prévia do PDF completo
             </h2>
 
             <span id="pagesLabel">
@@ -1329,7 +1309,7 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
         <div class="panel-head">
 
           <h2>
-            📚 Histórico de Propostas
+            Histórico de Propostas
           </h2>
 
           <span id="historicoContador">
@@ -1483,7 +1463,7 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
         <div class="panel-head">
 
           <div>
-            <h2>📊 Painel Comercial</h2>
+            <h2>Painel Comercial</h2>
             <span>Carteira atual. O crédito das vendas permanece nos resultados históricos.</span>
           </div>
 
@@ -1732,7 +1712,7 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
           <div class="panel-head">
 
             <h2>
-              🧮 Calculadora de Clichê
+              Calculadora de Clichê
             </h2>
 
             <span>
@@ -1954,7 +1934,7 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
           <div class="panel-head">
 
             <h2>
-              📏 Consulta de Medidas
+              Consulta de Medidas
             </h2>
 
             <span>
@@ -2124,26 +2104,6 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
             </div>
 
 
-            <div class="info">
-
-              <b>
-                Regra de produção:
-              </b>
-
-              primeiro o sistema procura um cilindro igual à largura.
-              Se não existir, testa <b>largura × 2</b>.
-
-              A bobina segue sempre <b>altura × 2</b>.
-
-              A espessura é determinada automaticamente pela altura
-              conforme as medidas padrão cadastradas do modelo.
-
-              Se a largura não for produzível ou a altura não possuir
-              espessura padrão, a medida passa para <b>200 kg</b>.
-
-            </div>
-
-
             <div class="section-title" id="catalogTitle">
               Medidas de catálogo — Sacola Vazada
             </div>
@@ -2193,7 +2153,7 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
           <div class="panel-head">
 
             <h2>
-              📋 Resultado da Consulta
+              Resultado da Consulta
             </h2>
 
             <span>
@@ -2460,35 +2420,6 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
                 <tbody id="espBody"></tbody>
 
               </table>
-
-            </div>
-
-
-            <div class="info" id="mObservacao">
-              Informe largura e altura para consultar.
-            </div>
-
-
-            <div class="measure-calc-box" id="mContaUnidades">
-              <b>Conta das unidades:</b>
-              informe uma medida para calcular.
-            </div>
-
-
-            <div class="info">
-
-              <b>Fórmula comercial:</b>
-
-              Kg/milheiro = largura × altura de cálculo × espessura.
-
-              Em modelos com aba, a altura de cálculo =
-              altura + (aba ÷ 2).
-
-              Unidade mínima base =
-              (kg mínimos ÷ kg/milheiro) × 1.000.
-
-              O acréscimo de <b>10%</b> é aplicado sobre
-              o valor exato da unidade mínima base.
 
             </div>
 

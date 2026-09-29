@@ -201,133 +201,41 @@ async function atualizarSeletorResponsavelProposta() {
     );
 
 
-  if (
-    !bloco ||
-    !campo
-  ) {
-
-    return;
-
+  if (bloco) {
+    bloco.hidden =
+      true;
   }
 
 
-  const ehAdm =
-    perfilCentralAtual?.tipo_acesso === 'adm';
+  if (campo) {
 
-
-  const visivel =
-    ehAdm &&
-    !propostaNuvemAtual.propostaId;
-
-
-  bloco.hidden =
-    !visivel;
-
-  campo.required =
-    visivel;
-
-  campo.disabled =
-    !visivel;
-
-
-  // O ADM precisa conhecer a lista também quando abre
-  // uma proposta já existente. Assim conseguimos resolver
-  // o nome pelo vendedor_responsavel_id oficial.
-  if (
-    !ehAdm ||
-    responsaveisNovaPropostaUsuario ===
-    usuarioLocalAtual
-  ) {
-
-    return;
-
-  }
-
-
-  const usuario =
-    usuarioLocalAtual;
-
-
-  campo.disabled =
-    true;
-
-
-  try {
-
-    const perfis =
-      await listarResponsaveisAtivos();
-
-
-    if (
-      usuario !==
-      usuarioLocalAtual
-    ) {
-
-      return;
-
-    }
-
-
-    responsaveisNovaPropostaLista =
-      perfis || [];
-
-
-    campo.innerHTML =
-      '<option value="">Selecione o responsável</option>' +
-      responsaveisNovaPropostaLista
-        .map(
-          perfil =>
-            `<option value="${esc(perfil.user_id)}">${esc(
-              perfil.nome || 'Sem nome'
-            )} — ${perfil.tipo_acesso === 'gestor'
-              ? 'Gestor'
-              : 'Vendedor'
-            }</option>`
-        )
-        .join('');
-
-
-    // Se estamos abrindo uma proposta existente,
-    // mantemos no select oculto o responsável oficial.
-    if (
-      propostaNuvemAtual.propostaId &&
-      propostaNuvemAtual.responsavelId
-    ) {
-
-      campo.value =
-        propostaNuvemAtual.responsavelId;
-
-    }
-
-
-    responsaveisNovaPropostaUsuario =
-      usuario;
-
-
-    const info =
-      document.getElementById(
-        'responsavelNovaPropostaInfo'
-      );
-
-
-    if (info) {
-
-      info.textContent =
-        responsaveisNovaPropostaLista.length
-          ? 'Selecione um Vendedor ou Gestor ativo.'
-          : 'Nenhum responsável ativo disponível.';
-
-    }
-
-  } finally {
+    campo.required =
+      false;
 
     campo.disabled =
-      !perfilCentralAtual?.ativo ||
-      Boolean(
-        propostaNuvemAtual.propostaId
-      );
+      true;
+
+    campo.value =
+      '';
 
   }
+
+
+  // Regra atual:
+  //
+  // Vendedor cria proposta própria.
+  // Gestor cria proposta própria.
+  // ADM não cria proposta.
+  // Diretor não cria proposta.
+  //
+  // Portanto não existe mais seleção manual
+  // de responsável na criação da proposta.
+
+  responsaveisNovaPropostaLista =
+    [];
+
+  responsaveisNovaPropostaUsuario =
+    null;
 
 }
 
@@ -1437,12 +1345,16 @@ function refresh() {
     );
 
 
+  const responsavelComercialPdf =
+    obterResponsavelComercialFormulario();
+
+
   pVendedor.textContent =
     (
+      responsavelComercialPdf.nome ||
       vendedor.value ||
       ''
     ).toUpperCase();
-
 
   pProjeto.textContent =
     projeto.value;
@@ -3483,7 +3395,7 @@ function atualizarInterfaceRevisao() {
 
 
       botaoEnviar.textContent =
-        '📤 Enviar revisão';
+        'Enviar revisão';
 
     } else if (
       rascunho
@@ -3494,7 +3406,7 @@ function atualizarInterfaceRevisao() {
 
 
       botaoEnviar.textContent =
-        `📤 Enviar R${propostaNuvemAtual.numeroRevisao}`;
+        `Enviar R${propostaNuvemAtual.numeroRevisao}`;
 
     } else if (
       enviada
@@ -3574,8 +3486,26 @@ function atualizarInterfaceRevisao() {
     botaoNovaRevisao.hidden = true;
     botaoNovaRevisao.disabled = true;
   }
-  const bloco = document.getElementById('responsavelNovaPropostaBloco');
-  if (bloco) bloco.hidden = perfilCentralAtual?.tipo_acesso !== 'adm' || propostaSalva;
+
+  const bloco =
+    document.getElementById(
+      'responsavelNovaPropostaBloco'
+    );
+
+  const campoResponsavel =
+    document.getElementById(
+      'responsavelNovaProposta'
+    );
+
+  if (bloco) {
+    bloco.hidden = true;
+  }
+
+  if (campoResponsavel) {
+    campoResponsavel.disabled = true;
+    campoResponsavel.required = false;
+  }
+
   const validadeInfo = document.getElementById('validadePersistidaInfo');
   if (validadeInfo) {
     validadeInfo.hidden = !propostaNuvemAtual.validadeAte || propostaNuvemAtual.status !== 'enviada';

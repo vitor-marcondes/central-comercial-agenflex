@@ -93,6 +93,200 @@ function formatarMoedaMeta(
 }
 
 
+// =========================================================
+// ## MÁSCARA MONETÁRIA DOS CAMPOS DE META
+// =========================================================
+
+function converterValorInputMeta(
+  valor
+) {
+
+  const texto =
+    String(
+      valor ?? ''
+    )
+      .trim();
+
+
+  if (!texto) {
+    return NaN;
+  }
+
+
+  const normalizado =
+    texto
+      .replace(/[^\d,.-]/g, '')
+      .replace(/\./g, '')
+      .replace(',', '.');
+
+
+  return Number(
+    normalizado
+  );
+
+}
+
+
+function formatarValorInputMeta(
+  valor
+) {
+
+  const numero =
+    Number(
+      valor
+    );
+
+
+  if (
+    !Number.isFinite(
+      numero
+    )
+  ) {
+
+    return '';
+
+  }
+
+
+  return new Intl.NumberFormat(
+    'pt-BR',
+    {
+      minimumFractionDigits:
+        2,
+
+      maximumFractionDigits:
+        2
+    }
+  ).format(
+    numero
+  );
+
+}
+
+
+function aplicarMascaraMoedaMeta(
+  campo
+) {
+
+  if (!campo) {
+    return;
+  }
+
+
+  let texto =
+    String(
+      campo.value || ''
+    )
+      .replace(
+        /[^\d,]/g,
+        ''
+      );
+
+
+  if (!texto) {
+
+    campo.value =
+      '';
+
+    return;
+
+  }
+
+
+  const partes =
+    texto.split(
+      ','
+    );
+
+
+  let inteiro =
+    String(
+      partes.shift() || ''
+    )
+      .replace(
+        /\D/g,
+        ''
+      )
+      .replace(
+        /^0+(?=\d)/,
+        ''
+      );
+
+
+  if (!inteiro) {
+    inteiro = '0';
+  }
+
+
+  const centavos =
+    partes
+      .join('')
+      .replace(
+        /\D/g,
+        ''
+      )
+      .slice(
+        0,
+        2
+      );
+
+
+  inteiro =
+    inteiro.replace(
+      /\B(?=(\d{3})+(?!\d))/g,
+      '.'
+    );
+
+
+  campo.value =
+    partes.length
+      ? `${inteiro},${centavos}`
+      : inteiro;
+
+}
+
+
+function finalizarMascaraMoedaMeta(
+  campo
+) {
+
+  if (!campo) {
+    return;
+  }
+
+
+  if (
+    !String(
+      campo.value || ''
+    ).trim()
+  ) {
+
+    campo.value =
+      '';
+
+    return;
+
+  }
+
+
+  const valor =
+    converterValorInputMeta(
+      campo.value
+    );
+
+
+  campo.value =
+    Number.isFinite(
+      valor
+    )
+      ? formatarValorInputMeta(
+        valor
+      )
+      : '';
+
+}
+
+
 function podeGerenciarMetas() {
 
   return [
@@ -260,7 +454,7 @@ function montarInterfaceMetas() {
       <div>
 
         <h3>
-          🎯 Gestão de Metas
+          Gestão de Metas
         </h3>
 
         <p>
@@ -421,14 +615,15 @@ function montarInterfaceMetas() {
             Valor da meta oficial
           </label>
 
-          <input
-            id="metaOficialInput"
-            type="number"
-            min="0"
-            step="0.01"
-            placeholder="Ex.: 500000"
-          >
-
+<input
+  id="metaOficialInput"
+  type="text"
+  inputmode="decimal"
+  autocomplete="off"
+  placeholder="Ex.: 500.000,00"
+  oninput="aplicarMascaraMoedaMeta(this)"
+  onblur="finalizarMascaraMoedaMeta(this)"
+>
         </div>
 
 
@@ -626,7 +821,7 @@ function montarInterfaceMetas() {
       anoAtual - 1;
 
     ano <=
-      anoAtual + 2;
+    anoAtual + 2;
 
     ano++
   ) {
@@ -1096,13 +1291,12 @@ function atualizarResumoMetas() {
 
     metaInputEl.value =
       metaOficial
-        ? Number(
-            metaOficial.meta_valor
-          )
+        ? formatarValorInputMeta(
+          metaOficial.meta_valor
+        )
         : '';
 
   }
-
 
   if (
     distribuicaoDescricaoEl
@@ -1187,22 +1381,20 @@ function renderizarMetasEquipe() {
 
           <div class="meta-vendedor-nome">
 
-            ${
-              escaparMeta(
-                vendedor.nome
-              )
-            }
+            ${escaparMeta(
+        vendedor.nome
+      )
+        }
 
           </div>
 
 
           <div class="meta-vendedor-email">
 
-            ${
-              escaparMeta(
-                vendedor.email
-              )
-            }
+            ${escaparMeta(
+          vendedor.email
+        )
+        }
 
           </div>
 
@@ -1211,54 +1403,54 @@ function renderizarMetasEquipe() {
 
         <td class="meta-atual">
 
-          ${
-            meta
-              ? formatarMoedaMeta(
-                  valor
-                )
-              : '—'
-          }
+          ${meta
+          ? formatarMoedaMeta(
+            valor
+          )
+          : '—'
+        }
 
         </td>
 
 
         <td>
 
-          ${
-            meta
-              ? `
+          ${meta
+          ? `
                 <span class="meta-status definida">
                   DEFINIDA
                 </span>
               `
-              : `
+          : `
                 <span class="meta-status nao-definida">
                   NÃO DEFINIDA
                 </span>
               `
-          }
+        }
 
         </td>
 
 
         <td>
 
-          <input
-            id="metaInput_${escaparMeta(
-              vendedor.user_id
-            )}"
-            class="meta-input"
-            type="number"
-            min="0"
-            step="0.01"
-            value="${
-              meta
-                ? valor
-                : ''
-            }"
-            placeholder="Ex.: 100000"
-          >
-
+<input
+  id="metaInput_${escaparMeta(
+          vendedor.user_id
+        )}"
+  class="meta-input"
+  type="text"
+  inputmode="decimal"
+  autocomplete="off"
+  value="${meta
+          ? formatarValorInputMeta(
+            valor
+          )
+          : ''
+        }"
+  placeholder="Ex.: 100.000,00"
+  oninput="aplicarMascaraMoedaMeta(this)"
+  onblur="finalizarMascaraMoedaMeta(this)"
+>
         </td>
 
 
@@ -1270,8 +1462,8 @@ function renderizarMetasEquipe() {
             onclick="
               salvarMetaUsuarioEquipe(
                 '${escaparMeta(
-                  vendedor.user_id
-                )}'
+          vendedor.user_id
+        )}'
               )
             "
           >
@@ -1393,9 +1585,9 @@ async function carregarMetasEquipe() {
           perfil =>
             perfil.ativo &&
             perfil.tipo_acesso ===
-              'vendedor' &&
+            'vendedor' &&
             perfil.time_equipe ===
-              timeEquipe
+            timeEquipe
         )
         .sort(
           (
@@ -1490,10 +1682,9 @@ async function salvarMetaOficialTimeSelecionado() {
 
 
   const valor =
-    Number(
+    converterValorInputMeta(
       input?.value
     );
-
 
   if (
     !Number.isFinite(
@@ -1657,10 +1848,9 @@ async function salvarMetaUsuarioEquipe(
 
 
   const valor =
-    Number(
+    converterValorInputMeta(
       input?.value
     );
-
 
   if (
     !Number.isFinite(

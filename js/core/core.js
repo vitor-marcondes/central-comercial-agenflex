@@ -149,6 +149,57 @@ function esc(valor) {
 
 function showPage(id, btn) {
 
+  // -------------------------------------------------------
+  // Proteção da área comercial de Orçamento
+  // -------------------------------------------------------
+
+  if (
+    id === 'orcamentoPage'
+  ) {
+
+    const tipo =
+      typeof perfilCentralAtual !==
+        'undefined'
+        ? String(
+          perfilCentralAtual
+            ?.tipo_acesso || ''
+        )
+          .trim()
+          .toLowerCase()
+        : '';
+
+
+    if (
+      ![
+        'vendedor',
+        'gestor'
+      ].includes(
+        tipo
+      )
+    ) {
+
+      if (
+        typeof toastMsg ===
+        'function'
+      ) {
+
+        toastMsg(
+          'Orçamento disponível somente para Vendedor e Gestor.'
+        );
+
+      }
+
+
+      id =
+        'homePage';
+
+      btn =
+        null;
+
+    }
+
+  }
+
   document
     .querySelectorAll('.page')
     .forEach(
