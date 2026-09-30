@@ -8,7 +8,7 @@
 // - Filtrar vendedores por Time
 // - Calcular total distribuído
 // - Calcular valor restante / excedente
-// - Permitir manutenção por Gestor / ADM
+// - Permitir manutenção somente por Gestor
 //
 // Dependências:
 // - js/services/usuarios.service.js
@@ -289,12 +289,10 @@ function finalizarMascaraMoedaMeta(
 
 function podeGerenciarMetas() {
 
-  return [
-    'gestor',
-    'adm'
-  ].includes(
+  return (
     metasPerfilAtual
-      ?.tipo_acesso
+      ?.tipo_acesso ===
+    'gestor'
   );
 
 }

@@ -317,7 +317,6 @@ function mostrarCentral(
 
   atualizarInterfaceRevisao();
   atualizarInterfaceGestaoComercial();
-  atualizarSeletorResponsavelProposta().catch(erro => toastMsg(erro.message));
 
 }
 

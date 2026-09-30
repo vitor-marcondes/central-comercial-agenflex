@@ -114,11 +114,41 @@ let statusComercialAtual = {
 // → bloqueada.
 
 function podeOperarPropostaAtual() {
-  const perfil = perfilCentralAtual;
-  if (!perfil?.ativo || !['vendedor', 'gestor', 'adm'].includes(perfil.tipo_acesso)) return false;
-  if (window.__agenflexConsultaHistorica?.ativa) return false;
-  return !propostaNuvemAtual.propostaId || perfil.tipo_acesso === 'adm' ||
-    propostaNuvemAtual.responsavelId === perfil.user_id;
+
+  const perfil =
+    perfilCentralAtual;
+
+
+  if (
+    !perfil?.ativo ||
+    ![
+      'vendedor',
+      'gestor'
+    ].includes(
+      perfil.tipo_acesso
+    )
+  ) {
+
+    return false;
+
+  }
+
+
+  if (
+    window.__agenflexConsultaHistorica?.ativa
+  ) {
+
+    return false;
+
+  }
+
+
+  return (
+    !propostaNuvemAtual.propostaId ||
+    propostaNuvemAtual.responsavelId ===
+      perfil.user_id
+  );
+
 }
 
 function revisaoEhEditavel() {
@@ -126,51 +156,18 @@ function revisaoEhEditavel() {
     (!propostaNuvemAtual.propostaId || propostaNuvemAtual.status === 'rascunho');
 }
 
-let responsaveisNovaPropostaUsuario = null;
-let responsaveisNovaPropostaLista = [];
-
 
 function obterResponsavelComercialFormulario() {
 
-  const ehAdm =
-    perfilCentralAtual?.tipo_acesso === 'adm';
-
-
-  let responsavelId =
+  const responsavelId =
+    propostaNuvemAtual.responsavelId ||
+    perfilCentralAtual?.user_id ||
     null;
 
 
-  if (ehAdm) {
-
-    responsavelId =
-      propostaNuvemAtual.propostaId
-        ? propostaNuvemAtual.responsavelId || null
-        : document.getElementById(
-          'responsavelNovaProposta'
-        )?.value || null;
-
-  } else {
-
-    responsavelId =
-      propostaNuvemAtual.responsavelId ||
-      perfilCentralAtual?.user_id ||
-      null;
-
-  }
-
-
-  const perfilResponsavel =
-    responsaveisNovaPropostaLista.find(
-      perfil =>
-        perfil.user_id ===
-        responsavelId
-    ) ||
-    (
-      perfilCentralAtual?.user_id ===
-        responsavelId
-        ? perfilCentralAtual
-        : null
-    );
+  const ehUsuarioAtual =
+    perfilCentralAtual?.user_id ===
+    responsavelId;
 
 
   return {
@@ -180,62 +177,12 @@ function obterResponsavelComercialFormulario() {
 
     nome:
       String(
-        perfilResponsavel?.nome || ''
+        ehUsuarioAtual
+          ? perfilCentralAtual?.nome || ''
+          : ''
       ).trim()
 
   };
-
-}
-
-
-async function atualizarSeletorResponsavelProposta() {
-
-  const bloco =
-    document.getElementById(
-      'responsavelNovaPropostaBloco'
-    );
-
-  const campo =
-    document.getElementById(
-      'responsavelNovaProposta'
-    );
-
-
-  if (bloco) {
-    bloco.hidden =
-      true;
-  }
-
-
-  if (campo) {
-
-    campo.required =
-      false;
-
-    campo.disabled =
-      true;
-
-    campo.value =
-      '';
-
-  }
-
-
-  // Regra atual:
-  //
-  // Vendedor cria proposta própria.
-  // Gestor cria proposta própria.
-  // ADM não cria proposta.
-  // Diretor não cria proposta.
-  //
-  // Portanto não existe mais seleção manual
-  // de responsável na criação da proposta.
-
-  responsaveisNovaPropostaLista =
-    [];
-
-  responsaveisNovaPropostaUsuario =
-    null;
 
 }
 
@@ -2698,9 +2645,13 @@ function montarPayloadRevisao() {
       validade.value,
 
     time_equipe:
-      timeEquipe.value ||
-      null,
-
+      perfilCentralAtual?.tipo_acesso ===
+        'gestor'
+        ? (
+            timeEquipe.value ||
+            null
+          )
+        : null,
 
     cliente:
       cliente.value.trim(),
@@ -2863,12 +2814,9 @@ function montarItensBanco() {
 async function salvarPropostaNuvem(
   opcoes = {}
 ) {
-  if (!revisaoEhEditavel()) { toastMsg('Esta proposta está em somente leitura.'); return false; }
-  if (!propostaNuvemAtual.propostaId && perfilCentralAtual?.tipo_acesso === 'adm' &&
-    !document.getElementById('responsavelNovaProposta')?.value) {
-    toastMsg('Selecione o responsável comercial.');
-    document.getElementById('responsavelNovaProposta')?.focus();
-    return false;
+  if (!revisaoEhEditavel()) { 
+    toastMsg('Esta proposta está em somente leitura.'); 
+    return false; 
   }
 
 
@@ -2927,11 +2875,14 @@ async function salvarPropostaNuvem(
 
 
   if (
+    !propostaNuvemAtual.propostaId &&
+    perfilCentralAtual?.tipo_acesso ===
+      'gestor' &&
     !timeEquipe.value
   ) {
 
     toastMsg(
-      'Selecione o time'
+      'Selecione o Time da proposta'
     );
 
 
@@ -2939,6 +2890,7 @@ async function salvarPropostaNuvem(
 
 
     return false;
+
   }
 
 
@@ -2962,17 +2914,7 @@ async function salvarPropostaNuvem(
   // -------------------------------------------------------
   // ## 9.2 Montagem dos dados
   // -------------------------------------------------------
-
-  if (
-    perfilCentralAtual?.tipo_acesso === 'adm' &&
-    responsaveisNovaPropostaUsuario !==
-    usuarioLocalAtual
-  ) {
-
-    await atualizarSeletorResponsavelProposta();
-
-  }
-
+  
 
   const revisao =
     montarPayloadRevisao();
@@ -3278,7 +3220,50 @@ function atualizarBloqueioCamposRevisao() {
     );
 
 
-  if (perfilCentralAtual?.tipo_acesso === 'vendedor') document.getElementById('timeEquipe').disabled = true;
+  const campoTime =
+    document.getElementById(
+      'timeEquipe'
+    );
+
+
+  if (campoTime) {
+
+    const tipoAcesso =
+      perfilCentralAtual
+        ?.tipo_acesso;
+
+
+    const propostaSalva =
+      Boolean(
+        propostaNuvemAtual.propostaId
+      );
+
+
+    if (
+      tipoAcesso ===
+      'vendedor'
+    ) {
+
+      campoTime.disabled =
+        true;
+
+    } else if (
+      tipoAcesso ===
+      'gestor'
+    ) {
+
+      campoTime.disabled =
+        bloqueada ||
+        propostaSalva;
+
+    } else {
+
+      campoTime.disabled =
+        true;
+
+    }
+
+  }
 
   sincronizarValidadeInterface();
 
@@ -3487,24 +3472,6 @@ function atualizarInterfaceRevisao() {
     botaoNovaRevisao.disabled = true;
   }
 
-  const bloco =
-    document.getElementById(
-      'responsavelNovaPropostaBloco'
-    );
-
-  const campoResponsavel =
-    document.getElementById(
-      'responsavelNovaProposta'
-    );
-
-  if (bloco) {
-    bloco.hidden = true;
-  }
-
-  if (campoResponsavel) {
-    campoResponsavel.disabled = true;
-    campoResponsavel.required = false;
-  }
 
   const validadeInfo = document.getElementById('validadePersistidaInfo');
   if (validadeInfo) {
@@ -3515,6 +3482,7 @@ function atualizarInterfaceRevisao() {
   atualizarBloqueioCamposRevisao();
 
 }
+
 // ---------------------------------------------------------
 // ## 10.3 Enviar revisão atual
 // ---------------------------------------------------------

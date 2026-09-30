@@ -8,7 +8,7 @@
 // - Exibir Gestão da Equipe para Gestor / Diretor / ADM
 // - Listar usuários
 // - Mostrar contas pendentes
-// - Aprovar / bloquear vendedores
+// - Ativar / inativar usuários conforme o perfil do operador
 // - Permitir que ADM altere o perfil
 // - Permitir que Gestor / ADM alterem o Time do vendedor
 // - Manter Diretor em modo somente leitura
@@ -202,7 +202,7 @@ function propostaSalvaAbertaEquipe() {
 
     return (
       typeof propostaNuvemAtual !==
-        'undefined' &&
+      'undefined' &&
       Boolean(
         propostaNuvemAtual
           ?.propostaId
@@ -343,17 +343,26 @@ function sincronizarTimeOrcamentoComPerfil(
     'gestor'
   ) {
 
+    const propostaSalva =
+      propostaSalvaAbertaEquipe();
+
+
     field.hidden =
       false;
 
+
     campo.disabled =
-      false;
+      propostaSalva;
+
 
     campo.required =
-      true;
+      !propostaSalva;
+
 
     campo.title =
-      'Selecione o Time da proposta.';
+      propostaSalva
+        ? 'O Time desta proposta já foi definido na criação e faz parte do histórico comercial.'
+        : 'Selecione o Time da proposta.';
 
 
     if (label) {
@@ -377,7 +386,6 @@ function sincronizarTimeOrcamentoComPerfil(
     return;
 
   }
-
 
   // =======================================================
   // ADM / DIRETOR / OUTROS
@@ -835,8 +843,8 @@ function obterPerfisFiltradosEquipe() {
           perfil.tipo_acesso ===
             'vendedor'
             ? nomeTimeGestaoEquipe(
-                perfil.time_equipe
-              )
+              perfil.time_equipe
+            )
             : ''
         ]
           .join(
@@ -875,7 +883,7 @@ function obterPerfisFiltradosEquipe() {
 
         if (
           perfil.tipo_acesso !==
-            'vendedor' ||
+          'vendedor' ||
           perfil.time_equipe
         ) {
 
@@ -894,9 +902,9 @@ function obterPerfisFiltradosEquipe() {
 
         if (
           perfil.tipo_acesso !==
-            'vendedor' ||
+          'vendedor' ||
           perfil.time_equipe !==
-            filtroTime
+          filtroTime
         ) {
 
           return false;
@@ -954,7 +962,7 @@ function atualizarIndicadoresEquipe() {
       perfil =>
         perfil.ativo &&
         perfil.tipo_acesso ===
-          'vendedor'
+        'vendedor'
     ).length;
 
 
@@ -963,7 +971,7 @@ function atualizarIndicadoresEquipe() {
       perfil =>
         perfil.ativo &&
         perfil.tipo_acesso ===
-          'gestor'
+        'gestor'
     ).length;
 
 
@@ -1032,17 +1040,16 @@ function badgePerfilEquipe(
       class="
         equipe-badge
         ${escaparEquipe(
-          perfil.tipo_acesso
-        )}
+    perfil.tipo_acesso
+  )}
       "
     >
-      ${
-        escaparEquipe(
-          nomePerfilEquipe(
-            perfil.tipo_acesso
-          )
-        )
-      }
+      ${escaparEquipe(
+    nomePerfilEquipe(
+      perfil.tipo_acesso
+    )
+  )
+    }
     </span>
   `;
 
@@ -1133,29 +1140,14 @@ function selectPerfilEquipe(
   }
 
 
-  if (
-    !perfil.ativo
-  ) {
-
-    return `
-      ${badgePerfilEquipe(perfil)}
-
-      <div class="equipe-user-email">
-        Aprove primeiro para alterar o perfil.
-      </div>
-    `;
-
-  }
-
-
   return `
     <select
       class="equipe-role-select"
       onchange="
         alterarPerfilUsuarioEquipe(
           '${escaparEquipe(
-            perfil.user_id
-          )}',
+    perfil.user_id
+  )}',
           this.value
         )
       "
@@ -1163,48 +1155,44 @@ function selectPerfilEquipe(
 
       <option
         value="vendedor"
-        ${
-          perfil.tipo_acesso ===
-          'vendedor'
-            ? 'selected'
-            : ''
-        }
+        ${perfil.tipo_acesso ===
+      'vendedor'
+      ? 'selected'
+      : ''
+    }
       >
         Vendedor
       </option>
 
       <option
         value="gestor"
-        ${
-          perfil.tipo_acesso ===
-          'gestor'
-            ? 'selected'
-            : ''
-        }
+        ${perfil.tipo_acesso ===
+      'gestor'
+      ? 'selected'
+      : ''
+    }
       >
         Gestor
       </option>
 
       <option
         value="diretor"
-        ${
-          perfil.tipo_acesso ===
-          'diretor'
-            ? 'selected'
-            : ''
-        }
+        ${perfil.tipo_acesso ===
+      'diretor'
+      ? 'selected'
+      : ''
+    }
       >
         Diretor
       </option>
 
       <option
         value="adm"
-        ${
-          perfil.tipo_acesso ===
-          'adm'
-            ? 'selected'
-            : ''
-        }
+        ${perfil.tipo_acesso ===
+      'adm'
+      ? 'selected'
+      : ''
+    }
       >
         ADM
       </option>
@@ -1252,17 +1240,16 @@ function selectTimeEquipe(
         class="
           equipe-badge
           ${escaparEquipe(
-            classeTime
-          )}
+      classeTime
+    )}
         "
       >
-        ${
-          escaparEquipe(
-            nomeTimeGestaoEquipe(
-              perfil.time_equipe
-            )
-          )
-        }
+        ${escaparEquipe(
+      nomeTimeGestaoEquipe(
+        perfil.time_equipe
+      )
+    )
+      }
       </span>
     `;
 
@@ -1273,17 +1260,16 @@ function selectTimeEquipe(
     <select
       class="
         equipe-team-select
-        ${
-          !perfil.time_equipe
-            ? 'sem-time'
-            : ''
-        }
+        ${!perfil.time_equipe
+      ? 'sem-time'
+      : ''
+    }
       "
       onchange="
         alterarTimeUsuarioEquipe(
           '${escaparEquipe(
-            perfil.user_id
-          )}',
+      perfil.user_id
+    )}',
           this.value
         )
       "
@@ -1291,11 +1277,10 @@ function selectTimeEquipe(
 
       <option
         value=""
-        ${
-          !perfil.time_equipe
-            ? 'selected'
-            : ''
-        }
+        ${!perfil.time_equipe
+      ? 'selected'
+      : ''
+    }
         disabled
       >
         Selecionar Time
@@ -1303,36 +1288,33 @@ function selectTimeEquipe(
 
       <option
         value="pharma"
-        ${
-          perfil.time_equipe ===
-          'pharma'
-            ? 'selected'
-            : ''
-        }
+        ${perfil.time_equipe ===
+      'pharma'
+      ? 'selected'
+      : ''
+    }
       >
         Pharma
       </option>
 
       <option
         value="food"
-        ${
-          perfil.time_equipe ===
-          'food'
-            ? 'selected'
-            : ''
-        }
+        ${perfil.time_equipe ===
+      'food'
+      ? 'selected'
+      : ''
+    }
       >
         Food
       </option>
 
       <option
         value="revenda"
-        ${
-          perfil.time_equipe ===
-          'revenda'
-            ? 'selected'
-            : ''
-        }
+        ${perfil.time_equipe ===
+      'revenda'
+      ? 'selected'
+      : ''
+    }
       >
         Revenda
       </option>
@@ -1366,7 +1348,7 @@ function botoesEquipe(
 
   if (
     perfil.tipo_acesso ===
-      'vendedor' &&
+    'vendedor' &&
     !perfil.ativo
   ) {
 
@@ -1376,14 +1358,14 @@ function botoesEquipe(
         type="button"
         class="btn green"
         onclick="
-          aprovarUsuarioEquipe(
+          ativarUsuarioEquipe(
             '${escaparEquipe(
-              perfil.user_id
-            )}'
+      perfil.user_id
+    )}'
           )
         "
       >
-        ✓ Aprovar
+        Ativar
       </button>
 
       <button
@@ -1392,8 +1374,8 @@ function botoesEquipe(
         onclick="
           redefinirSenhaUsuarioEquipe(
             '${escaparEquipe(
-              perfil.user_id
-            )}'
+      perfil.user_id
+    )}'
           )
         "
       >
@@ -1416,14 +1398,14 @@ function botoesEquipe(
         type="button"
         class="btn light"
         onclick="
-          bloquearUsuarioEquipe(
+          inativarUsuarioEquipe(
             '${escaparEquipe(
-              perfil.user_id
-            )}'
+      perfil.user_id
+    )}'
           )
         "
       >
-        Bloquear
+        Inativar
       </button>
 
       <button
@@ -1432,8 +1414,8 @@ function botoesEquipe(
         onclick="
           redefinirSenhaUsuarioEquipe(
             '${escaparEquipe(
-              perfil.user_id
-            )}'
+      perfil.user_id
+    )}'
           )
         "
       >
@@ -1449,7 +1431,43 @@ function botoesEquipe(
     usuarioEhAdmEquipe()
   ) {
 
+    const botaoAcesso =
+      perfil.ativo
+        ? `
+          <button
+            type="button"
+            class="btn light"
+            onclick="
+              inativarUsuarioEquipe(
+                '${escaparEquipe(
+          perfil.user_id
+        )}'
+              )
+            "
+          >
+            Inativar
+          </button>
+        `
+        : `
+          <button
+            type="button"
+            class="btn green"
+            onclick="
+              ativarUsuarioEquipe(
+                '${escaparEquipe(
+          perfil.user_id
+        )}'
+              )
+            "
+          >
+            Ativar
+          </button>
+        `;
+
+
     return `
+
+      ${botaoAcesso}
 
       <button
         type="button"
@@ -1457,8 +1475,8 @@ function botoesEquipe(
         onclick="
           redefinirSenhaUsuarioEquipe(
             '${escaparEquipe(
-              perfil.user_id
-            )}'
+      perfil.user_id
+    )}'
           )
         "
       >
@@ -1468,7 +1486,6 @@ function botoesEquipe(
     `;
 
   }
-
 
   return `
     <span class="equipe-user-email">
@@ -1565,21 +1582,19 @@ function renderizarEquipe() {
         <td>
 
           <div class="equipe-user-name">
-            ${
-              escaparEquipe(
-                perfil.nome ||
-                'Sem nome'
-              )
-            }
+            ${escaparEquipe(
+        perfil.nome ||
+        'Sem nome'
+      )
+        }
           </div>
 
           <div class="equipe-user-email">
-            ${
-              escaparEquipe(
-                perfil.email ||
-                '—'
-              )
-            }
+            ${escaparEquipe(
+          perfil.email ||
+          '—'
+        )
+        }
           </div>
 
         </td>
@@ -1587,44 +1602,40 @@ function renderizarEquipe() {
 
         <td>
 
-          ${
-            selectPerfilEquipe(
-              perfil
-            )
-          }
+          ${selectPerfilEquipe(
+          perfil
+        )
+        }
 
         </td>
 
 
         <td>
 
-          ${
-            selectTimeEquipe(
-              perfil
-            )
-          }
+          ${selectTimeEquipe(
+          perfil
+        )
+        }
 
         </td>
 
 
         <td>
 
-          ${
-            badgeAcessoEquipe(
-              perfil
-            )
-          }
+          ${badgeAcessoEquipe(
+          perfil
+        )
+        }
 
         </td>
 
 
         <td>
 
-          ${
-            formatarDataEquipe(
-              perfil.created_at
-            )
-          }
+          ${formatarDataEquipe(
+          perfil.created_at
+        )
+        }
 
         </td>
 
@@ -1633,11 +1644,10 @@ function renderizarEquipe() {
 
           <div class="equipe-actions">
 
-            ${
-              botoesEquipe(
-                perfil
-              )
-            }
+            ${botoesEquipe(
+          perfil
+        )
+        }
 
           </div>
 
@@ -1820,10 +1830,10 @@ async function recarregarMetasEquipeSeDisponivel() {
 
 
 // =========================================================
-// ## 17. APROVAR USUÁRIO
+// ## 17. ATIVAR USUÁRIO
 // =========================================================
 
-async function aprovarUsuarioEquipe(
+async function ativarUsuarioEquipe(
   userId
 ) {
 
@@ -1853,13 +1863,12 @@ async function aprovarUsuarioEquipe(
 
   if (
     perfil.tipo_acesso ===
-      'vendedor' &&
+    'vendedor' &&
     !perfil.time_equipe
   ) {
 
     alert(
-      'Defina o Time comercial do vendedor antes de aprovar o acesso.'
-    );
+      'Defina o Time comercial do vendedor antes de ativar o acesso.');
 
     return;
 
@@ -1868,7 +1877,7 @@ async function aprovarUsuarioEquipe(
 
   const confirmar =
     confirm(
-      `Aprovar acesso de ${perfil.nome}?`
+      `Ativar o acesso de ${perfil.nome}?`
     );
 
 
@@ -1881,14 +1890,14 @@ async function aprovarUsuarioEquipe(
 
   try {
 
-    await definirAcessoVendedor(
+    await definirAtivoUsuario(
       userId,
       true
     );
 
 
     toastMsg(
-      `${perfil.nome} aprovado`
+      `${perfil.nome} ativado`
     );
 
 
@@ -1900,14 +1909,13 @@ async function aprovarUsuarioEquipe(
   } catch (erro) {
 
     console.error(
-      'Erro ao aprovar usuário:',
+      'Erro ao ativar usuário:',
       erro
     );
 
 
     alert(
-      'Não foi possível aprovar o usuário.\n\n' +
-      (
+      'Não foi possível ativar o usuário.\n\n'(
         erro?.message ||
         'Erro desconhecido.'
       )
@@ -1919,10 +1927,10 @@ async function aprovarUsuarioEquipe(
 
 
 // =========================================================
-// ## 18. BLOQUEAR VENDEDOR
+// ## 18. INATIVAR VENDEDOR
 // =========================================================
 
-async function bloquearUsuarioEquipe(
+async function inativarUsuarioEquipe(
   userId
 ) {
 
@@ -1952,8 +1960,7 @@ async function bloquearUsuarioEquipe(
 
   const confirmar =
     confirm(
-      `Bloquear o acesso de ${perfil.nome}?`
-    );
+      `Inativar o acesso de ${perfil.nome}?`);
 
 
   if (!confirmar) {
@@ -1965,14 +1972,14 @@ async function bloquearUsuarioEquipe(
 
   try {
 
-    await definirAcessoVendedor(
+    await definirAtivoUsuario(
       userId,
       false
     );
 
 
     toastMsg(
-      `${perfil.nome} bloqueado`
+      `${perfil.nome} inativado`
     );
 
 
@@ -1984,13 +1991,13 @@ async function bloquearUsuarioEquipe(
   } catch (erro) {
 
     console.error(
-      'Erro ao bloquear usuário:',
+      'Erro ao inativar usuário:',
       erro
     );
 
 
     alert(
-      'Não foi possível bloquear o usuário.\n\n' +
+      'Não foi possível inativar o usuário.\n\n' +
       (
         erro?.message ||
         'Erro desconhecido.'
@@ -2133,7 +2140,7 @@ async function alterarTimeUsuarioEquipe(
   if (
     !perfil ||
     perfil.tipo_acesso !==
-      'vendedor'
+    'vendedor'
   ) {
 
     renderizarEquipe();

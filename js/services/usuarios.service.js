@@ -215,7 +215,7 @@ async function listarPerfisEquipe() {
   return perfis.sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
 }
 
-async function definirAcessoVendedor(
+async function definirAtivoUsuario(
   userId,
   ativo
 ) {
@@ -229,7 +229,7 @@ async function definirAcessoVendedor(
     error
   } =
     await client.rpc(
-      'definir_acesso_vendedor',
+      'definir_ativo_usuario',
       {
 
         p_user_id:
@@ -686,23 +686,6 @@ async function transferirProposta({
 
 
   return data;
-}
-// Seletor ADM: filtrar no servidor antes de paginar, sem confundir nome do PDF com identidade.
-async function listarResponsaveisAtivos() {
-  const perfis = [];
-  let cursor = null;
-  while (true) {
-    let consulta = getSupabaseClient().from('perfis').select('user_id,nome,tipo_acesso')
-      .eq('ativo', true).in('tipo_acesso', ['vendedor', 'gestor'])
-      .order('user_id').limit(100);
-    if (cursor) consulta = consulta.gt('user_id', cursor);
-    const { data, error } = await consulta;
-    if (error) throw error;
-    if (!data?.length) break;
-    perfis.push(...data);
-    cursor = data[data.length - 1].user_id;
-  }
-  return perfis.sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
 }
 
 async function listarPaginasComerciais(criarConsulta, chave = 'id') {

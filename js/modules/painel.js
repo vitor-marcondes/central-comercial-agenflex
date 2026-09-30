@@ -198,13 +198,12 @@ function painelTemVisaoGlobal() {
 
 function painelPodeGerenciarComercial() {
 
-  return [
-    'gestor',
-    'adm'
-  ].includes(
+  return (
     painelPerfilAtual
-      ?.tipo_acesso
+      ?.tipo_acesso ===
+    'gestor'
   );
+
 }
 
 function painelEhVendedor() {
@@ -4620,7 +4619,7 @@ function abrirTransferenciaPainel(
   ) {
 
     alert(
-      'Apenas Gestor ou ADM podem transferir propostas.'
+      'Apenas Gestor pode transferir propostas.'
     );
 
     return;
@@ -4952,7 +4951,7 @@ async function confirmarTransferenciaPainel() {
   ) {
 
     alert(
-      'Apenas Gestor ou ADM podem transferir propostas.'
+      'Apenas Gestor pode transferir propostas.'
     );
 
     return;
