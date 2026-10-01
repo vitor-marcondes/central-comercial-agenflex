@@ -529,40 +529,40 @@ begin
   end if;
 
 
-  -- -------------------------------------------------------
-  -- 3.4 Mudança de responsável
-  -- -------------------------------------------------------
-  --
-  -- Somente Gestor pode realizar transferência.
-  --
-  -- O trigger bloquear_transferencia_direta() continua
-  -- exigindo que a alteração passe pela RPC oficial
-  -- transferir_proposta().
-  -- -------------------------------------------------------
+    -- -------------------------------------------------------
+    -- 3.4 Mudança de responsável
+    -- -------------------------------------------------------
+    --
+    -- Somente Gestor pode realizar transferência.
+    --
+    -- O trigger bloquear_transferencia_direta() continua
+    -- exigindo que a alteração passe pela RPC oficial
+    -- transferir_proposta().
+    -- -------------------------------------------------------
 
-  if tg_op = 'UPDATE'
-     and new.vendedor_responsavel_id
-         is distinct from old.vendedor_responsavel_id
-     and not public.usuario_gestor()
-  then
+    if tg_op = 'UPDATE'
+      and new.vendedor_responsavel_id
+          is distinct from old.vendedor_responsavel_id
+      and not public.usuario_gestor()
+    then
 
-    raise exception
-      'Somente Gestor pode alterar o responsável comercial.';
+      raise exception
+        'Somente Gestor pode alterar o responsável comercial.';
 
-  end if;
-
-
-  return new;
-
-end;
-
-$function$;
+    end if;
 
 
-comment on function
-public.preparar_vendedor_responsavel()
-is
-'V1: Vendedor/Gestor criam propostas próprias; somente Gestor pode alterar o responsável pela transferência oficial.';
+    return new;
+
+  end;
+
+  $function$;
+
+
+  comment on function
+  public.preparar_vendedor_responsavel()
+  is
+  'V1: Vendedor/Gestor criam propostas próprias; somente Gestor pode alterar o responsável pela transferência oficial.';
 
 
 -- =========================================================
