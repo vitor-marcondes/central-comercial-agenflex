@@ -1441,30 +1441,59 @@ async function abrirPropostaHistorico(
 
     instalarSuporteRevisoesHistoricas();
 
+    const perfilAtual =
+      await obterMeuPerfil();
+
+
     aplicarPropostaNoFormulario(
       proposta
     );
+
+
+    // -----------------------------------------------------
+    // ADM = consulta somente leitura
+    // -----------------------------------------------------
+
+    if (
+      perfilAtual?.tipo_acesso === 'adm'
+    ) {
+
+      ativarModoConsultaOrcamento();
+
+    } else {
+
+      desativarModoConsultaOrcamento();
+
+    }
+
 
     showPage(
       'orcamentoPage',
       null
     );
 
+
     window.scrollTo({
       top: 0,
       behavior: 'smooth'
     });
+
 
     const revisao =
       revisaoAtualDaLista(
         proposta
       );
 
+
     toastMsg(
       `Proposta #${proposta.numero} ` +
       `• R${revisao?.numero_revisao ??
       proposta.revisao_atual
-      } aberta`
+      } ` +
+      `${perfilAtual?.tipo_acesso === 'adm'
+        ? 'em consulta'
+        : 'aberta'
+      }`
     );
 
   } catch (erro) {

@@ -94,7 +94,7 @@
           Início
         </button>
 
-        <button class="nav-btn" data-page="orcamentoPage" onclick="showPage('orcamentoPage',this)">
+        <button class="nav-btn" data-page="orcamentoPage" data-perfis="vendedor,gestor" onclick="showPage('orcamentoPage',this)">
           Orçamento
         </button>
 
@@ -153,7 +153,7 @@
 
       <div class="cards">
 
-        <div class="tool-card" onclick="go('orcamentoPage')">
+        <div class="tool-card" data-perfis="vendedor,gestor" onclick="go('orcamentoPage')">
           <h3>Orçamento</h3>
           <p>
             Crie o PDF completo, escolha a identidade do time

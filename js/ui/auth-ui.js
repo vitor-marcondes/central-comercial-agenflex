@@ -269,28 +269,39 @@ function mostrarCentral(
       .trim()
       .toLowerCase();
 
-  const podeOperarOrcamento =
-    [
-      'vendedor',
-      'gestor'
-    ].includes(
-      tipo
-    );
+// -------------------------------------------------------
+// ## 3.2.4 Visibilidade dos recursos por perfil
+// -------------------------------------------------------
+//
+// Elementos com data-perfis="vendedor,gestor" só aparecem
+// para esses perfis.
+//
+// A segurança continua no core.js.
+// Aqui apenas evitamos exibir uma opção que o usuário
+// não pode utilizar.
+// -------------------------------------------------------
+
+document
+  .querySelectorAll('[data-perfis]')
+  .forEach(elemento => {
+
+    const perfisPermitidos =
+      String(
+        elemento.dataset.perfis || ''
+      )
+        .split(',')
+        .map(perfilPermitido =>
+          perfilPermitido
+            .trim()
+            .toLowerCase()
+        )
+        .filter(Boolean);
 
 
-  const botaoOrcamento =
-    document.querySelector(
-      '.nav-btn[data-page="orcamentoPage"]'
-    );
+    elemento.hidden =
+      !perfisPermitidos.includes(tipo);
 
-
-  if (botaoOrcamento) {
-
-    botaoOrcamento.hidden =
-      !podeOperarOrcamento;
-
-  }
-
+  });
 
   const campoVendedor =
     document.getElementById(

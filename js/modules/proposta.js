@@ -4563,6 +4563,114 @@ if (
 
 atualizarInterfaceGestaoComercial();
 
+// =========================================================
+// ## MODO CONSULTA DO ORÇAMENTO
+// =========================================================
+//
+// ADM pode visualizar uma proposta pelo Histórico,
+// mas não pode operar o orçamento.
+//
+// O bloqueio é apenas visual/UX.
+// A proteção real continua no Supabase/RLS/RPC.
+// =========================================================
+
+function ativarModoConsultaOrcamento() {
+
+  const pagina =
+    document.getElementById(
+      'orcamentoPage'
+    );
+
+  if (!pagina) {
+
+    return;
+
+  }
+
+
+  pagina.dataset.modoConsulta =
+    'true';
+
+
+  pagina
+    .querySelectorAll(
+      'input, select, textarea, button'
+    )
+    .forEach(
+      elemento => {
+
+        // Mantém controles de navegação utilizáveis.
+        const onclick =
+          elemento.getAttribute(
+            'onclick'
+          ) || '';
+
+
+        const ehNavegacao =
+          onclick.includes(
+            'showPage('
+          )
+          ||
+          onclick.includes(
+            'go('
+          );
+
+
+        if (!ehNavegacao) {
+
+          elemento.disabled =
+            true;
+
+        }
+
+      }
+    );
+
+
+  pagina.classList.add(
+    'orcamento-consulta'
+  );
+
+}
+
+
+function desativarModoConsultaOrcamento() {
+
+  const pagina =
+    document.getElementById(
+      'orcamentoPage'
+    );
+
+  if (!pagina) {
+
+    return;
+
+  }
+
+
+  pagina.dataset.modoConsulta =
+    'false';
+
+
+  pagina
+    .querySelectorAll(
+      'input, select, textarea, button'
+    )
+    .forEach(
+      elemento => {
+
+        elemento.disabled =
+          false;
+
+      }
+    );
+
+
+  pagina.classList.remove(
+    'orcamento-consulta'
+  );
+
+}
 
 // =========================================================
 // ## 12. ABERTURA DE PROPOSTA EXISTENTE
