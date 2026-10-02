@@ -6120,11 +6120,13 @@ async function abrirPropostaPainel(
       proposta
     );
 
-    showPage(
-      'orcamentoPage',
-      null
-    );
-
+showPage(
+  'orcamentoPage',
+  null,
+  {
+    consulta: true
+  }
+);
 
     window.scrollTo({
       top: 0,

@@ -147,7 +147,12 @@ function esc(valor) {
 // ## 5. NAVEGAÇÃO ENTRE PÁGINAS
 // =========================================================
 
-function showPage(id, btn) {
+
+function showPage(
+  id,
+  btn,
+  opcoes = {}
+) {
 
   // -------------------------------------------------------
   // Proteção da área comercial de Orçamento
@@ -169,7 +174,12 @@ function showPage(id, btn) {
         : '';
 
 
+    const aberturaConsulta =
+      opcoes?.consulta === true;
+
+
     if (
+      !aberturaConsulta &&
       ![
         'vendedor',
         'gestor'
@@ -199,6 +209,7 @@ function showPage(id, btn) {
     }
 
   }
+
 
   document
     .querySelectorAll('.page')
@@ -241,6 +252,7 @@ function showPage(id, btn) {
     top: 0,
     behavior: 'smooth'
   });
+
 }
 
 
@@ -250,6 +262,7 @@ function go(id) {
     id,
     null
   );
+
 }
 
 

@@ -1074,11 +1074,13 @@ async function abrirRevisaoEspecificaHistorico(
 
     fecharRevisoesHistorico();
 
-    showPage(
-      'orcamentoPage',
-      null
-    );
-
+showPage(
+  'orcamentoPage',
+  null,
+  {
+    consulta: true
+  }
+);
     window.scrollTo({
       top: 0,
       behavior:
@@ -1467,11 +1469,13 @@ async function abrirPropostaHistorico(
     }
 
 
-    showPage(
-      'orcamentoPage',
-      null
-    );
-
+showPage(
+  'orcamentoPage',
+  null,
+  {
+    consulta: true
+  }
+);
 
     window.scrollTo({
       top: 0,

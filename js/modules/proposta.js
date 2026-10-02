@@ -66,6 +66,13 @@ let propostaNuvemAtual = {
   enviadoEm: null
 };
 
+// ---------------------------------------------------------
+// ## 1.1 Perfil do usuário atual
+// ---------------------------------------------------------
+
+let propostaPerfilAtual = null;
+
+let propostaPerfilCarregado = false;
 
 // ---------------------------------------------------------
 // ## 1.2 Estado comercial da proposta
@@ -146,16 +153,90 @@ function podeOperarPropostaAtual() {
   return (
     !propostaNuvemAtual.propostaId ||
     propostaNuvemAtual.responsavelId ===
-      perfil.user_id
+    perfil.user_id
   );
 
 }
 
 function revisaoEhEditavel() {
-  return podeOperarPropostaAtual() && statusComercialAtual.status !== 'concluido' &&
-    (!propostaNuvemAtual.propostaId || propostaNuvemAtual.status === 'rascunho');
-}
 
+  // ---------------------------------------------------------
+  // ## 1.2 Carregar perfil do usuário atual
+  // ---------------------------------------------------------
+
+  async function carregarPerfilProposta() {
+
+    try {
+
+      propostaPerfilAtual =
+        await obterMeuPerfil();
+
+      propostaPerfilCarregado =
+        true;
+
+      atualizarInterfaceRevisao();
+
+    } catch (erro) {
+
+      console.error(
+        'Erro ao carregar perfil da proposta:',
+        erro
+      );
+
+      propostaPerfilAtual =
+        null;
+
+      propostaPerfilCarregado =
+        true;
+
+      atualizarInterfaceRevisao();
+
+    }
+
+  }
+
+  // Enquanto o perfil ainda não foi carregado,
+  // não liberamos edição de uma proposta existente.
+  if (
+    propostaNuvemAtual.propostaId &&
+    !propostaPerfilCarregado
+  ) {
+
+    return false;
+
+  }
+
+
+  // ADM possui acesso global para consulta,
+  // mas não edita propostas pela tela.
+  if (
+    propostaPerfilAtual?.tipo_acesso ===
+    'adm'
+  ) {
+
+    return false;
+
+  }
+
+
+  // Nova proposta.
+  if (
+    !propostaNuvemAtual.propostaId
+  ) {
+
+    return true;
+
+  }
+
+
+  // Proposta existente:
+  // somente revisão em rascunho pode ser editada.
+  return (
+    propostaNuvemAtual.status ===
+    'rascunho'
+  );
+
+}
 
 function obterResponsavelComercialFormulario() {
 
@@ -2648,9 +2729,9 @@ function montarPayloadRevisao() {
       perfilCentralAtual?.tipo_acesso ===
         'gestor'
         ? (
-            timeEquipe.value ||
-            null
-          )
+          timeEquipe.value ||
+          null
+        )
         : null,
 
     cliente:
@@ -2814,9 +2895,9 @@ function montarItensBanco() {
 async function salvarPropostaNuvem(
   opcoes = {}
 ) {
-  if (!revisaoEhEditavel()) { 
-    toastMsg('Esta proposta está em somente leitura.'); 
-    return false; 
+  if (!revisaoEhEditavel()) {
+    toastMsg('Esta proposta está em somente leitura.');
+    return false;
   }
 
 
@@ -2877,7 +2958,7 @@ async function salvarPropostaNuvem(
   if (
     !propostaNuvemAtual.propostaId &&
     perfilCentralAtual?.tipo_acesso ===
-      'gestor' &&
+    'gestor' &&
     !timeEquipe.value
   ) {
 
@@ -2914,7 +2995,7 @@ async function salvarPropostaNuvem(
   // -------------------------------------------------------
   // ## 9.2 Montagem dos dados
   // -------------------------------------------------------
-  
+
 
   const revisao =
     montarPayloadRevisao();
@@ -3356,130 +3437,123 @@ function atualizarInterfaceRevisao() {
   ) {
 
     botaoSalvar.disabled =
-      propostaSalva &&
-      !rascunho;
+      !revisaoEhEditavel();
 
   }
-
 
   // -------------------------------------------------------
   // Enviar revisão
   // -------------------------------------------------------
 
   if (
-    botaoEnviar
+    !propostaSalva ||
+    !revisaoSalva ||
+    !revisaoEhEditavel()
   ) {
 
-    if (
-      !propostaSalva ||
-      !revisaoSalva
-    ) {
+    botaoEnviar.disabled =
+      true;
 
-      botaoEnviar.disabled =
-        true;
+    botaoEnviar.textContent =
+      '📤 Enviar revisão';
 
+  } else if (
+    rascunho
+  ) {
 
-      botaoEnviar.textContent =
-        'Enviar revisão';
-
-    } else if (
-      rascunho
-    ) {
-
-      botaoEnviar.disabled =
-        false;
+    botaoEnviar.disabled =
+      false;
 
 
-      botaoEnviar.textContent =
-        `Enviar R${propostaNuvemAtual.numeroRevisao}`;
+    botaoEnviar.textContent =
+      `Enviar R${propostaNuvemAtual.numeroRevisao}`;
 
-    } else if (
-      enviada
-    ) {
+  } else if (
+    enviada
+  ) {
 
-      botaoEnviar.disabled =
-        true;
+    botaoEnviar.disabled =
+      true;
 
 
-      botaoEnviar.textContent =
-        `✅ R${propostaNuvemAtual.numeroRevisao} enviada`;
+    botaoEnviar.textContent =
+      `✅ R${propostaNuvemAtual.numeroRevisao} enviada`;
 
-    } else {
+  } else {
 
-      botaoEnviar.disabled =
-        true;
-
-    }
+    botaoEnviar.disabled =
+      true;
 
   }
 
 
-  // -------------------------------------------------------
-  // Criar próxima revisão
-  // -------------------------------------------------------
+// -------------------------------------------------------
+// Criar próxima revisão
+// -------------------------------------------------------
+
+if (
+  botaoNovaRevisao
+) {
+
+  const numeroAtual =
+    Number(
+      propostaNuvemAtual.numeroRevisao
+    );
+
+
+  const limiteAtingido =
+    Number.isFinite(
+      numeroAtual
+    ) &&
+    numeroAtual >= 2;
+
+
+  const podeCriar =
+    propostaSalva &&
+    revisaoSalva &&
+    enviada &&
+    !limiteAtingido;
+
+
+  botaoNovaRevisao.hidden =
+    !podeCriar;
+
+
+  botaoNovaRevisao.disabled =
+    !podeCriar;
+
 
   if (
-    botaoNovaRevisao
+    podeCriar
   ) {
 
-    const numeroAtual =
-      Number(
-        propostaNuvemAtual.numeroRevisao
-      );
+    const proxima =
+      numeroAtual + 1;
 
 
-    const limiteAtingido =
-      Number.isFinite(
-        numeroAtual
-      ) &&
-      numeroAtual >= 2;
-
-
-    const podeCriar =
-      propostaSalva &&
-      revisaoSalva &&
-      enviada &&
-      !limiteAtingido;
-
-
-    botaoNovaRevisao.hidden =
-      !podeCriar;
-
-
-    botaoNovaRevisao.disabled =
-      !podeCriar;
-
-
-    if (
-      podeCriar
-    ) {
-
-      const proxima =
-        numeroAtual + 1;
-
-
-      botaoNovaRevisao.textContent =
-        `➕ Criar R${proxima}`;
-
-    }
+    botaoNovaRevisao.textContent =
+      `➕ Criar R${proxima}`;
 
   }
 
-  if (botaoSalvar) botaoSalvar.disabled = !revisaoEhEditavel();
-  if (botaoEnviar) botaoEnviar.disabled = botaoEnviar.disabled || !revisaoEhEditavel();
-  if (botaoNovaRevisao && (!podeOperarPropostaAtual() || statusComercialAtual.status === 'concluido')) {
-    botaoNovaRevisao.hidden = true;
-    botaoNovaRevisao.disabled = true;
-  }
+}
+
+if (botaoSalvar) botaoSalvar.disabled = !revisaoEhEditavel();
+if (botaoEnviar) botaoEnviar.disabled = botaoEnviar.disabled || !revisaoEhEditavel();
+if (botaoNovaRevisao && (!podeOperarPropostaAtual() || statusComercialAtual.status === 'concluido')) {
+  botaoNovaRevisao.hidden = true;
+  botaoNovaRevisao.disabled = true;
+}
 
 
-  const validadeInfo = document.getElementById('validadePersistidaInfo');
-  if (validadeInfo) {
-    validadeInfo.hidden = !propostaNuvemAtual.validadeAte || propostaNuvemAtual.status !== 'enviada';
-    validadeInfo.textContent = propostaNuvemAtual.validadeAte
-      ? `Validade registrada: ${brDate(propostaNuvemAtual.validadeAte)} (${propostaNuvemAtual.validadeDias} dia(s)).` : '';
-  }
-  atualizarBloqueioCamposRevisao();
+const validadeInfo = document.getElementById('validadePersistidaInfo');
+if (validadeInfo) {
+  validadeInfo.hidden = !propostaNuvemAtual.validadeAte || propostaNuvemAtual.status !== 'enviada';
+  validadeInfo.textContent = propostaNuvemAtual.validadeAte
+    ? `Validade registrada: ${brDate(propostaNuvemAtual.validadeAte)} (${propostaNuvemAtual.validadeDias} dia(s)).` : '';
+}
+atualizarBloqueioCamposRevisao();
+
 
 }
 
@@ -3891,6 +3965,10 @@ async function criarNovaRevisaoAtual() {
 
 // Inicializa o estado da revisão.
 atualizarInterfaceRevisao();
+
+// Carrega o perfil do usuário para aplicar
+// corretamente as regras de edição.
+carregarPerfilProposta();
 
 // =========================================================
 // ## 11. GESTÃO COMERCIAL
