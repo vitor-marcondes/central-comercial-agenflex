@@ -1407,10 +1407,6 @@ function refresh() {
     validade.value;
 
 
-  pCliche.textContent =
-    cliche.value;
-
-
   pPagamento.textContent =
     pagamento.value;
 
