@@ -213,29 +213,131 @@ async function copyCliche() {
 
 function useCliche() {
 
-  if (!revisaoEhEditavel() || window.__agenflexConsultaHistorica?.ativa) {
-    toastMsg('Esta revisão é somente leitura. Crie ou abra um rascunho para alterar o clichê.');
+  if (
+    !revisaoEhEditavel() ||
+    window.__agenflexConsultaHistorica?.ativa
+  ) {
+
+    toastMsg(
+      'Esta revisão é somente leitura. Crie ou abra um rascunho para alterar o clichê.'
+    );
+
     return;
   }
 
-  // Calcula e grava o valor no campo de clichê da proposta.
+
+  // -------------------------------------------------------
+  // Calcula o valor comercial do clichê
+  // -------------------------------------------------------
+
+  const valorCliche =
+    calcCliche();
+
+
+  // -------------------------------------------------------
+  // Mantém o campo antigo preenchido por compatibilidade
+  // com o fluxo atual da proposta.
+  // -------------------------------------------------------
+
   cliche.value =
     BRL.format(
-      calcCliche()
+      valorCliche
     );
 
 
-  // Atualiza a prévia da proposta.
-  refresh();
+  // -------------------------------------------------------
+  // Estrutura oficial do item CLICHE
+  // -------------------------------------------------------
+
+  const itemCliche = {
+
+    codigo:
+      'CLICHE',
+
+    produto:
+      'CLICHÊ',
+
+    detalhes:
+      '',
+
+    ncm:
+      '',
+
+    quant:
+      1,
+
+    unidade:
+      'UN',
+
+    unit:
+      valorCliche,
+
+    desc:
+      0,
+
+    ipi:
+      0
+
+  };
 
 
-  // Navega novamente para a página de orçamento.
+  // -------------------------------------------------------
+  // Procura um CLICHE já existente na proposta
+  // -------------------------------------------------------
+
+  const indiceCliche =
+    items.findIndex(
+      it =>
+        String(
+          it.codigo || ''
+        )
+          .trim()
+          .toUpperCase() ===
+        'CLICHE'
+    );
+
+
+  // -------------------------------------------------------
+  // Se já existe, atualiza.
+  // Se não existe, adiciona.
+  // -------------------------------------------------------
+
+  if (
+    indiceCliche >= 0
+  ) {
+
+    items[indiceCliche] =
+      itemCliche;
+
+  } else {
+
+    items.push(
+      itemCliche
+    );
+
+  }
+
+
+  // -------------------------------------------------------
+  // Atualiza tabela, cálculos e prévia
+  // -------------------------------------------------------
+
+  renderItems();
+
+
+  // -------------------------------------------------------
+  // Retorna ao orçamento
+  // -------------------------------------------------------
+
   go(
     'orcamentoPage'
   );
 
 
   toastMsg(
-    'Clichê enviado à proposta'
+    indiceCliche >= 0
+      ? 'Clichê atualizado na proposta'
+      : 'Clichê adicionado à proposta'
   );
+
 }
