@@ -1828,3 +1828,261 @@ body.auth-pending > .toast {
   }
 
 }
+
+/* =========================================================
+   ## HISTÓRICO — CARDS DE REVISÕES
+   Compactação visual do modal R0 / R1 / R2
+   ========================================================= */
+
+.history-revision-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+
+  padding: 14px 16px;
+  margin-bottom: 10px;
+
+  border-radius: 12px;
+}
+
+.history-revision-card-main {
+  min-width: 0;
+}
+
+.history-revision-card-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  margin-bottom: 7px;
+}
+
+.history-revision-card-title strong {
+  font-size: 16px;
+}
+
+.history-revision-card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+
+  margin-bottom: 6px;
+
+  font-size: 12px;
+}
+
+.history-revision-card-client {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.history-revision-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.history-revision-card-actions .btn {
+  min-width: 0;
+  padding: 9px 13px;
+  white-space: nowrap;
+}
+
+
+/* ---------------------------------------------------------
+   Telas menores
+   --------------------------------------------------------- */
+
+@media (max-width: 720px) {
+
+  .history-revision-card {
+    grid-template-columns: 1fr;
+  }
+
+  .history-revision-card-actions {
+    justify-content: flex-start;
+  }
+
+}
+
+/* =========================================================
+   ## HISTÓRICO — PROPORÇÃO DA TABELA
+   ========================================================= */
+
+table.editor.history-table {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+}
+
+/* Nº */
+table.editor.history-table th:nth-child(1),
+table.editor.history-table td:nth-child(1) {
+  width: 5%;
+}
+
+/* Proposta / Cliente */
+table.editor.history-table th:nth-child(2),
+table.editor.history-table td:nth-child(2) {
+  width: 29%;
+}
+
+/* CNPJ */
+table.editor.history-table th:nth-child(3),
+table.editor.history-table td:nth-child(3) {
+  width: 13%;
+}
+
+/* Responsável */
+table.editor.history-table th:nth-child(4),
+table.editor.history-table td:nth-child(4) {
+  width: 11%;
+}
+
+/* Data */
+table.editor.history-table th:nth-child(5),
+table.editor.history-table td:nth-child(5) {
+  width: 9%;
+}
+
+/* Revisão */
+table.editor.history-table th:nth-child(6),
+table.editor.history-table td:nth-child(6) {
+  width: 8%;
+}
+
+/* Status comercial */
+table.editor.history-table th:nth-child(7),
+table.editor.history-table td:nth-child(7) {
+  width: 11%;
+}
+
+/* Ações */
+table.editor.history-table th:nth-child(8),
+table.editor.history-table td:nth-child(8) {
+  width: 14%;
+}
+
+
+/* Permite que a proposta use melhor o espaço */
+table.editor.history-table td:nth-child(2) {
+  white-space: normal;
+}
+
+
+/* Mantém os botões de ações organizados */
+table.editor.history-table td:nth-child(8) {
+  white-space: nowrap;
+}
+
+table.editor.history-table td:nth-child(8) .btn {
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+/* =========================================================
+   ## PAINEL — PROPORÇÃO DA TABELA
+   ========================================================= */
+
+table.editor.painel-table {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+}
+
+
+/* Nº */
+table.editor.painel-table th:nth-child(1),
+table.editor.painel-table td:nth-child(1) {
+  width: 4%;
+}
+
+
+/* Proposta / Cliente */
+table.editor.painel-table th:nth-child(2),
+table.editor.painel-table td:nth-child(2) {
+  width: 24%;
+}
+
+
+/* Responsável */
+table.editor.painel-table th:nth-child(3),
+table.editor.painel-table td:nth-child(3) {
+  width: 10%;
+}
+
+
+/* Data */
+table.editor.painel-table th:nth-child(4),
+table.editor.painel-table td:nth-child(4) {
+  width: 8%;
+}
+
+
+/* Origem */
+table.editor.painel-table th:nth-child(5),
+table.editor.painel-table td:nth-child(5) {
+  width: 9%;
+}
+
+
+/* Status */
+table.editor.painel-table th:nth-child(6),
+table.editor.painel-table td:nth-child(6) {
+  width: 8%;
+}
+
+
+/* Valor */
+table.editor.painel-table th:nth-child(7),
+table.editor.painel-table td:nth-child(7) {
+  width: 10%;
+}
+
+
+/* Revisão */
+table.editor.painel-table th:nth-child(8),
+table.editor.painel-table td:nth-child(8) {
+  width: 8%;
+}
+
+
+/* Validade */
+table.editor.painel-table th:nth-child(9),
+table.editor.painel-table td:nth-child(9) {
+  width: 8%;
+}
+
+
+/* Ações */
+table.editor.painel-table th:nth-child(10),
+table.editor.painel-table td:nth-child(10) {
+  width: 11%;
+}
+
+
+/* Proposta / Cliente pode quebrar linha */
+table.editor.painel-table td:nth-child(2) {
+  white-space: normal;
+}
+
+
+/* Campos mais curtos permanecem organizados */
+table.editor.painel-table td:nth-child(4),
+table.editor.painel-table td:nth-child(7),
+table.editor.painel-table td:nth-child(8),
+table.editor.painel-table td:nth-child(9),
+table.editor.painel-table td:nth-child(10) {
+  white-space: nowrap;
+}
+
+
+/* Botões da última coluna */
+table.editor.painel-table td:nth-child(10) .btn {
+  padding: 8px 10px;
+  font-size: 12px;
+}

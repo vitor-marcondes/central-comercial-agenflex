@@ -1506,41 +1506,14 @@ function refresh() {
 
       tr.innerHTML = `
 
-        <td>
+<td>
+  ${esc(it.produto)}
 
-          ${esc(
-        (
-          it.codigo
-            ? it.codigo +
-            ' - '
-            : ''
-        ) +
-        it.produto
-      )
-        }
-
-
-          ${it.detalhes
-          ? `
-
-                  <div class="item-notes">
-
-                    ${esc(
-            it.detalhes
-          ).replace(
-            /\n/g,
-            '<br>'
-          )
-          }
-
-                  </div>
-
-                `
+  ${it.detalhes
+          ? `<div class="item-notes">${esc(it.detalhes).replace(/\n/g, '<br>')}</div>`
           : ''
         }
-
-        </td>
-
+</td>
 
         <td>
 
@@ -1551,27 +1524,31 @@ function refresh() {
         </td>
 
 
-        <td>
+<td>
 
-          ${N2.format(
+  ${N2.format(
           it.quant
         )}
 
-          ${esc(
+</td>
+
+
+<td>
+
+  ${esc(
           it.unidade
         )}
 
-        </td>
+</td>
 
 
-        <td>
+<td>
 
-          ${N4.format(
+  ${N4.format(
           it.unit
         )}
 
-        </td>
-
+</td>
 
         ${celulaDesconto}
 
@@ -3477,72 +3454,72 @@ function atualizarInterfaceRevisao() {
   }
 
 
-// -------------------------------------------------------
-// Criar próxima revisão
-// -------------------------------------------------------
-
-if (
-  botaoNovaRevisao
-) {
-
-  const numeroAtual =
-    Number(
-      propostaNuvemAtual.numeroRevisao
-    );
-
-
-  const limiteAtingido =
-    Number.isFinite(
-      numeroAtual
-    ) &&
-    numeroAtual >= 2;
-
-
-  const podeCriar =
-    propostaSalva &&
-    revisaoSalva &&
-    enviada &&
-    !limiteAtingido;
-
-
-  botaoNovaRevisao.hidden =
-    !podeCriar;
-
-
-  botaoNovaRevisao.disabled =
-    !podeCriar;
-
+  // -------------------------------------------------------
+  // Criar próxima revisão
+  // -------------------------------------------------------
 
   if (
-    podeCriar
+    botaoNovaRevisao
   ) {
 
-    const proxima =
-      numeroAtual + 1;
+    const numeroAtual =
+      Number(
+        propostaNuvemAtual.numeroRevisao
+      );
 
 
-    botaoNovaRevisao.textContent =
-      `➕ Criar R${proxima}`;
+    const limiteAtingido =
+      Number.isFinite(
+        numeroAtual
+      ) &&
+      numeroAtual >= 2;
+
+
+    const podeCriar =
+      propostaSalva &&
+      revisaoSalva &&
+      enviada &&
+      !limiteAtingido;
+
+
+    botaoNovaRevisao.hidden =
+      !podeCriar;
+
+
+    botaoNovaRevisao.disabled =
+      !podeCriar;
+
+
+    if (
+      podeCriar
+    ) {
+
+      const proxima =
+        numeroAtual + 1;
+
+
+      botaoNovaRevisao.textContent =
+        `➕ Criar R${proxima}`;
+
+    }
 
   }
 
-}
-
-if (botaoSalvar) botaoSalvar.disabled = !revisaoEhEditavel();
-if (botaoEnviar) botaoEnviar.disabled = botaoEnviar.disabled || !revisaoEhEditavel();
-if (botaoNovaRevisao && (!podeOperarPropostaAtual() || statusComercialAtual.status === 'concluido')) {
-  botaoNovaRevisao.hidden = true;
-  botaoNovaRevisao.disabled = true;
-}
+  if (botaoSalvar) botaoSalvar.disabled = !revisaoEhEditavel();
+  if (botaoEnviar) botaoEnviar.disabled = botaoEnviar.disabled || !revisaoEhEditavel();
+  if (botaoNovaRevisao && (!podeOperarPropostaAtual() || statusComercialAtual.status === 'concluido')) {
+    botaoNovaRevisao.hidden = true;
+    botaoNovaRevisao.disabled = true;
+  }
 
 
-const validadeInfo = document.getElementById('validadePersistidaInfo');
-if (validadeInfo) {
-  validadeInfo.hidden = !propostaNuvemAtual.validadeAte || propostaNuvemAtual.status !== 'enviada';
-  validadeInfo.textContent = propostaNuvemAtual.validadeAte
-    ? `Validade registrada: ${brDate(propostaNuvemAtual.validadeAte)} (${propostaNuvemAtual.validadeDias} dia(s)).` : '';
-}
-atualizarBloqueioCamposRevisao();
+  const validadeInfo = document.getElementById('validadePersistidaInfo');
+  if (validadeInfo) {
+    validadeInfo.hidden = !propostaNuvemAtual.validadeAte || propostaNuvemAtual.status !== 'enviada';
+    validadeInfo.textContent = propostaNuvemAtual.validadeAte
+      ? `Validade registrada: ${brDate(propostaNuvemAtual.validadeAte)} (${propostaNuvemAtual.validadeDias} dia(s)).` : '';
+  }
+  atualizarBloqueioCamposRevisao();
 
 
 }
@@ -4968,11 +4945,56 @@ function aplicarPropostaNoFormulario(
   );
 
 
-  definir(
-    'destinacao',
-    revisaoAtual.destinacao
-  );
+const destinacaoNormalizada =
+  (() => {
 
+    const valor =
+      String(
+        revisaoAtual.destinacao || ''
+      )
+        .trim()
+        .toUpperCase();
+
+
+    if (
+      valor ===
+      'USO E CONSUMO'
+    ) {
+
+      return 'Uso e Consumo';
+
+    }
+
+
+    if (
+      valor ===
+      'VENDA / REVENDA'
+    ) {
+
+      return 'Venda / Revenda';
+
+    }
+
+
+    if (
+      valor ===
+      'INSUMOS'
+    ) {
+
+      return 'Insumos';
+
+    }
+
+
+    return '';
+
+  })();
+
+
+definir(
+  'destinacao',
+  destinacaoNormalizada
+);
 
   definir(
     'frete',

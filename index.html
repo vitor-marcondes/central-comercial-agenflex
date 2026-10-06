@@ -530,12 +530,16 @@
               </div>
 
               <div class="field">
-                <label>Destinação</label>
+                <label>
+                  Destinação *
+                </label>
 
-                <select id="destinacao">
+                <select id="destinacao" required>
+
                   <option value="" selected disabled>
                     Selecione a Destinação
                   </option>
+
                   <option value="Uso e Consumo">
                     Uso e Consumo
                   </option>
@@ -550,6 +554,7 @@
 
                 </select>
               </div>
+              
               <div class="field full">
                 <label>Frete</label>
                 <input id="frete"
@@ -1056,11 +1061,15 @@ CASO HAJA NECESSIDADE DE REENTREGA, A MESMA SERÁ COBRADA.</textarea>
                     </th>
 
                     <th>
-                      Quant.
+                      Qtd.
                     </th>
 
                     <th>
-                      Unit.
+                      Un.
+                    </th>
+
+                    <th>
+                      Valor Unit.
                     </th>
 
                     <th id="pDescHeader" style="display:none">
