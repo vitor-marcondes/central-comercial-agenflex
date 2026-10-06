@@ -509,18 +509,23 @@ function instalarSuporteRevisoesHistoricas() {
         };
       }
 
-      const historica =
-        Boolean(
-          revisaoSelecionada &&
-          Number(
-            revisaoSelecionada
-              .numero_revisao
-          ) !==
-          Number(
-            proposta.revisao_atual
-          )
-        );
+const revisaoAtualEfetiva =
+  revisaoAtualDaLista(
+    proposta
+  );
 
+
+const historica =
+  Boolean(
+    revisaoSelecionada &&
+    revisaoAtualEfetiva &&
+    String(
+      revisaoSelecionada.id || ''
+    ) !==
+    String(
+      revisaoAtualEfetiva.id || ''
+    )
+  );
       const snapshotLocalStorage =
         historica
           ? capturarLocalStorageHistorico()

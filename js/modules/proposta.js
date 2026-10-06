@@ -158,42 +158,50 @@ function podeOperarPropostaAtual() {
 
 }
 
-function revisaoEhEditavel() {
+// ---------------------------------------------------------
+// ## 1.2 Carregar perfil do usuário atual
+// ---------------------------------------------------------
 
-  // ---------------------------------------------------------
-  // ## 1.2 Carregar perfil do usuário atual
-  // ---------------------------------------------------------
+async function carregarPerfilProposta() {
 
-  async function carregarPerfilProposta() {
+  try {
 
-    try {
+    propostaPerfilAtual =
+      await obterMeuPerfil();
 
-      propostaPerfilAtual =
-        await obterMeuPerfil();
+    propostaPerfilCarregado =
+      true;
 
-      propostaPerfilCarregado =
-        true;
+    atualizarInterfaceRevisao();
 
-      atualizarInterfaceRevisao();
+    atualizarBloqueioCamposRevisao();
 
-    } catch (erro) {
+  } catch (erro) {
 
-      console.error(
-        'Erro ao carregar perfil da proposta:',
-        erro
-      );
+    console.error(
+      'Erro ao carregar perfil da proposta:',
+      erro
+    );
 
-      propostaPerfilAtual =
-        null;
+    propostaPerfilAtual =
+      null;
 
-      propostaPerfilCarregado =
-        true;
+    propostaPerfilCarregado =
+      true;
 
-      atualizarInterfaceRevisao();
+    atualizarInterfaceRevisao();
 
-    }
+    atualizarBloqueioCamposRevisao();
 
   }
+
+}
+
+// ---------------------------------------------------------
+// ## 1.3 Regra de edição da revisão
+// ---------------------------------------------------------
+
+function revisaoEhEditavel() {
 
   // Enquanto o perfil ainda não foi carregado,
   // não liberamos edição de uma proposta existente.
