@@ -743,20 +743,6 @@ function renderItems() {
 
       tr.innerHTML = `
 
-        <!-- ===============================================
-             CÓDIGO
-             =============================================== -->
-
-        <td>
-
-          <input
-            value="${esc(it.codigo)}"
-            placeholder="Código"
-            oninput="upd(${i},'codigo',this.value)"
-          >
-
-        </td>
-
 
         <!-- ===============================================
              PRODUTO / OBSERVAÇÕES
