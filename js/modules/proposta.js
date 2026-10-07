@@ -604,6 +604,80 @@ function upd(
 
 
 // ---------------------------------------------------------
+// ## 2.4 Máscara da quantidade
+// ---------------------------------------------------------
+
+function atualizarQuantidadeMascarada(
+  i,
+  campo
+) {
+
+  let digitos =
+    String(
+      campo.value || ''
+    )
+      .replace(
+        /\D/g,
+        ''
+      );
+
+
+  if (
+    digitos.length > 9
+  ) {
+
+    digitos =
+      digitos.slice(
+        0,
+        9
+      );
+
+    toastMsg(
+      'A quantidade permite no máximo 9 dígitos'
+    );
+
+  }
+
+  if (
+    !digitos
+  ) {
+
+    campo.value =
+      '';
+
+    upd(
+      i,
+      'quant',
+      0
+    );
+
+    return;
+  }
+
+
+  const quantidade =
+    Number(
+      digitos
+    ) || 0;
+
+
+  campo.value =
+    quantidade
+      .toLocaleString(
+        'pt-BR'
+      );
+
+
+  upd(
+    i,
+    'quant',
+    quantidade
+  );
+
+}
+
+
+// ---------------------------------------------------------
 // ## 2.4 Seleção de NCM
 // ---------------------------------------------------------
 
@@ -783,17 +857,25 @@ function renderItems() {
              QUANTIDADE
              =============================================== -->
 
-        <td>
+<td>
 
-          <input
-            type="number"
-            min="0"
-            value="${it.quant}"
-            oninput="upd(${i},'quant',this.value)"
-          >
+  <input
+    type="text"
+    inputmode="numeric"
+    value="${Number(
+        it.quant || 0
+      )
+          .toLocaleString(
+            'pt-BR',
+            {
+              maximumFractionDigits: 0
+            }
+          )
+        }"
+    oninput="atualizarQuantidadeMascarada(${i},this)"
+  >
 
-        </td>
-
+</td>
 
         <!-- ===============================================
              UNIDADE
@@ -802,9 +884,9 @@ function renderItems() {
         <td>
 
           ${unitSelect(
-        it,
-        i
-      )}
+          it,
+          i
+        )}
 
         </td>
 
@@ -841,8 +923,8 @@ function renderItems() {
               max="100"
               step="0.01"
               value="${normalizarDescontoPercentual(
-        it.desc
-      )
+          it.desc
+        )
         }"
               oninput="upd(${i},'desc',this.value)"
             >
@@ -1426,6 +1508,20 @@ function refresh() {
 
   pGeradoPor.textContent =
     vendedor.value;
+
+  const avisoArtesPdf =
+    document.getElementById(
+      'pAvisoArtesPdf'
+    );
+
+  if (avisoArtesPdf) {
+
+    avisoArtesPdf.textContent =
+      arts.length
+        ? 'ATENÇÃO: Esta proposta possui arte(s) anexada(s) nas páginas seguintes. Verifique todas as páginas do PDF antes da aprovação final.'
+        : '';
+
+  }
 
 
   // -------------------------------------------------------
@@ -2618,6 +2714,135 @@ function loadDraft() {
 
 
 // ---------------------------------------------------------
+// ## 7.4 Salvamento automático do rascunho local
+// ---------------------------------------------------------
+
+function instalarAutosaveRascunhoLocal() {
+
+  const pagina =
+    document.getElementById(
+      'orcamentoPage'
+    );
+
+
+  if (
+    !pagina ||
+    pagina.dataset.autosaveLocalInstalado === '1'
+  ) {
+
+    return;
+
+  }
+
+
+  let timerAutosave =
+    null;
+
+
+  const podeSalvarLocalmente =
+    () => {
+
+      return (
+        revisaoEhEditavel() &&
+        !window.__agenflexConsultaHistorica?.ativa
+      );
+
+    };
+
+
+  const agendarAutosave =
+    () => {
+
+      if (
+        !podeSalvarLocalmente()
+      ) {
+
+        return;
+
+      }
+
+
+      clearTimeout(
+        timerAutosave
+      );
+
+
+      timerAutosave =
+        setTimeout(
+          () => {
+
+            persistirRascunhoLocal();
+
+          },
+          400
+        );
+
+    };
+
+
+  pagina.addEventListener(
+    'input',
+    agendarAutosave
+  );
+
+
+  pagina.addEventListener(
+    'change',
+    agendarAutosave
+  );
+
+
+  // Captura inclusão, duplicação e exclusão de itens.
+  pagina.addEventListener(
+    'click',
+    evento => {
+
+      const alvo =
+        evento.target.closest(
+          '#itemsEditor button, ' +
+          '[onclick="addItem()"], ' +
+          '[onclick="duplicateLast()"], ' +
+          '[onclick="removeArts()"]'
+        );
+
+
+      if (
+        alvo
+      ) {
+
+        agendarAutosave();
+
+      }
+
+    }
+  );
+
+
+  // Proteção extra para F5 ou fechamento da página.
+  window.addEventListener(
+    'beforeunload',
+    () => {
+
+      if (
+        podeSalvarLocalmente()
+      ) {
+
+        persistirRascunhoLocal();
+
+      }
+
+    }
+  );
+
+
+  pagina.dataset.autosaveLocalInstalado =
+    '1';
+
+}
+
+instalarAutosaveRascunhoLocal();
+
+// ---------------------------------------------------------
 // ## 7.5 Limpeza do formulário
 // ---------------------------------------------------------
 
@@ -2953,6 +3178,22 @@ async function salvarPropostaNuvem(
 
 
     origemEl?.focus();
+
+
+    return false;
+  }
+
+
+  if (
+    !destinacao.value
+  ) {
+
+    toastMsg(
+      'Selecione a Destinação dos itens do pedido'
+    );
+
+
+    destinacao.focus();
 
 
     return false;
@@ -4945,56 +5186,56 @@ function aplicarPropostaNoFormulario(
   );
 
 
-const destinacaoNormalizada =
-  (() => {
+  const destinacaoNormalizada =
+    (() => {
 
-    const valor =
-      String(
-        revisaoAtual.destinacao || ''
-      )
-        .trim()
-        .toUpperCase();
-
-
-    if (
-      valor ===
-      'USO E CONSUMO'
-    ) {
-
-      return 'Uso e Consumo';
-
-    }
+      const valor =
+        String(
+          revisaoAtual.destinacao || ''
+        )
+          .trim()
+          .toUpperCase();
 
 
-    if (
-      valor ===
-      'VENDA / REVENDA'
-    ) {
+      if (
+        valor ===
+        'USO E CONSUMO'
+      ) {
 
-      return 'Venda / Revenda';
+        return 'Uso e Consumo';
 
-    }
-
-
-    if (
-      valor ===
-      'INSUMOS'
-    ) {
-
-      return 'Insumos';
-
-    }
+      }
 
 
-    return '';
+      if (
+        valor ===
+        'VENDA / REVENDA'
+      ) {
 
-  })();
+        return 'Venda / Revenda';
+
+      }
 
 
-definir(
-  'destinacao',
-  destinacaoNormalizada
-);
+      if (
+        valor ===
+        'INSUMOS'
+      ) {
+
+        return 'Insumos';
+
+      }
+
+
+      return '';
+
+    })();
+
+
+  definir(
+    'destinacao',
+    destinacaoNormalizada
+  );
 
   definir(
     'frete',

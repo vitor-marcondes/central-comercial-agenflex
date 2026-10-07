@@ -43,12 +43,15 @@
 
 body {
   margin: 0;
-  font-family: Segoe UI,Arial,sans-serif;
+  font-family: Segoe UI, Arial, sans-serif;
   background: var(--bg);
   color: var(--ink);
 }
 
-button,input,select,textarea {
+button,
+input,
+select,
+textarea {
   font: inherit;
 }
 
@@ -61,7 +64,7 @@ header {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: linear-gradient(100deg,#070707,#1a1a1a);
+  background: linear-gradient(100deg, #070707, #1a1a1a);
   color: #fff;
   border-bottom: 4px solid var(--red);
 }
@@ -115,7 +118,8 @@ nav {
   cursor: pointer;
 }
 
-.nav-btn:hover,.nav-btn.active {
+.nav-btn:hover,
+.nav-btn.active {
   background: var(--red);
   border-color: var(--red);
 }
@@ -145,11 +149,11 @@ main {
    ========================================================= */
 
 .hero {
-  background: linear-gradient(120deg,#111,#202020 65%,#3a0005);
+  background: linear-gradient(120deg, #111, #202020 65%, #3a0005);
   color: #fff;
   padding: 34px;
   border-radius: 18px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .12);
   margin-bottom: 22px;
 }
 
@@ -167,7 +171,7 @@ main {
 
 .cards {
   display: grid;
-  grid-template-columns: repeat(4,1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 18px;
 }
 
@@ -177,7 +181,7 @@ main {
   border-top: 5px solid var(--red);
   border-radius: 16px;
   padding: 22px;
-  box-shadow: 0 7px 22px rgba(16,24,40,.07);
+  box-shadow: 0 7px 22px rgba(16, 24, 40, .07);
   cursor: pointer;
 }
 
@@ -227,7 +231,7 @@ main {
   background: #fff;
   border: 1px solid #e1e5eb;
   border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(16,24,40,.07);
+  box-shadow: 0 8px 24px rgba(16, 24, 40, .07);
   overflow: hidden;
 }
 
@@ -271,13 +275,13 @@ main {
 
 .grid2 {
   display: grid;
-  grid-template-columns: repeat(2,minmax(0,1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
 .grid3 {
   display: grid;
-  grid-template-columns: repeat(3,minmax(0,1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -298,7 +302,9 @@ main {
   margin-bottom: 5px;
 }
 
-.field input,.field select,.field textarea {
+.field input,
+.field select,
+.field textarea {
   width: 100%;
   border: 1px solid #cfd6df;
   border-radius: 8px;
@@ -307,9 +313,11 @@ main {
   outline: none;
 }
 
-.field input:focus,.field select:focus,.field textarea:focus {
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
   border-color: var(--navy);
-  box-shadow: 0 0 0 3px rgba(8,44,103,.08);
+  box-shadow: 0 0 0 3px rgba(8, 44, 103, .08);
 }
 
 .field textarea {
@@ -661,6 +669,7 @@ table.editor td:nth-child(10) {
   color: var(--navy);
 
 }
+
 /* =========================================================
    ## CAMPOS PERCENTUAIS DOS ITENS
    ========================================================= */
@@ -793,7 +802,7 @@ table.editor td:nth-child(10) {
 
 .metrics {
   display: grid;
-  grid-template-columns: repeat(3,1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 9px;
   margin-top: 15px;
 }
@@ -976,7 +985,7 @@ table.editor td:nth-child(10) {
 
 .measure-status-grid {
   display: grid;
-  grid-template-columns: repeat(3,1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   margin: 0 0 14px;
 }
@@ -1093,7 +1102,7 @@ table.editor td:nth-child(10) {
 
 .pdf-page {
   background: #fff;
-  box-shadow: 0 4px 15px rgba(0,0,0,.10);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, .10);
   margin: 0 auto 16px;
   min-height: 760px;
   padding: 18px 18px 24px;
@@ -1321,7 +1330,7 @@ table.editor td:nth-child(10) {
    ========================================================= */
 
 .cliche-result {
-  background: linear-gradient(135deg,#fff,#fff7f7);
+  background: linear-gradient(135deg, #fff, #fff7f7);
   border: 1px solid #eee;
   border-radius: 16px;
   padding: 24px;
@@ -1411,7 +1420,7 @@ table.editor td:nth-child(10) {
 @media (max-width:1250px) {
 
   .cards {
-    grid-template-columns: repeat(2,1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .two-col {
@@ -1446,7 +1455,8 @@ table.editor td:nth-child(10) {
     padding: 9px 6px;
   }
 
-  .grid2,.grid3 {
+  .grid2,
+  .grid3 {
     grid-template-columns: 1fr;
   }
 
@@ -1476,9 +1486,9 @@ table.editor td:nth-child(10) {
    Tela de login, usuário autenticado e botão de saída.
    ========================================================= */
 
-body.auth-pending > header,
-body.auth-pending > main,
-body.auth-pending > .toast {
+body.auth-pending>header,
+body.auth-pending>main,
+body.auth-pending>.toast {
   display: none;
 }
 
@@ -1488,12 +1498,10 @@ body.auth-pending > .toast {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: linear-gradient(
-      135deg,
+  background: linear-gradient(135deg,
       #080808 0%,
       #171717 60%,
-      #3a0005 100%
-    );
+      #3a0005 100%);
 }
 
 .login-screen[hidden] {
@@ -1507,7 +1515,7 @@ body.auth-pending > .toast {
   padding: 36px;
   border-radius: 18px;
   border-top: 6px solid var(--red);
-  box-shadow: 0 20px 60px rgba(0,0,0,.30);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .30);
 }
 
 .login-logo {
@@ -1606,7 +1614,11 @@ body.auth-pending > .toast {
     background: #fff;
   }
 
-  header,.editor-side,.panel-head,.info,.toast {
+  header,
+  .editor-side,
+  .panel-head,
+  .info,
+  .toast {
     display: none !important;
   }
 
@@ -1643,6 +1655,7 @@ body.auth-pending > .toast {
     margin: 0;
     min-height: auto;
   }
+
   /* Paginação inteligente das artes:
      - a primeira arte tenta ocupar o espaço livre após o orçamento;
      - se o bloco inteiro não couber, o navegador move a arte para a próxima página;
@@ -1651,48 +1664,81 @@ body.auth-pending > .toast {
   .art-page {
     break-inside: avoid-page;
     page-break-inside: avoid;
+
     border-top: 4px solid var(--red);
-    padding: 5mm 4mm 4mm;
+
+    padding: 3mm 3mm 2mm;
   }
 
-  .art-page.first-art {
-    break-before: auto;
-    page-break-before: auto;
-    margin-top: 5mm;
-  }
 
+  /* Cada arte começa em página própria */
+  .art-page.first-art,
   .art-page.subsequent-art {
     break-before: page;
     page-break-before: always;
+
+    margin-top: 0;
   }
 
+
+  /* Cabeçalho mais compacto para sobrar área útil */
   .art-page h2 {
-    font-size: 16px;
-    margin: 0 0 2mm;
+    font-size: 14px;
+    margin: 0 0 1mm;
+    line-height: 1.2;
   }
+
 
   .art-sub {
-    margin-bottom: 3mm;
+    margin-bottom: 1.5mm;
+    font-size: 10px;
+    line-height: 1.2;
+    color: #555;
   }
+
 
   .art-frame {
-    height: 105mm;
-    max-height: 105mm;
+    width: 100%;
+    height: 240mm;
+
     min-height: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
     border: 1px solid #d8dde5;
-    background: #fafafa;
+    background: #fff;
+
+    padding: 2mm;
+
+    box-sizing: border-box;
   }
+
 
   .art-frame img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
     max-width: 100%;
     max-height: 100%;
-    width: auto;
-    height: auto;
+
+    margin: 0 auto;
+
     object-fit: contain;
+    object-position: center center;
   }
 
+  /* Rodapé pequeno, só para identificação */
   .art-page .generated {
-    margin-top: 3mm;
+    margin-top: 1.5mm;
+    font-size: 9px;
+    line-height: 1.2;
+    color: #666;
   }
 
   @page {
@@ -1749,10 +1795,8 @@ body.auth-pending > .toast {
   display: grid;
 
   grid-template-columns:
-    repeat(
-      4,
-      minmax(0, 1fr)
-    );
+    repeat(4,
+      minmax(0, 1fr));
 
   gap: 6px;
 }
@@ -1821,10 +1865,8 @@ body.auth-pending > .toast {
 
   .validade-selector {
     grid-template-columns:
-      repeat(
-        2,
-        minmax(0, 1fr)
-      );
+      repeat(2,
+        minmax(0, 1fr));
   }
 
 }
