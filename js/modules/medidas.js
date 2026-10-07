@@ -639,15 +639,14 @@ function renderCatalogo() {
           </td>
 
           <td>
-            ${
-              medida.aba
-                ? (
-                    '+' +
-                    numeroPt(medida.aba) +
-                    ' cm'
-                  )
-                : '—'
-            }
+            ${medida.aba
+            ? (
+              '+' +
+              numeroPt(medida.aba) +
+              ' cm'
+            )
+            : '—'
+          }
           </td>
 
           <td>
@@ -789,7 +788,7 @@ function useCatalogo(
       'mCategoria'
     )
     .value =
-      cat;
+    cat;
 
 
   document
@@ -797,7 +796,7 @@ function useCatalogo(
       'mLargDesejada'
     )
     .value =
-      medida.larg;
+    medida.larg;
 
 
   document
@@ -805,7 +804,7 @@ function useCatalogo(
       'mAltDesejada'
     )
     .value =
-      medida.alt;
+    medida.alt;
 
 
   ajustarDensidadeCategoria();
@@ -879,7 +878,7 @@ function clearMedidas() {
       'mCategoria'
     )
     .value =
-      'sacola_vazada';
+    'sacola_vazada';
 
 
   document
@@ -887,7 +886,7 @@ function clearMedidas() {
       'mDensidade'
     )
     .value =
-      'bd';
+    'bd';
 
 
   document
@@ -895,7 +894,7 @@ function clearMedidas() {
       'mLargDesejada'
     )
     .value =
-      '';
+    '';
 
 
   document
@@ -903,7 +902,7 @@ function clearMedidas() {
       'mAltDesejada'
     )
     .value =
-      '';
+    '';
 
 
   [
@@ -918,7 +917,7 @@ function clearMedidas() {
         document
           .getElementById(id)
           .value =
-            '';
+          '';
 
       }
     );
@@ -1106,13 +1105,13 @@ function calcMedidas() {
   const kgMilheiro =
 
     medidaPreenchida &&
-    espN
+      espN
 
       ? (
-          larg *
-          alturaCalculo *
-          espN
-        )
+        larg *
+        alturaCalculo *
+        espN
+      )
 
       : 0;
 
@@ -1122,9 +1121,9 @@ function calcMedidas() {
     kgMilheiro > 0
 
       ? (
-          pedido /
-          kgMilheiro
-        ) * 1000
+        pedido /
+        kgMilheiro
+      ) * 1000
 
       : 0;
 
@@ -1146,8 +1145,8 @@ function calcMedidas() {
     unidadesCom10Exatas > 0
 
       ? Math.ceil(
-          unidadesCom10Exatas
-        )
+        unidadesCom10Exatas
+      )
 
       : 0;
 
@@ -1166,9 +1165,9 @@ function calcMedidas() {
     !larguraCompativel
 
       ? sugestaoLargura(
-          cat,
-          larg
-        )
+        cat,
+        larg
+      )
 
       : [];
 
@@ -1183,9 +1182,9 @@ function calcMedidas() {
     )
     .value =
 
-      esp
-        ? esp + ' mm'
-        : '';
+    esp
+      ? esp + ' mm'
+      : '';
 
 
   document
@@ -1194,18 +1193,18 @@ function calcMedidas() {
     )
     .value =
 
-      aba
-        ? (
-            '+' +
-            numeroPt(aba) +
-            ' cm'
-          )
+    aba
+      ? (
+        '+' +
+        numeroPt(aba) +
+        ' cm'
+      )
 
-        : (
-            catalogItem
-              ? 'Sem aba'
-              : '—'
-          );
+      : (
+        catalogItem
+          ? 'Sem aba'
+          : '—'
+      );
 
 
   document
@@ -1214,9 +1213,9 @@ function calcMedidas() {
     )
     .value =
 
-      cil
-        ? numeroPt(cil) + ' cm'
-        : '';
+    cil
+      ? numeroPt(cil) + ' cm'
+      : '';
 
 
   document
@@ -1225,9 +1224,9 @@ function calcMedidas() {
     )
     .value =
 
-      bob
-        ? numeroPt(bob) + ' cm'
-        : '';
+    bob
+      ? numeroPt(bob) + ' cm'
+      : '';
 
 
   document
@@ -1236,9 +1235,9 @@ function calcMedidas() {
     )
     .textContent =
 
-      medidaPreenchida
-        ? pedido + ' kg'
-        : '—';
+    medidaPreenchida
+      ? pedido + ' kg'
+      : '—';
 
 
   document
@@ -1247,20 +1246,20 @@ function calcMedidas() {
     )
     .textContent =
 
-      unidades
+    unidades
 
-        ? (
-            new Intl.NumberFormat(
-              'pt-BR'
-            )
-              .format(
-                unidades
-              )
-            +
-            ' un.'
+      ? (
+        new Intl.NumberFormat(
+          'pt-BR'
+        )
+          .format(
+            unidades
           )
+        +
+        ' un.'
+      )
 
-        : '—';
+      : '—';
 
 
   document
@@ -1269,14 +1268,14 @@ function calcMedidas() {
     )
     .textContent =
 
-      kgMilheiro
+    kgMilheiro
 
-        ? (
-            `Kg/milheiro: ` +
-            `${N4.format(kgMilheiro)} kg`
-          )
+      ? (
+        `Kg/milheiro: ` +
+        `${N4.format(kgMilheiro)} kg`
+      )
 
-        : 'Kg/milheiro: —';
+      : 'Kg/milheiro: —';
 
 
   document
@@ -1285,14 +1284,14 @@ function calcMedidas() {
     )
     .textContent =
 
-      unidadesBaseExatas
+    unidadesBaseExatas
 
-        ? (
-            `Unidade mínima base: ` +
-            `${formatDecimal(unidadesBaseExatas, 10)} un.`
-          )
+      ? (
+        `Unidade mínima base: ` +
+        `${formatDecimal(unidadesBaseExatas, 10)} un.`
+      )
 
-        : 'Unidade mínima base: —';
+      : 'Unidade mínima base: —';
 
 
   // -------------------------------------------------------
@@ -1362,7 +1361,7 @@ function calcMedidas() {
       'mPedidoMotivo'
     )
     .textContent =
-      resumoPedido;
+    resumoPedido;
 
 
   // -------------------------------------------------------
@@ -1374,7 +1373,7 @@ function calcMedidas() {
       'rCategoria'
     )
     .textContent =
-      nomeCategoria(cat);
+    nomeCategoria(cat);
 
 
   document
@@ -1383,16 +1382,16 @@ function calcMedidas() {
     )
     .textContent =
 
-      larg && alt
+    larg && alt
 
-        ? (
-            `${numeroPt(larg)} x ` +
-            `${numeroPt(alt)}` +
-            `${aba ? ' + ' + numeroPt(aba) : ''}` +
-            `${esp ? ' x ' + esp : ''}`
-          )
+      ? (
+        `${numeroPt(larg)} x ` +
+        `${numeroPt(alt)}` +
+        `${aba ? ' + ' + numeroPt(aba) : ''}` +
+        `${esp ? ' x ' + esp : ''}`
+      )
 
-        : '—';
+      : '—';
 
 
   document
@@ -1401,9 +1400,9 @@ function calcMedidas() {
     )
     .textContent =
 
-      esp
-        ? esp + ' mm'
-        : 'Não definida para esta altura';
+    esp
+      ? esp + ' mm'
+      : 'Não definida para esta altura';
 
 
   document
@@ -1412,23 +1411,23 @@ function calcMedidas() {
     )
     .textContent =
 
-      !alt
+    !alt
 
-        ? '—'
+      ? '—'
 
-        : (
-            esp
+      : (
+        esp
 
-              ? (
-                  `${numeroPt(alt)} cm ` +
-                  `→ ${esp} mm`
-                )
+          ? (
+            `${numeroPt(alt)} cm ` +
+            `→ ${esp} mm`
+          )
 
-              : (
-                  `Altura ${numeroPt(alt)} cm ` +
-                  `sem espessura padrão cadastrada`
-                )
-          );
+          : (
+            `Altura ${numeroPt(alt)} cm ` +
+            `sem espessura padrão cadastrada`
+          )
+      );
 
 
   document
@@ -1437,9 +1436,9 @@ function calcMedidas() {
     )
     .textContent =
 
-      cil
-        ? numeroPt(cil) + ' cm'
-        : 'Não encontrado';
+    cil
+      ? numeroPt(cil) + ' cm'
+      : 'Não encontrado';
 
 
   // -------------------------------------------------------
@@ -1453,7 +1452,7 @@ function calcMedidas() {
         'rBateu'
       )
       .textContent =
-        '—';
+      '—';
 
   }
 
@@ -1467,8 +1466,8 @@ function calcMedidas() {
       )
       .textContent =
 
-        `Não — ${numeroPt(larg)} cm ` +
-        `usa cilindro ${numeroPt(cil)} cm`;
+      `Não — ${numeroPt(larg)} cm ` +
+      `usa cilindro ${numeroPt(cil)} cm`;
 
   }
 
@@ -1482,8 +1481,8 @@ function calcMedidas() {
       )
       .textContent =
 
-        `Sim — ${numeroPt(larg)} × 2 ` +
-        `= ${numeroPt(cil)} cm`;
+      `Sim — ${numeroPt(larg)} × 2 ` +
+      `= ${numeroPt(cil)} cm`;
 
   }
 
@@ -1497,8 +1496,8 @@ function calcMedidas() {
       )
       .textContent =
 
-        `Catálogo — ${numeroPt(larg)} × 2 ` +
-        `= ${numeroPt(cil)} cm`;
+      `Catálogo — ${numeroPt(larg)} × 2 ` +
+      `= ${numeroPt(cil)} cm`;
 
   }
 
@@ -1510,9 +1509,9 @@ function calcMedidas() {
       )
       .textContent =
 
-        `Fora do padrão — não há cilindro ` +
-        `${numeroPt(larg)} ou ` +
-        `${numeroPt(larg * 2)} cm`;
+      `Fora do padrão — não há cilindro ` +
+      `${numeroPt(larg)} ou ` +
+      `${numeroPt(larg * 2)} cm`;
 
   }
 
@@ -1527,21 +1526,21 @@ function calcMedidas() {
     )
     .textContent =
 
-      larguraCompativel
+    larguraCompativel
 
-        ? 'Não necessária'
+      ? 'Não necessária'
 
-        : (
-            sugestoesLargura.length
+      : (
+        sugestoesLargura.length
 
-              ? (
-                  `${sugestoesLargura
-                    .map(numeroPt)
-                    .join(' cm ou ')} cm`
-                )
+          ? (
+            `${sugestoesLargura
+              .map(numeroPt)
+              .join(' cm ou ')} cm`
+          )
 
-              : 'Nenhuma sugestão cadastrada'
-          );
+          : 'Nenhuma sugestão cadastrada'
+      );
 
 
   document
@@ -1550,14 +1549,14 @@ function calcMedidas() {
     )
     .textContent =
 
-      bob
+    bob
 
-        ? (
-            `${numeroPt(alt)} × 2 ` +
-            `= ${numeroPt(bob)} cm`
-          )
+      ? (
+        `${numeroPt(alt)} × 2 ` +
+        `= ${numeroPt(bob)} cm`
+      )
 
-        : '—';
+      : '—';
 
 
   document
@@ -1566,15 +1565,15 @@ function calcMedidas() {
     )
     .textContent =
 
-      aba
+    aba
 
-        ? `+${numeroPt(aba)} cm`
+      ? `+${numeroPt(aba)} cm`
 
-        : (
-            catalogItem
-              ? 'Sem aba'
-              : '—'
-          );
+      : (
+        catalogItem
+          ? 'Sem aba'
+          : '—'
+      );
 
 
   document
@@ -1583,17 +1582,17 @@ function calcMedidas() {
     )
     .textContent =
 
-      cil &&
+    cil &&
       bob &&
       esp
 
-        ? (
-            `${numeroPt(cil)} x ` +
-            `${numeroPt(bob)} x ` +
-            `${esp}`
-          )
+      ? (
+        `${numeroPt(cil)} x ` +
+        `${numeroPt(bob)} x ` +
+        `${esp}`
+      )
 
-        : '—';
+      : '—';
 
 
   document
@@ -1602,16 +1601,16 @@ function calcMedidas() {
     )
     .textContent =
 
-      medidaPreenchida &&
+    medidaPreenchida &&
       esp
 
-        ? (
-            catalogo
-              ? 'Sim'
-              : 'Não'
-          )
+      ? (
+        catalogo
+          ? 'Sim'
+          : 'Não'
+      )
 
-        : '—';
+      : '—';
 
 
   document
@@ -1620,14 +1619,14 @@ function calcMedidas() {
     )
     .textContent =
 
-      kgMilheiro
+    kgMilheiro
 
-        ? (
-            `${N4.format(kgMilheiro)} ` +
-            `kg/milheiro`
-          )
+      ? (
+        `${N4.format(kgMilheiro)} ` +
+        `kg/milheiro`
+      )
 
-        : '—';
+      : '—';
 
 
   document
@@ -1636,20 +1635,20 @@ function calcMedidas() {
     )
     .textContent =
 
-      unidades
+    unidades
 
-        ? (
-            `Base exata: ` +
-            `(${pedido} ÷ ${N4.format(kgMilheiro)}) ` +
-            `× 1.000 = ` +
-            `${formatDecimal(unidadesBaseExatas, 10)} un. ` +
-            `| +10% exato = ` +
-            `${formatDecimal(unidadesCom10Exatas, 10)} un. ` +
-            `| Para oferecer: ` +
-            `${new Intl.NumberFormat('pt-BR').format(unidades)} un.`
-          )
+      ? (
+        `Base exata: ` +
+        `(${pedido} ÷ ${N4.format(kgMilheiro)}) ` +
+        `× 1.000 = ` +
+        `${formatDecimal(unidadesBaseExatas, 10)} un. ` +
+        `| +10% exato = ` +
+        `${formatDecimal(unidadesCom10Exatas, 10)} un. ` +
+        `| Para oferecer: ` +
+        `${new Intl.NumberFormat('pt-BR').format(unidades)} un.`
+      )
 
-        : '—';
+      : '—';
 
 
   // -------------------------------------------------------
@@ -1667,10 +1666,10 @@ function calcMedidas() {
     aba
 
       ? (
-          `${numeroPt(alt)} + ` +
-          `(${numeroPt(aba)} ÷ 2) ` +
-          `= ${numeroPt(alturaCalculo)} cm`
-        )
+        `${numeroPt(alt)} + ` +
+        `(${numeroPt(aba)} ÷ 2) ` +
+        `= ${numeroPt(alturaCalculo)} cm`
+      )
 
       : `${numeroPt(alt)} cm`;
 
@@ -1680,293 +1679,296 @@ function calcMedidas() {
     aba
 
       ? (
-          `${numeroPt(larg)} × ` +
-          `(${numeroPt(alt)} + ${numeroPt(aba)} ÷ 2) ` +
-          `× ${esp}`
-        )
+        `${numeroPt(larg)} × ` +
+        `(${numeroPt(alt)} + ${numeroPt(aba)} ÷ 2) ` +
+        `× ${esp}`
+      )
 
       : (
-          `${numeroPt(larg)} × ` +
-          `${numeroPt(alt)} × ` +
-          `${esp}`
-        );
+        `${numeroPt(larg)} × ` +
+        `${numeroPt(alt)} × ` +
+        `${esp}`
+      );
 
 
-  contaEl.innerHTML =
+    if (contaEl) {
 
-    unidades
+      contaEl.innerHTML =
 
-      ? (
-          `<b>Conta das unidades:</b><br>` +
+        unidades
 
-          `${aba
-            ? `Altura de cálculo: ${detalheAlturaAba}<br>`
-            : ''
-          }` +
+          ? (
+            `<b>Conta das unidades:</b><br>` +
 
-          `Kg/milheiro: ${formulaKg} = ` +
-          `<b>${N4.format(kgMilheiro)} kg/milheiro</b><br>` +
+            `${aba
+              ? `Altura de cálculo: ${detalheAlturaAba}<br>`
+              : ''
+            }` +
 
-          `Unidade mínima base: ` +
-          `(${pedido} ÷ ${N4.format(kgMilheiro)}) × 1.000 = ` +
-          `<b>${formatDecimal(unidadesBaseExatas, 10)} un.</b><br>` +
+            `Kg/milheiro: ${formulaKg} = ` +
+            `<b>${N4.format(kgMilheiro)} kg/milheiro</b><br>` +
 
-          `10% adicional: ` +
-          `${formatDecimal(unidadesBaseExatas, 10)} × 10% = ` +
-          `<b>${formatDecimal(acrescimo10Exato, 10)} un.</b><br>` +
+            `Unidade mínima base: ` +
+            `(${pedido} ÷ ${N4.format(kgMilheiro)}) × 1.000 = ` +
+            `<b>${formatDecimal(unidadesBaseExatas, 10)} un.</b><br>` +
 
-          `Base + 10%: ` +
-          `<b>${formatDecimal(unidadesCom10Exatas, 10)} un.</b><br>` +
+            `10% adicional: ` +
+            `${formatDecimal(unidadesBaseExatas, 10)} × 10% = ` +
+            `<b>${formatDecimal(acrescimo10Exato, 10)} un.</b><br>` +
 
-          `<span class="calc-final">` +
-          `Quantidade mínima para oferecer (arredondada): ` +
-          `${new Intl.NumberFormat('pt-BR').format(unidades)} un.` +
-          `</span>`
-        )
+            `Base + 10%: ` +
+            `<b>${formatDecimal(unidadesCom10Exatas, 10)} un.</b><br>` +
 
-      : (
-          '<b>Conta das unidades:</b> '
-        );
+            `<span class="calc-final">` +
+            `Quantidade mínima para oferecer (arredondada): ` +
+            `${new Intl.NumberFormat('pt-BR').format(unidades)} un.` +
+            `</span>`
+          )
+
+          : (
+            '<b>Conta das unidades:</b> '
+          );
+
+    }
+
+    // -------------------------------------------------------
+    // ## 7.12 Classificação visual
+    // -------------------------------------------------------
+
+    [
+      'statusCatalogo',
+      'statusPadrao',
+      'statusNaoPadrao'
+    ]
+      .forEach(
+        id => {
+
+          document
+            .getElementById(id)
+            .classList
+            .remove(
+              'active'
+            );
+
+        }
+      );
 
 
-  // -------------------------------------------------------
-  // ## 7.12 Classificação visual
-  // -------------------------------------------------------
+    if (
+      medidaPreenchida
+    ) {
 
-  [
-    'statusCatalogo',
-    'statusPadrao',
-    'statusNaoPadrao'
-  ]
-    .forEach(
-      id => {
+      if (
+        catalogo
+      ) {
 
         document
-          .getElementById(id)
+          .getElementById(
+            'statusCatalogo'
+          )
           .classList
-          .remove(
+          .add(
             'active'
           );
 
       }
-    );
+
+      else if (
+        padraoProducao
+      ) {
+
+        document
+          .getElementById(
+            'statusPadrao'
+          )
+          .classList
+          .add(
+            'active'
+          );
+
+      }
+
+      else {
+
+        document
+          .getElementById(
+            'statusNaoPadrao'
+          )
+          .classList
+          .add(
+            'active'
+          );
+
+      }
+
+    }
 
 
-  if (
-    medidaPreenchida
-  ) {
+    // -------------------------------------------------------
+    // ## 7.13 Explicação do pedido mínimo de 200 kg
+    // -------------------------------------------------------
+
+    const motivos200 =
+      [];
+
 
     if (
-      catalogo
+      medidaPreenchida
     ) {
 
-      document
-        .getElementById(
-          'statusCatalogo'
-        )
-        .classList
-        .add(
-          'active'
+      if (
+        dens === 'ad'
+      ) {
+
+        motivos200.push(
+          'Alta Densidade (AD): mínimo obrigatório de 200 kg'
         );
+
+      }
+
+
+      if (
+        !larguraCompativel
+      ) {
+
+        motivos200.push(
+          `largura ${numeroPt(larg)} cm ` +
+          `não corresponde a nenhum cilindro disponível ` +
+          `de forma direta ou batendo 2x`
+        );
+
+      }
+
+
+      if (
+        !alturaComEspessuraPadrao
+      ) {
+
+        motivos200.push(
+          `altura ${numeroPt(alt)} cm ` +
+          `não possui espessura padrão cadastrada para ` +
+          `${nomeCategoria(cat)}`
+        );
+
+      }
+
+    }
+
+
+    const motivoBox =
+      document.getElementById(
+        'mMotivos200'
+      );
+
+
+    if (
+      medidaPreenchida
+      &&
+      pedido === 200
+    ) {
+
+      motivoBox.style.display =
+        'block';
+
+
+      motivoBox.classList.remove(
+        'good'
+      );
+
+
+      motivoBox.innerHTML =
+
+        '<b>⚠ Por que o pedido mínimo é 200 kg?</b><br>'
+
+        +
+
+        motivos200
+          .map(
+            motivo =>
+              '• ' + motivo
+          )
+          .join(
+            '<br>'
+          );
 
     }
 
     else if (
-      padraoProducao
+      medidaPreenchida
+      &&
+      pedido === 100
     ) {
 
-      document
-        .getElementById(
-          'statusPadrao'
-        )
-        .classList
-        .add(
-          'active'
-        );
+      motivoBox.style.display =
+        'block';
+
+
+      motivoBox.classList.add(
+        'good'
+      );
+
+
+      motivoBox.innerHTML =
+
+        '<b>✅ Pedido mínimo de 100 kg</b><br>' +
+
+        'A medida respeita as regras de largura/cilindro ' +
+        'e altura/espessura para produção padrão.';
 
     }
 
     else {
 
-      document
-        .getElementById(
-          'statusNaoPadrao'
-        )
-        .classList
-        .add(
-          'active'
-        );
+      motivoBox.style.display =
+        'none';
 
     }
 
-  }
 
+    // -------------------------------------------------------
+    // ## 7.14 Sugestão comercial de largura
+    // -------------------------------------------------------
 
-  // -------------------------------------------------------
-  // ## 7.13 Explicação do pedido mínimo de 200 kg
-  // -------------------------------------------------------
-
-  const motivos200 =
-    [];
-
-
-  if (
-    medidaPreenchida
-  ) {
-
-    if (
-      dens === 'ad'
-    ) {
-
-      motivos200.push(
-        'Alta Densidade (AD): mínimo obrigatório de 200 kg'
+    const sugestaoBox =
+      document.getElementById(
+        'mSugestaoComercial'
       );
 
-    }
-
 
     if (
+      medidaPreenchida
+      &&
       !larguraCompativel
+      &&
+      sugestoesLargura.length
     ) {
 
-      motivos200.push(
-        `largura ${numeroPt(larg)} cm ` +
-        `não corresponde a nenhum cilindro disponível ` +
-        `de forma direta ou batendo 2x`
-      );
+      const sugestoes =
+        sugestoesLargura.map(
+          valor => {
 
-    }
-
-
-    if (
-      !alturaComEspessuraPadrao
-    ) {
-
-      motivos200.push(
-        `altura ${numeroPt(alt)} cm ` +
-        `não possui espessura padrão cadastrada para ` +
-        `${nomeCategoria(cat)}`
-      );
-
-    }
-
-  }
+            const encaixeSugestao =
+              encontrarCilindro(
+                cat,
+                valor,
+                alt
+              );
 
 
-  const motivoBox =
-    document.getElementById(
-      'mMotivos200'
-    );
+            const cilindroSugestao =
+              encaixeSugestao.cil;
 
 
-  if (
-    medidaPreenchida
-    &&
-    pedido === 200
-  ) {
+            const minimoSugestao =
 
-    motivoBox.style.display =
-      'block';
+              dens === 'ad'
 
+                ? 200
 
-    motivoBox.classList.remove(
-      'good'
-    );
-
-
-    motivoBox.innerHTML =
-
-      '<b>⚠ Por que o pedido mínimo é 200 kg?</b><br>'
-
-      +
-
-      motivos200
-        .map(
-          motivo =>
-            '• ' + motivo
-        )
-        .join(
-          '<br>'
-        );
-
-  }
-
-  else if (
-    medidaPreenchida
-    &&
-    pedido === 100
-  ) {
-
-    motivoBox.style.display =
-      'block';
-
-
-    motivoBox.classList.add(
-      'good'
-    );
-
-
-    motivoBox.innerHTML =
-
-      '<b>✅ Pedido mínimo de 100 kg</b><br>' +
-
-      'A medida respeita as regras de largura/cilindro ' +
-      'e altura/espessura para produção padrão.';
-
-  }
-
-  else {
-
-    motivoBox.style.display =
-      'none';
-
-  }
-
-
-  // -------------------------------------------------------
-  // ## 7.14 Sugestão comercial de largura
-  // -------------------------------------------------------
-
-  const sugestaoBox =
-    document.getElementById(
-      'mSugestaoComercial'
-    );
-
-
-  if (
-    medidaPreenchida
-    &&
-    !larguraCompativel
-    &&
-    sugestoesLargura.length
-  ) {
-
-    const sugestoes =
-      sugestoesLargura.map(
-        valor => {
-
-          const encaixeSugestao =
-            encontrarCilindro(
-              cat,
-              valor,
-              alt
-            );
-
-
-          const cilindroSugestao =
-            encaixeSugestao.cil;
-
-
-          const minimoSugestao =
-
-            dens === 'ad'
-
-              ? 200
-
-              : (
+                : (
                   alturaComEspessuraPadrao
-                  &&
-                  cilindroSugestao
+                    &&
+                    cilindroSugestao
 
                     ? 100
 
@@ -1974,161 +1976,162 @@ function calcMedidas() {
                 );
 
 
-          const kgSugestao =
+            const kgSugestao =
 
-            espN > 0
+              espN > 0
 
-              ? (
+                ? (
                   valor *
                   alt *
                   espN
                 )
 
-              : 0;
+                : 0;
 
 
-          const baseSugestao =
+            const baseSugestao =
 
-            kgSugestao > 0
+              kgSugestao > 0
 
-              ? Math.ceil(
+                ? Math.ceil(
                   (
                     minimoSugestao /
                     kgSugestao
                   ) * 1000
                 )
 
-              : 0;
+                : 0;
 
 
-          const unidadesSugestao =
+            const unidadesSugestao =
 
-            baseSugestao
+              baseSugestao
 
-              ? Math.ceil(
+                ? Math.ceil(
                   baseSugestao *
                   1.10
                 )
 
-              : 0;
+                : 0;
 
 
-          return (
-            `<b>` +
-            `${numeroPt(valor)} × ` +
-            `${numeroPt(alt)}` +
-            `${esp ? ' × ' + esp : ''}` +
-            `</b>` +
+            return (
+              `<b>` +
+              `${numeroPt(valor)} × ` +
+              `${numeroPt(alt)}` +
+              `${esp ? ' × ' + esp : ''}` +
+              `</b>` +
 
-            `${
-              cilindroSugestao
+              `${cilindroSugestao
                 ? (
-                    ` — cilindro ` +
-                    `${numeroPt(cilindroSugestao)} cm`
-                  )
+                  ` — cilindro ` +
+                  `${numeroPt(cilindroSugestao)} cm`
+                )
                 : ''
-            }` +
+              }` +
 
-            ` — mínimo ${minimoSugestao} kg` +
+              ` — mínimo ${minimoSugestao} kg` +
 
-            `${
-              unidadesSugestao
+              `${unidadesSugestao
                 ? (
-                    ` — oferecer aprox. ` +
-                    `${new Intl.NumberFormat('pt-BR').format(unidadesSugestao)} ` +
-                    `un. (+10%)`
-                  )
+                  ` — oferecer aprox. ` +
+                  `${new Intl.NumberFormat('pt-BR').format(unidadesSugestao)} ` +
+                  `un. (+10%)`
+                )
                 : ''
-            }`
-          );
+              }`
+            );
 
-        }
-      );
-
-
-    sugestaoBox.style.display =
-      'block';
-
-
-    sugestaoBox.innerHTML =
-
-      '<b>💡 Sugestão comercial</b><br>' +
-
-      'A largura solicitada não encaixa nos cilindros disponíveis. ' +
-
-      'Você pode oferecer a medida produzível mais próxima:<br>'
-
-      +
-
-      sugestoes
-        .map(
-          sugestao =>
-            '• ' + sugestao
-        )
-        .join(
-          '<br>'
+          }
         );
 
-  }
 
-  else {
-
-    sugestaoBox.style.display =
-      'none';
-
-  }
+      sugestaoBox.style.display =
+        'block';
 
 
-  // -------------------------------------------------------
-  // ## 7.15 Status final e observação comercial
-  // -------------------------------------------------------
+      sugestaoBox.innerHTML =
 
-  if (
-    !medidaPreenchida
-  ) {
+        '<b>💡 Sugestão comercial</b><br>' +
 
-    document
-      .getElementById(
-        'rStatus'
-      )
-      .textContent =
+        'A largura solicitada não encaixa nos cilindros disponíveis. ' +
+
+        'Você pode oferecer a medida produzível mais próxima:<br>'
+
+        +
+
+        sugestoes
+          .map(
+            sugestao =>
+              '• ' + sugestao
+          )
+          .join(
+            '<br>'
+          );
+
+    }
+
+    else {
+
+      sugestaoBox.style.display =
+        'none';
+
+    }
+
+
+    // -------------------------------------------------------
+    // ## 7.15 Status final e observação comercial
+    // -------------------------------------------------------
+
+    const observacaoEl =
+      document.getElementById(
+        'mObservacao'
+      );
+
+    if (
+      !medidaPreenchida
+    ) {
+
+      document
+        .getElementById(
+          'rStatus'
+        )
+        .textContent =
         'Informe largura e altura';
 
 
-    document
-      .getElementById(
-        'mObservacao'
-      )
-      .innerHTML =
+      if (observacaoEl) {
 
-        'Informe largura e altura para consultar. ' +
-        'A espessura será definida automaticamente pela altura.';
+        observacaoEl.innerHTML =
+          'Informe largura e altura para consultar. ' +
+          'A espessura será definida automaticamente pela altura.';
 
+      }
 
-    return;
-  }
+      return;
+    }
 
 
-  if (
-    padraoProducao
-  ) {
+    if (
+      padraoProducao
+    ) {
 
-    document
-      .getElementById(
-        'rStatus'
-      )
-      .textContent =
+      document
+        .getElementById(
+          'rStatus'
+        )
+        .textContent =
 
         catalogo
           ? 'Medida de catálogo — padrão'
           : 'Medida padrão de produção';
 
 
-    const densidadeTexto =
+      const densidadeTexto =
 
-      dens === 'ad'
+        dens === 'ad'
 
-        ? (
+          ? (
             '<br>' +
             '<span class="measure-bad">' +
             '⚠ Como foi selecionado AD, ' +
@@ -2136,25 +2139,23 @@ function calcMedidas() {
             '</span>'
           )
 
-        : '';
+          : '';
 
 
-    document
-      .getElementById(
-        'mObservacao'
-      )
-      .innerHTML =
+      if (observacaoEl) {
 
-        catalogo
+        observacaoEl.innerHTML =
 
-          ? (
+          catalogo
+
+            ? (
               `✅ <b>Medida de catálogo.</b> ` +
               `Largura/cilindro e altura/espessura ` +
               `estão dentro do padrão.` +
               `${densidadeTexto}`
             )
 
-          : (
+            : (
               `✅ <b>Medida padrão de produção.</b> ` +
               `Mesmo fora do catálogo, a largura encaixa ` +
               `em medida produzível e a altura possui ` +
@@ -2162,84 +2163,82 @@ function calcMedidas() {
               `${densidadeTexto}`
             );
 
-  }
+      }
+    }
 
-  else {
+    else {
 
-    const motivos =
-      [];
+      const motivos =
+        [];
 
 
-    if (
-      !larguraCompativel
-    ) {
+      if (
+        !larguraCompativel
+      ) {
 
-      motivos.push(
+        motivos.push(
 
-        `largura ${numeroPt(larg)} cm ` +
-        `não encaixa nos cilindros disponíveis`
+          `largura ${numeroPt(larg)} cm ` +
+          `não encaixa nos cilindros disponíveis`
 
-        +
+          +
 
-        `${
-          sugestoesLargura.length
+          `${sugestoesLargura.length
 
             ? (
-                `; medida próxima: ` +
-                `${sugestoesLargura
-                  .map(
-                    valor =>
-                      numeroPt(valor) +
-                      ' cm'
-                  )
-                  .join(
-                    ' ou '
-                  )
-                }`
-              )
+              `; medida próxima: ` +
+              `${sugestoesLargura
+                .map(
+                  valor =>
+                    numeroPt(valor) +
+                    ' cm'
+                )
+                .join(
+                  ' ou '
+                )
+              }`
+            )
 
             : ''
-        }`
+          }`
 
-      );
+        );
 
-    }
-
-
-    if (
-      !alturaComEspessuraPadrao
-    ) {
-
-      motivos.push(
-        `altura ${numeroPt(alt)} cm ` +
-        `não possui espessura padrão cadastrada ` +
-        `para este modelo`
-      );
-
-    }
+      }
 
 
-    document
-      .getElementById(
-        'rStatus'
-      )
-      .textContent =
+      if (
+        !alturaComEspessuraPadrao
+      ) {
+
+        motivos.push(
+          `altura ${numeroPt(alt)} cm ` +
+          `não possui espessura padrão cadastrada ` +
+          `para este modelo`
+        );
+
+      }
+
+
+      document
+        .getElementById(
+          'rStatus'
+        )
+        .textContent =
         'Medida não padrão';
 
 
-    document
-      .getElementById(
-        'mObservacao'
-      )
-      .innerHTML =
+      if (observacaoEl) {
 
-        '⚠️ <b>Medida não padrão.</b> ' +
-        'Pedido mínimo: <b>200 kg</b>.<br>' +
-        'Motivo: ' +
-        motivos.join(
-          ' e '
-        ) +
-        '.';
+        observacaoEl.innerHTML =
+          '⚠️ <b>Medida não padrão.</b> ' +
+          'Pedido mínimo: <b>200 kg</b>.<br>' +
+          'Motivo: ' +
+          motivos.join(
+            ' e '
+          ) +
+          '.';
 
+      }
+    }
   }
-}

@@ -509,23 +509,23 @@ function instalarSuporteRevisoesHistoricas() {
         };
       }
 
-const revisaoAtualEfetiva =
-  revisaoAtualDaLista(
-    proposta
-  );
+      const revisaoAtualEfetiva =
+        revisaoAtualDaLista(
+          proposta
+        );
 
 
-const historica =
-  Boolean(
-    revisaoSelecionada &&
-    revisaoAtualEfetiva &&
-    String(
-      revisaoSelecionada.id || ''
-    ) !==
-    String(
-      revisaoAtualEfetiva.id || ''
-    )
-  );
+      const historica =
+        Boolean(
+          revisaoSelecionada &&
+          revisaoAtualEfetiva &&
+          String(
+            revisaoSelecionada.id || ''
+          ) !==
+          String(
+            revisaoAtualEfetiva.id || ''
+          )
+        );
       const snapshotLocalStorage =
         historica
           ? capturarLocalStorageHistorico()
@@ -1079,13 +1079,13 @@ async function abrirRevisaoEspecificaHistorico(
 
     fecharRevisoesHistorico();
 
-showPage(
-  'orcamentoPage',
-  null,
-  {
-    consulta: true
-  }
-);
+    showPage(
+      'orcamentoPage',
+      null,
+      {
+        consulta: true
+      }
+    );
     window.scrollTo({
       top: 0,
       behavior:
@@ -1452,27 +1452,31 @@ async function abrirPropostaHistorico(
       await obterMeuPerfil();
 
 
-    aplicarPropostaNoFormulario(
-      proposta
-    );
+aplicarPropostaNoFormulario(
+  proposta
+);
 
 
-    // -----------------------------------------------------
-    // ADM = consulta somente leitura
-    // -----------------------------------------------------
+// -----------------------------------------------------
+// ADM = consulta somente leitura
+// -----------------------------------------------------
 
-    if (
-      perfilAtual?.tipo_acesso === 'adm'
-    ) {
+if (
+  perfilAtual?.tipo_acesso === 'adm'
+) {
 
-      ativarModoConsultaOrcamento();
+  ativarModoConsultaOrcamento();
 
-    } else {
+} else {
 
-      desativarModoConsultaOrcamento();
+  desativarModoConsultaOrcamento();
 
-    }
+}
 
+
+// -----------------------------------------------------
+// Abre a página da proposta
+// -----------------------------------------------------
 
 showPage(
   'orcamentoPage',
@@ -1482,11 +1486,21 @@ showPage(
   }
 );
 
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
 
+// -----------------------------------------------------
+// IMPORTANTE:
+// reaplica o estado da revisão somente depois de todas
+// as rotinas que podem habilitar/desabilitar os campos.
+// -----------------------------------------------------
+
+atualizarInterfaceRevisao();
+atualizarBloqueioCamposRevisao();
+
+
+window.scrollTo({
+  top: 0,
+  behavior: 'smooth'
+});
 
     const revisao =
       revisaoAtualDaLista(
