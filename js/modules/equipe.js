@@ -1876,10 +1876,24 @@ async function ativarUsuarioEquipe(
 
 
   const confirmar =
-    confirm(
-      `Ativar o acesso de ${perfil.nome}?`
-    );
+    await confirmarAcao({
 
+      titulo:
+        `Ativar acesso de ${perfil.nome}?`,
+
+      mensagem:
+        'O usuário terá o acesso ao sistema ativado.',
+
+      detalhe:
+        'Confirme para continuar com a ativação.',
+
+      textoConfirmar:
+        'Ativar acesso',
+
+      textoCancelar:
+        'Cancelar'
+
+    });
 
   if (!confirmar) {
 
@@ -1915,12 +1929,12 @@ async function ativarUsuarioEquipe(
 
 
     alert(
-      'Não foi possível ativar o usuário.\n\n'(
+      'Não foi possível ativar o usuário.\n\n' +
+      (
         erro?.message ||
         'Erro desconhecido.'
       )
     );
-
   }
 
 }
@@ -1957,10 +1971,25 @@ async function inativarUsuarioEquipe(
 
   }
 
-
   const confirmar =
-    confirm(
-      `Inativar o acesso de ${perfil.nome}?`);
+    await confirmarAcao({
+
+      titulo:
+        `Inativar acesso de ${perfil.nome}?`,
+
+      mensagem:
+        'O acesso deste usuário será inativado.',
+
+      detalhe:
+        'Confirme para continuar com a inativação.',
+
+      textoConfirmar:
+        'Inativar acesso',
+
+      textoCancelar:
+        'Cancelar'
+
+    });
 
 
   if (!confirmar) {
@@ -2053,12 +2082,25 @@ async function alterarPerfilUsuarioEquipe(
 
 
   const confirmar =
-    confirm(
-      `Alterar ${perfil.nome} de ` +
-      `${nomePerfilEquipe(perfil.tipo_acesso)} ` +
-      `para ${nomePerfilEquipe(novoTipo)}?`
-    );
+    await confirmarAcao({
 
+      titulo:
+        `Alterar perfil de ${perfil.nome}?`,
+
+      mensagem:
+        `${nomePerfilEquipe(perfil.tipo_acesso)} → ` +
+        `${nomePerfilEquipe(novoTipo)}`,
+
+      detalhe:
+        'Confirme para aplicar o novo perfil de acesso.',
+
+      textoConfirmar:
+        'Alterar perfil',
+
+      textoCancelar:
+        'Cancelar'
+
+    });
 
   if (!confirmar) {
 
@@ -2198,11 +2240,24 @@ async function alterarTimeUsuarioEquipe(
 
 
   const confirmar =
-    confirm(
-      `Alterar o Time de ${perfil.nome} ` +
-      `de ${timeAnterior} para ${timeNovo}?`
-    );
+    await confirmarAcao({
 
+      titulo:
+        `Alterar Time de ${perfil.nome}?`,
+
+      mensagem:
+        `${timeAnterior} → ${timeNovo}`,
+
+      detalhe:
+        'Confirme para aplicar o novo Time comercial.',
+
+      textoConfirmar:
+        'Alterar Time',
+
+      textoCancelar:
+        'Cancelar'
+
+    });
 
   if (!confirmar) {
 

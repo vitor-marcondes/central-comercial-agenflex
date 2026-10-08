@@ -219,9 +219,9 @@ async function redefinirSenhaUsuarioEquipe(
     'undefined' &&
     equipePerfilAtual
       ?.tipo_acesso ===
-      'gestor' &&
+    'gestor' &&
     perfil.tipo_acesso !==
-      'vendedor'
+    'vendedor'
   ) {
 
     alert(
@@ -234,11 +234,22 @@ async function redefinirSenhaUsuarioEquipe(
 
 
   const confirmar =
-    confirm(
-      `Enviar um link de redefinição de senha para:\n\n` +
-      `${perfil.nome}\n` +
-      `${perfil.email}?`
-    );
+    await confirmarAcao({
+      titulo:
+        `Enviar redefinição para ${perfil.nome}?`,
+
+      mensagem:
+        `${perfil.email}`,
+
+      detalhe:
+        'Será enviado um link para redefinição de senha no e-mail do usuário.',
+
+      textoConfirmar:
+        'Enviar link',
+
+      textoCancelar:
+        'Cancelar'
+    });
 
 
   if (!confirmar) {
@@ -246,7 +257,6 @@ async function redefinirSenhaUsuarioEquipe(
     return;
 
   }
-
 
   try {
 

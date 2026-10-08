@@ -2846,26 +2846,50 @@ instalarAutosaveRascunhoLocal();
 // ## 7.5 Limpeza do formulário
 // ---------------------------------------------------------
 
-function clearForm() {
+async function clearForm() {
 
-  if (
-    !confirm(
-      'Limpar o orçamento atual?'
-    )
-  ) {
+  const confirmou =
+    await confirmarAcao({
+
+      titulo:
+        'Limpar orçamento atual?',
+
+      mensagem:
+        'Os dados preenchidos no formulário atual serão descartados.',
+
+      detalhe:
+        'Use esta ação somente se realmente quiser recomeçar o orçamento.',
+
+      textoConfirmar:
+        'Limpar orçamento',
+
+      textoCancelar:
+        'Cancelar'
+
+    });
+
+
+  if (!confirmou) {
 
     return;
 
   }
 
 
-  const chave = chaveLocalUsuario(KEY);
-  if (chave) localStorage.removeItem(chave);
+  const chave =
+    chaveLocalUsuario(
+      KEY
+    );
+
+  if (chave) {
+    localStorage.removeItem(
+      chave
+    );
+  }
 
 
   location.reload();
 }
-
 // =========================================================
 // ## 8. PREPARAÇÃO DOS DADOS PARA O SUPABASE
 // =========================================================
@@ -3663,7 +3687,7 @@ function atualizarInterfaceRevisao() {
       true;
 
     botaoEnviar.textContent =
-      '📤 Enviar revisão';
+      'Enviar revisão';
 
   } else if (
     rascunho
@@ -3685,7 +3709,7 @@ function atualizarInterfaceRevisao() {
 
 
     botaoEnviar.textContent =
-      `✅ R${propostaNuvemAtual.numeroRevisao} enviada`;
+      `R${propostaNuvemAtual.numeroRevisao} enviada`;
 
   } else {
 
@@ -3740,7 +3764,7 @@ function atualizarInterfaceRevisao() {
 
 
       botaoNovaRevisao.textContent =
-        `➕ Criar R${proxima}`;
+        `Criar R${proxima}`;
 
     }
 
@@ -3815,13 +3839,25 @@ async function enviarRevisaoAtual() {
 
 
   const confirmou =
-    confirm(
-      `Enviar a revisão R${numeroRevisao}?\n\n` +
-      'Antes do envio, as alterações atuais serão salvas.\n\n' +
-      `Depois do envio, a R${numeroRevisao} ficará bloqueada ` +
-      'e não poderá mais ser alterada.'
-    );
+    await confirmarAcao({
 
+      titulo:
+        `Enviar revisão R${numeroRevisao}?`,
+
+      mensagem:
+        'As alterações atuais serão salvas antes do envio.',
+
+      detalhe:
+        `Após o envio, a R${numeroRevisao} ficará bloqueada ` +
+        'e não poderá mais ser alterada.',
+
+      textoConfirmar:
+        `Enviar R${numeroRevisao}`,
+
+      textoCancelar:
+        'Cancelar'
+
+    });
 
   if (
     !confirmou
@@ -4042,13 +4078,25 @@ async function criarNovaRevisaoAtual() {
     atual + 1;
 
   const confirmou =
-    confirm(
-      `Criar a revisão R${proxima}?\n\n` +
-      `Os dados e itens da R${atual} serão copiados.\n\n` +
-      `A R${atual} continuará enviada e bloqueada. ` +
-      `A R${proxima} será criada como rascunho.`
-    );
+    await confirmarAcao({
 
+      titulo:
+        `Criar revisão R${proxima}?`,
+
+      mensagem:
+        `Os dados e itens da R${atual} serão copiados para a nova revisão.`,
+
+      detalhe:
+        `A R${atual} continuará enviada e bloqueada. ` +
+        `A R${proxima} será criada como rascunho e poderá ser editada.`,
+
+      textoConfirmar:
+        `Criar R${proxima}`,
+
+      textoCancelar:
+        'Cancelar'
+
+    });
 
   if (
     !confirmou

@@ -2704,7 +2704,7 @@ function dadosFiltradosPainel() {
           painelPerfilAtual.user_id;
 
 
-if (
+        if (
           !ehResponsavel
         ) {
 
@@ -5046,19 +5046,31 @@ async function confirmarTransferenciaPainel() {
   }
 
 
-  const novoResponsavel =
-    obterPerfilResponsavelPainel(
+  const novoVendedor =
+    obterPerfilVendedorPainel(
       vendedorNovoId
     );
 
 
   const confirmar =
-    window.confirm(
-      `Transferir a proposta #${painelTransferenciaAtual.proposta.numero} ` +
-      `para ${novoResponsavel?.nome || 'o vendedor selecionado'}?\n\n` +
-      'A alteração será registrada no histórico de transferências. ' +
-      'Em vendas concluídas, o crédito histórico permanece com o responsável da conclusão.'
-    );
+    await confirmarAcao({
+
+      titulo:
+        `Transferir proposta #${painelTransferenciaAtual.proposta.numero}?`,
+
+      mensagem:
+        `Novo responsável: ${novoVendedor?.nome || 'responsável selecionado'}.`,
+
+      detalhe:
+        'A alteração será registrada no histórico de transferências.',
+
+      textoConfirmar:
+        'Confirmar transferência',
+
+      textoCancelar:
+        'Cancelar'
+
+    });
 
 
   if (!confirmar) {
@@ -5066,7 +5078,6 @@ async function confirmarTransferenciaPainel() {
     return;
 
   }
-
 
   painelTransferenciaProcessando =
     true;
@@ -5150,9 +5161,8 @@ async function confirmarTransferenciaPainel() {
 
 
     toastMsg(
-      `Proposta #${propostaNumero} transferida para ${novoResponsavel?.nome || 'o novo responsável'}`
+      `Proposta #${propostaNumero} transferida para ${novoVendedor?.nome || 'o novo responsável'}`
     );
-
 
     await carregarPainel();
 
@@ -5275,8 +5285,16 @@ function renderizarPainel() {
 
 
   const lista =
-    dadosFiltradosPainel();
-
+    dadosFiltradosPainel()
+      .sort(
+        (a, b) =>
+          Number(
+            a?.proposta?.numero || 0
+          ) -
+          Number(
+            b?.proposta?.numero || 0
+          )
+      );
 
   corpo.innerHTML =
     '';
@@ -6120,13 +6138,13 @@ async function abrirPropostaPainel(
       proposta
     );
 
-showPage(
-  'orcamentoPage',
-  null,
-  {
-    consulta: true
-  }
-);
+    showPage(
+      'orcamentoPage',
+      null,
+      {
+        consulta: true
+      }
+    );
 
     window.scrollTo({
       top: 0,

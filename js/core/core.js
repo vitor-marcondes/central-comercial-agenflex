@@ -282,3 +282,302 @@ function toastMsg(msg) {
     1800
   );
 }
+
+// =========================================================
+// ## CONFIRMAÇÃO PERSONALIZADA
+// =========================================================
+
+function confirmarAcao({
+  titulo = 'Confirmar ação',
+  mensagem = '',
+  detalhe = '',
+  textoConfirmar = 'Confirmar',
+  textoCancelar = 'Cancelar'
+} = {}) {
+
+  return new Promise(
+    resolve => {
+
+      const anterior =
+        document.getElementById(
+          'agenflexConfirmModal'
+        );
+
+      if (anterior) {
+        anterior.remove();
+      }
+
+
+      const modal =
+        document.createElement(
+          'div'
+        );
+
+
+      modal.id =
+        'agenflexConfirmModal';
+
+      modal.className =
+        'painel-transferencia-modal';
+
+      modal.innerHTML = `
+
+        <div
+          class="painel-transferencia-dialog"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="agenflexConfirmTitulo"
+        >
+
+          <div class="painel-transferencia-head">
+
+            <div>
+
+              <span class="painel-transferencia-kicker">
+                CENTRAL COMERCIAL AGENFLEX
+              </span>
+
+              <h3 id="agenflexConfirmTitulo">
+              </h3>
+
+              <p id="agenflexConfirmMensagem">
+              </p>
+
+            </div>
+
+            <button
+              type="button"
+              class="painel-transferencia-fechar"
+              id="agenflexConfirmFechar"
+              aria-label="Fechar"
+            >
+              ×
+            </button>
+
+          </div>
+
+
+          <div class="painel-transferencia-body">
+
+            <div
+              id="agenflexConfirmDetalhe"
+              class="painel-transferencia-atual"
+              hidden
+            >
+            </div>
+
+          </div>
+
+
+          <div class="painel-transferencia-footer">
+
+            <button
+              type="button"
+              class="btn light"
+              id="agenflexConfirmCancelar"
+            >
+              Cancelar
+            </button>
+
+            <button
+              type="button"
+              class="btn navy"
+              id="agenflexConfirmOk"
+            >
+              Confirmar
+            </button>
+
+          </div>
+
+        </div>
+
+      `;
+
+
+      const tituloEl =
+        modal.querySelector(
+          '#agenflexConfirmTitulo'
+        );
+
+      const mensagemEl =
+        modal.querySelector(
+          '#agenflexConfirmMensagem'
+        );
+
+      const detalheEl =
+        modal.querySelector(
+          '#agenflexConfirmDetalhe'
+        );
+
+      const cancelarEl =
+        modal.querySelector(
+          '#agenflexConfirmCancelar'
+        );
+
+      const confirmarEl =
+        modal.querySelector(
+          '#agenflexConfirmOk'
+        );
+
+      const fecharEl =
+        modal.querySelector(
+          '#agenflexConfirmFechar'
+        );
+
+
+      tituloEl.textContent =
+        titulo;
+
+      mensagemEl.textContent =
+        mensagem;
+
+      cancelarEl.textContent =
+        textoCancelar;
+
+      confirmarEl.textContent =
+        textoConfirmar;
+
+
+      if (detalhe) {
+
+        detalheEl.hidden =
+          false;
+
+        detalheEl.textContent =
+          detalhe;
+
+      }
+
+
+      let encerrado =
+        false;
+
+
+      const finalizar =
+        resultado => {
+
+          if (encerrado) {
+            return;
+          }
+
+          encerrado =
+            true;
+
+          document.removeEventListener(
+            'keydown',
+            aoPressionarTecla
+          );
+
+          modal.remove();
+
+
+          // Se existir outro modal aberto por baixo,
+          // mantém o bloqueio da página.
+          const existeOutroModalAberto =
+            Array.from(
+              document.querySelectorAll(
+                '.painel-transferencia-modal'
+              )
+            ).some(
+              elemento =>
+                !elemento.hidden
+            );
+
+
+          if (
+            !existeOutroModalAberto
+          ) {
+
+            document.body.classList.remove(
+              'painel-modal-aberto'
+            );
+
+          }
+
+
+          resolve(
+            resultado
+          );
+          
+        };
+
+
+      const aoPressionarTecla =
+        evento => {
+
+          if (
+            evento.key ===
+            'Escape'
+          ) {
+
+            finalizar(
+              false
+            );
+
+          }
+
+        };
+
+
+      cancelarEl.addEventListener(
+        'click',
+        () => finalizar(false)
+      );
+
+
+      fecharEl.addEventListener(
+        'click',
+        () => finalizar(false)
+      );
+
+
+      confirmarEl.addEventListener(
+        'click',
+        () => finalizar(true)
+      );
+
+
+      modal.addEventListener(
+        'click',
+        evento => {
+
+          if (
+            evento.target ===
+            modal
+          ) {
+
+            finalizar(
+              false
+            );
+
+          }
+
+        }
+      );
+
+
+      document.addEventListener(
+        'keydown',
+        aoPressionarTecla
+      );
+
+
+      document.body.appendChild(
+        modal
+      );
+
+      document.body.classList.add(
+        'painel-modal-aberto'
+      );
+
+
+      setTimeout(
+        () => {
+          confirmarEl.focus();
+        },
+        30
+      );
+
+    }
+  );
+}

@@ -1713,13 +1713,24 @@ async function salvarMetaOficialTimeSelecionado() {
 
 
   const confirmar =
-    confirm(
-      `Definir a meta oficial do Time ` +
-      `${nomeTimeMeta(timeEquipe)} para ` +
-      `${nomeMesMeta(periodo.mes)}/${periodo.ano} ` +
-      `em ${formatarMoedaMeta(valor)}?`
-    );
+    await confirmarAcao({
 
+      titulo:
+        `Definir meta oficial do Time ${nomeTimeMeta(timeEquipe)}?`,
+
+      mensagem:
+        `${nomeMesMeta(periodo.mes)}/${periodo.ano} • ${formatarMoedaMeta(valor)}`,
+
+      detalhe:
+        'Esta será a meta oficial do Time para o período selecionado.',
+
+      textoConfirmar:
+        'Salvar meta oficial',
+
+      textoCancelar:
+        'Cancelar'
+
+    });
 
   if (!confirmar) {
 
@@ -1875,12 +1886,24 @@ async function salvarMetaUsuarioEquipe(
 
 
   const confirmar =
-    confirm(
-      `Salvar meta de ${vendedor.nome} ` +
-      `para ${nomeMesMeta(periodo.mes)}/${periodo.ano} ` +
-      `em ${formatarMoedaMeta(valor)}?`
-    );
+    await confirmarAcao({
 
+      titulo:
+        `Salvar meta de ${vendedor.nome}?`,
+
+      mensagem:
+        `${nomeMesMeta(periodo.mes)}/${periodo.ano} • ${formatarMoedaMeta(valor)}`,
+
+      detalhe:
+        'Esta será a meta individual do vendedor para o período selecionado.',
+
+      textoConfirmar:
+        'Salvar meta',
+
+      textoCancelar:
+        'Cancelar'
+
+    });
 
   if (!confirmar) {
 
