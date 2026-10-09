@@ -89,12 +89,21 @@ async function usuarioAtual() {
 
   if (error) {
 
+    if (
+      error?.name ===
+      'AuthSessionMissingError'
+    ) {
+
+      return null;
+
+    }
+
     throw error;
 
   }
 
 
-  return data.user ?? null;
+  return data?.user ?? null;
 }
 
 

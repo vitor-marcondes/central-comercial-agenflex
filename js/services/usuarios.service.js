@@ -140,22 +140,8 @@ async function obterMeuPerfil() {
     getSupabaseClient();
 
 
-  const {
-    data: authData,
-    error: authError
-  } =
-    await client.auth.getUser();
-
-
-  if (authError) {
-
-    throw authError;
-
-  }
-
-
   const user =
-    authData?.user;
+    await usuarioAtual();
 
 
   if (!user) {
@@ -199,7 +185,6 @@ async function obterMeuPerfil() {
 
   return data || null;
 }
-
 
 // =========================================================
 // ## 3. PERFIS DA EQUIPE
@@ -688,18 +673,96 @@ async function transferirProposta({
   return data;
 }
 
-async function listarPaginasComerciais(criarConsulta, chave = 'id') {
+async function listarPaginasComerciais(
+  criarConsulta,
+  chave = 'id'
+) {
+
   const registros = [];
-  const usuario = usuarioLocalAtual;
+
+  const usuarioInicial =
+    await usuarioAtual();
+
+
+  if (!usuarioInicial) {
+
+    return registros;
+
+  }
+
+
+  const usuarioId =
+    usuarioInicial.id;
+
   let cursor = null;
+
+
   while (true) {
-    const { data, error } = await criarConsulta(cursor);
-    if (error) throw error;
-    if (usuario !== usuarioLocalAtual || !usuario) throw new Error('A sessão foi alterada.');
-    if (!data?.length) return registros;
-    registros.push(...data);
-    const proximo = data[data.length - 1][chave];
-    if (!proximo || proximo === cursor) throw new Error('A paginação não avançou.');
-    cursor = proximo;
+
+    const {
+      data,
+      error
+    } =
+      await criarConsulta(
+        cursor
+      );
+
+
+    if (error) {
+
+      throw error;
+
+    }
+
+
+    const usuarioDepois =
+      await usuarioAtual();
+
+
+    if (
+      !usuarioDepois ||
+      usuarioDepois.id !== usuarioId
+    ) {
+
+      throw new Error(
+        'A sessão foi alterada.'
+      );
+
+    }
+
+
+    if (!data?.length) {
+
+      return registros;
+
+    }
+
+
+    registros.push(
+      ...data
+    );
+
+
+    const proximo =
+      data[
+      data.length - 1
+      ][chave];
+
+
+    if (
+      !proximo ||
+      proximo === cursor
+    ) {
+
+      throw new Error(
+        'A paginação não avançou.'
+      );
+
+    }
+
+
+    cursor =
+      proximo;
+
   }
 }
