@@ -661,11 +661,6 @@ function iniciarMonitoramentoSenha() {
           'PASSWORD_RECOVERY'
         ) {
 
-          console.log(
-            'Sessão de recuperação de senha detectada.',
-            session?.user?.email
-          );
-
 
           setTimeout(
             abrirTelaNovaSenha,

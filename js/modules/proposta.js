@@ -3407,12 +3407,6 @@ async function salvarPropostaNuvem(
     }
 
 
-    console.log(
-      'Proposta salva no Supabase:',
-      resultado
-    );
-
-
     return true;
 
   } catch (erro) {
@@ -3967,11 +3961,6 @@ async function enviarRevisaoAtual() {
     );
 
 
-    console.log(
-      'Revisão enviada:',
-      resultado
-    );
-
   } catch (erro) {
 
     console.error(
@@ -4184,11 +4173,6 @@ async function criarNovaRevisaoAtual() {
       `R${propostaNuvemAtual.numeroRevisao} criada com sucesso`
     );
 
-
-    console.log(
-      'Nova revisão criada:',
-      resultado
-    );
 
   } catch (erro) {
 
@@ -4808,11 +4792,6 @@ async function salvarStatusComercial() {
       'Gestão comercial atualizada'
     );
 
-
-    console.log(
-      'Gestão comercial atualizada:',
-      resultado
-    );
 
   } catch (erro) {
 
@@ -6059,11 +6038,6 @@ async function buscarCnpjEPreencher() {
       'Dados da empresa preenchidos'
     );
 
-
-    console.log(
-      'Empresa consultada:',
-      empresa
-    );
 
   } catch (erro) {
 
