@@ -2128,3 +2128,27 @@ table.editor.painel-table td:nth-child(10) .btn {
   padding: 8px 10px;
   font-size: 12px;
 }
+
+/* =========================================================
+   MEDIDAS — TABELAS COMPACTAS
+   ========================================================= */
+
+#medidasPage .table-wrap {
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+#medidasPage table.editor {
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 100%;
+  table-layout: auto;
+}
+
+#medidasPage table.editor th,
+#medidasPage table.editor td {
+  white-space: nowrap;
+  padding-left: 10px;
+  padding-right: 10px;
+}
